@@ -128,11 +128,8 @@ export default function AddEditContactScreen() {
       // Step 1: Crop the selected face
       const croppedImageUri = await cropFace(uploadedImageUri, faceIndex);
 
-      // Step 2: Compress the cropped image
-      const compressedImageUri = await imageService.compressImage(croppedImageUri);
-
-      // Step 3: Upload to S3 and get URL
-      const s3Url = await imageService.uploadImage(compressedImageUri, {
+      // Step 2: Upload to S3 (uploadImage handles compression internally)
+      const s3Url = await imageService.uploadImage(croppedImageUri, {
         type: 'contact-photo',
       });
 
