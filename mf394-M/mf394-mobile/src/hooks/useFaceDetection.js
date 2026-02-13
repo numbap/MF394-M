@@ -162,125 +162,188 @@ export function useFaceDetection() {
 
 /**
  * Crop face using canvas on web platform
+ * Handles file:// URLs from React Native Web image picker
  * Loads image, crops the face region, and returns as data URL
  */
 async function cropFaceWeb(imageUri, bounds, padding) {
   return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.crossOrigin = "anonymous";
+    try {
+      // Handle file:// URLs by converting to blob URL first
+      let uriToLoad = imageUri;
 
-    img.onload = () => {
-      try {
-        // Calculate crop region with padding
-        const originX = Math.max(0, bounds.origin.x - padding);
-        const originY = Math.max(0, bounds.origin.y - padding);
-        const cropWidth = Math.min(
-          bounds.size.width + padding * 2,
-          img.width - originX
-        );
-        const cropHeight = Math.min(
-          bounds.size.height + padding * 2,
-          img.height - originY
-        );
-
-        // Create canvas for cropped image
-        const canvas = document.createElement("canvas");
-        canvas.width = cropWidth;
-        canvas.height = cropHeight;
-
-        const ctx = canvas.getContext("2d");
-        if (!ctx) {
-          throw new Error("Could not get canvas context");
-        }
-
-        // Draw cropped region onto canvas
-        ctx.drawImage(
-          img,
-          originX,
-          originY,
-          cropWidth,
-          cropHeight,
-          0,
-          0,
-          cropWidth,
-          cropHeight
-        );
-
-        // Convert canvas to data URL
-        const croppedImageUrl = canvas.toDataURL("image/jpeg", 0.9);
-        resolve(croppedImageUrl);
-      } catch (error) {
-        reject(error);
+      if (imageUri.startsWith("file://")) {
+        // For file:// URLs, we need to fetch the file and create a blob URL
+        fetch(imageUri)
+          .then((response) => response.blob())
+          .then((blob) => {
+            const blobUrl = URL.createObjectURL(blob);
+            loadAndCropImage(blobUrl, bounds, padding, resolve, reject);
+          })
+          .catch((err) => {
+            console.error("Failed to fetch file:", err);
+            reject(err);
+          });
+      } else {
+        // For other URLs (http, data URLs, etc.), load directly
+        loadAndCropImage(uriToLoad, bounds, padding, resolve, reject);
       }
-    };
-
-    img.onerror = () => {
-      reject(new Error("Failed to load image for cropping"));
-    };
-
-    img.src = imageUri;
+    } catch (error) {
+      reject(error);
+    }
   });
 }
 
 /**
+ * Helper to load image and perform cropping
+ */
+function loadAndCropImage(imageUri, bounds, padding, resolve, reject) {
+  const img = new Image();
+  img.crossOrigin = "anonymous";
+
+  img.onload = () => {
+    try {
+      // Calculate crop region with padding
+      const originX = Math.max(0, bounds.origin.x - padding);
+      const originY = Math.max(0, bounds.origin.y - padding);
+      const cropWidth = Math.min(
+        bounds.size.width + padding * 2,
+        img.width - originX
+      );
+      const cropHeight = Math.min(
+        bounds.size.height + padding * 2,
+        img.height - originY
+      );
+
+      // Validate crop dimensions
+      if (cropWidth <= 0 || cropHeight <= 0) {
+        throw new Error(
+          `Invalid crop dimensions: ${cropWidth}x${cropHeight}`
+        );
+      }
+
+      // eslint-disable-next-line no-console
+      console.info(
+        `Cropping face at (${originX}, ${originY}) size ${cropWidth}x${cropHeight}`
+      );
+
+      // Create canvas for cropped image
+      const canvas = document.createElement("canvas");
+      canvas.width = cropWidth;
+      canvas.height = cropHeight;
+
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        throw new Error("Could not get canvas context");
+      }
+
+      // Draw cropped region onto canvas
+      ctx.drawImage(
+        img,
+        originX,
+        originY,
+        cropWidth,
+        cropHeight,
+        0,
+        0,
+        cropWidth,
+        cropHeight
+      );
+
+      // Convert canvas to data URL
+      const croppedImageUrl = canvas.toDataURL("image/jpeg", 0.9);
+
+      // Clean up blob URL if it was created
+      if (imageUri.startsWith("blob:")) {
+        URL.revokeObjectURL(imageUri);
+      }
+
+      resolve(croppedImageUrl);
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error("Crop failed:", error);
+      reject(error);
+    }
+  };
+
+  img.onerror = (err) => {
+    // eslint-disable-next-line no-console
+    console.error("Image load failed:", err);
+    reject(new Error(`Failed to load image: ${imageUri}`));
+  };
+
+  // eslint-disable-next-line no-console
+  console.info(`Loading image for cropping: ${imageUri}`);
+  img.src = imageUri;
+}
+
+/**
  * Create realistic mock faces for development/web
- * Generates 6 faces arranged in a typical group photo layout
+ * Generates 6 faces in proportional positions
+ * Since we don't know image dimensions, use conservative estimates
  */
 function createMockFaces(imageUri) {
-  // Simulate 6 faces in typical group photo positions
-  // Assuming image is roughly 400x600 or similar portrait orientation
+  // Assume typical photo dimensions and scale proportionally
+  // For most phone photos: width ~1000-4000, height ~1333-5333
+  // Use proportional positions that work with most image sizes
+
   const mockFaces = [
+    // Top left
     {
       id: "face-0",
       uri: imageUri,
       bounds: {
-        origin: { x: 50, y: 80 },
-        size: { width: 100, height: 120 },
+        origin: { x: 100, y: 150 },
+        size: { width: 250, height: 300 },
       },
       confidence: 0.92,
     },
+    // Top center
     {
       id: "face-1",
       uri: imageUri,
       bounds: {
-        origin: { x: 180, y: 60 },
-        size: { width: 110, height: 130 },
+        origin: { x: 375, y: 120 },
+        size: { width: 270, height: 330 },
       },
       confidence: 0.89,
     },
+    // Top right
     {
       id: "face-2",
       uri: imageUri,
       bounds: {
-        origin: { x: 310, y: 70 },
-        size: { width: 105, height: 125 },
+        origin: { x: 650, y: 150 },
+        size: { width: 260, height: 310 },
       },
       confidence: 0.87,
     },
+    // Bottom left
     {
       id: "face-3",
       uri: imageUri,
       bounds: {
-        origin: { x: 80, y: 220 },
-        size: { width: 95, height: 115 },
+        origin: { x: 80, y: 520 },
+        size: { width: 240, height: 290 },
       },
       confidence: 0.85,
     },
+    // Bottom center
     {
       id: "face-4",
       uri: imageUri,
       bounds: {
-        origin: { x: 210, y: 200 },
-        size: { width: 100, height: 120 },
+        origin: { x: 370, y: 480 },
+        size: { width: 280, height: 350 },
       },
       confidence: 0.88,
     },
+    // Bottom right
     {
       id: "face-5",
       uri: imageUri,
       bounds: {
-        origin: { x: 330, y: 220 },
-        size: { width: 98, height: 118 },
+        origin: { x: 690, y: 520 },
+        size: { width: 250, height: 300 },
       },
       confidence: 0.84,
     },
