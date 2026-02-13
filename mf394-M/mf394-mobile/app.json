@@ -1,0 +1,26 @@
+{
+  "expo": {
+    "name": "Face Memorizer",
+    "slug": "face-memorizer",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "sdkVersion": "54.0.0",
+    "ios": {
+      "supportsTabletMode": true,
+      "bundleIdentifier": "com.ummyou.ios",
+      "buildNumber": "1",
+      "requireFullScreen": true,
+      "deploymentTarget": "15.1"
+    },
+    "android": {
+      "package": "com.ummyou.android",
+      "versionCode": 1
+    },
+    "plugins": [],
+    "extra": {
+      "eas": {
+        "projectId": "your-project-id"
+      }
+    }
+  }
+}
