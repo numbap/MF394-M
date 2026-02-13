@@ -45,6 +45,7 @@ import { CategorySelector, Category } from '../../components/CategorySelector';
 import { TagSelector } from '../../components/TagSelector';
 import { FaceSelector, Face } from '../../components/FaceSelector';
 import { useFaceDetection } from '../../hooks/useFaceDetection';
+import * as imageService from '../../services/imageService';
 
 type Step = 'details' | 'faceDetection' | 'faceSelection' | 'crop' | 'save';
 
@@ -89,7 +90,7 @@ export default function AddEditContactScreen() {
 
   // API mutations
   const [createContact] = useCreateContactMutation();
-  const { detectFaces } = useFaceDetection();
+  const { detectFaces, cropFace, faces: detectionFaces } = useFaceDetection();
 
   // Determine if editing or creating
   const isEditing = false; // TODO: Get from route params
@@ -115,11 +116,42 @@ export default function AddEditContactScreen() {
     }
   };
 
-  const handleFaceSelected = (faceIndex: number) => {
+  const handleFaceSelected = async (faceIndex: number) => {
     setSelectedFaceIndex(faceIndex);
-    // TODO: Crop the selected face and set as photoUri
-    setPhotoUri(uploadedImageUri); // For now, use full image
-    setStep('details');
+    setIsLoading(true);
+
+    try {
+      if (!uploadedImageUri) {
+        throw new Error('No image uploaded');
+      }
+
+      // Step 1: Crop the selected face
+      const croppedImageUri = await cropFace(uploadedImageUri, faceIndex);
+
+      // Step 2: Compress the cropped image
+      const compressedImageUri = await imageService.compressImage(croppedImageUri);
+
+      // Step 3: Upload to S3 and get URL
+      const s3Url = await imageService.uploadImage(compressedImageUri, {
+        type: 'contact-photo',
+      });
+
+      // Step 4: Set the S3 URL as the photo
+      setPhotoUri(s3Url);
+
+      // Step 5: Return to details screen
+      setStep('details');
+      Alert.alert('Success', 'Photo processed and uploaded');
+    } catch (error: any) {
+      console.error('Image processing failed:', error);
+      Alert.alert(
+        'Error',
+        error?.message || 'Failed to process image. Please try again.'
+      );
+      // Keep on faceSelection screen to retry
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleCropManually = () => {
@@ -337,6 +369,7 @@ export default function AddEditContactScreen() {
             faces={detectedFaces}
             onSelectFace={handleFaceSelected}
             onCropInstead={handleCropManually}
+            isLoading={isLoading}
           />
           <TouchableOpacity
             style={styles.secondaryButton}
