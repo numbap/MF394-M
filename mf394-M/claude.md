@@ -355,14 +355,19 @@ Claude may autonomously (without asking):
 
 - Create commits with descriptive messages after summarizing changes
 - Just push to branches (not main)
-- Don't ask for permission on commits - just do them and summarize  
-
+- Don't ask for permission on commits - just do them and summarize
 
 ### Testing & Validation:
 
 - Run tests, lint, builds without asking
 - Fix lint errors automatically
 - Re-run tests after fixes
+- Don't ask for npm start or starting servers
+- Don't ask for killing existing processes on port 8081
+- Don't ask for python3 commands
+- Don't ask for git reset or git add commands.
+- Don't ask for playwright or pip install
+- Don't ask for npm run build or npm run
 
 ### Code Changes:
 
@@ -370,11 +375,13 @@ Claude may autonomously (without asking):
 - Update imports and dependencies mentioned in claude.md
 - Refactor ONLY what you just created in this session
 - Create new files and components without asking
+- Adding new libraries without asking
+- Concatenate files without asking
+-
 
 ### When to Still Ask:
 
 - Refactoring existing code (older than this session)
-- Adding new libraries (must ask first)
 - Architectural changes to existing patterns
 - Destructive operations (force push, delete branches)
 - Changes to claude.md itself

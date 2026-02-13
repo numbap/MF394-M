@@ -1,0 +1,27 @@
+{
+  "build": {
+    "production": {
+      "node": "20.x",
+      "npm": "10.x"
+    },
+    "preview": {
+      "node": "20.x",
+      "npm": "10.x"
+    },
+    "development": {
+      "node": "20.x",
+      "npm": "10.x",
+      "developmentClient": true
+    }
+  },
+  "submit": {
+    "production": {
+      "ios": {
+        "ascAppId": "YOUR_APP_ID"
+      },
+      "android": {
+        "serviceAccount": "path/to/service-account.json"
+      }
+    }
+  }
+}

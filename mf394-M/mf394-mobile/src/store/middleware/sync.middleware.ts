@@ -30,16 +30,11 @@ export const syncMiddleware: Middleware<{}, RootState> = (storeAPI) => (next) =>
   const result = next(action);
 
   // Trigger sync processing on specific conditions
-  const shouldProcessQueue = isAnyOf(
-    // Explicitly trigger sync
-    { type: 'sync/processSyncQueue' },
-    // Process after successful login (tokens available)
-    { type: 'auth/loginSuccess' },
-    // Process after session restore
-    { type: 'auth/restoreSession' },
-    // Process after token refresh
-    { type: 'auth/setAccessToken' }
-  )(action);
+  const shouldProcessQueue =
+    action.type === 'sync/processSyncQueue' ||
+    action.type === 'auth/loginSuccess' ||
+    action.type === 'auth/restoreSession' ||
+    action.type === 'auth/setAccessToken';
 
   if (shouldProcessQueue && !isProcessing) {
     processQueue(storeAPI);

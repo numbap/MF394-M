@@ -9,21 +9,24 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type { RootState } from '../index';
 
 export interface Contact {
-  id: string;
+  _id: string;
   name: string;
-  email: string;
-  phone?: string;
-  avatar?: string;
-  notes?: string;
-  createdAt: number;
-  updatedAt: number;
+  hint?: string;
+  photo?: string; // S3 URL
+  summary?: string;
+  category: 'friends-family' | 'community' | 'work' | 'goals-hobbies' | 'miscellaneous';
+  groups: string[]; // Tag IDs
+  created: number;
+  edited: number;
 }
 
 export interface ContactInput {
   name: string;
-  email: string;
-  phone?: string;
-  notes?: string;
+  hint?: string;
+  summary?: string;
+  category: 'friends-family' | 'community' | 'work' | 'goals-hobbies' | 'miscellaneous';
+  groups?: string[]; // Tag IDs
+  photo?: string; // S3 URL
 }
 
 export interface ContactsResponse {
@@ -63,7 +66,7 @@ export const contactsApi = createApi({
     // Get single contact
     getContactById: builder.query<Contact, string>({
       query: (id) => `/contacts/${id}`,
-      providesTags: (result, error, id) => [{ type: 'Contact', id }],
+      providesTags: (result) => (result ? [{ type: 'Contact', id: result._id }] : ['Contact']),
     }),
 
     // Create contact
@@ -83,7 +86,7 @@ export const contactsApi = createApi({
         method: 'PATCH',
         body: data,
       }),
-      invalidatesTags: (result, error, { id }) => [{ type: 'Contact', id }, 'Contact'],
+      invalidatesTags: (result, error, { id }) => (result ? [{ type: 'Contact', id: result._id }, 'Contact'] : ['Contact']),
     }),
 
     // Delete contact

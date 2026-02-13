@@ -85,7 +85,7 @@ export const imagesApi = createApi({
           formData.append('metadata', JSON.stringify(metadata));
         }
         return {
-          url: '/images/upload',
+          url: '/upload',
           method: 'POST',
           body: formData,
         };

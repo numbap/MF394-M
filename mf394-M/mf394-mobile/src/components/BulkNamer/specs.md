@@ -1,0 +1,1 @@
+In the Party flow, there will be a bulk add interface. The thumbnail will have a red border until a name is added. Then it will turn green. The Party flow will use this to add a contact for every validated contact that has both a name and an image. 

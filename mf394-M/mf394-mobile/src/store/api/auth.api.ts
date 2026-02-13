@@ -34,9 +34,17 @@ export interface UpdateProfileRequest {
 }
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: process.env.REACT_APP_API_URL || 'http://localhost:3000/api',
-  prepareHeaders: (headers) => {
+  baseUrl: process.env.REACT_APP_API_URL || 'https://ummyou.com/api',
+  prepareHeaders: (headers, { getState }) => {
     headers.set('Content-Type', 'application/json');
+
+    // Add authorization token if available
+    const state = getState() as any;
+    const token = state.auth?.accessToken;
+    if (token) {
+      headers.set('Authorization', `Bearer ${token}`);
+    }
+
     return headers;
   },
 });
