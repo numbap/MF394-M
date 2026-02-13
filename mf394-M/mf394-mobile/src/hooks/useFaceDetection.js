@@ -99,33 +99,45 @@ export function useFaceDetection() {
         return imageUri; // Return original if no bounds
       }
 
-      // Import here to avoid circular dependency
-      const { ImageManipulator } = require("expo-image-manipulator");
-
       // Add padding around face (20px)
       const padding = 20;
       const bounds = face.bounds;
-      const cropRegion = {
-        originX: Math.max(0, bounds.origin.x - padding),
-        originY: Math.max(0, bounds.origin.y - padding),
-        width: Math.min(
-          bounds.size.width + padding * 2,
-          800 // Cap at reasonable size
-        ),
-        height: Math.min(
-          bounds.size.height + padding * 2,
-          800
-        ),
-      };
 
-      // Crop the image
-      const result = await ImageManipulator.manipulateAsync(
-        imageUri,
-        [{ crop: cropRegion }],
-        { compress: 0.9, format: "jpeg" }
-      );
+      // Use appropriate cropping method based on platform
+      if (Platform.OS === "web") {
+        // For web: use canvas-based cropping
+        return await cropFaceWeb(imageUri, bounds, padding);
+      } else {
+        // For native: use ImageManipulator
+        try {
+          const { ImageManipulator } = require("expo-image-manipulator");
 
-      return result.uri;
+          const cropRegion = {
+            originX: Math.max(0, bounds.origin.x - padding),
+            originY: Math.max(0, bounds.origin.y - padding),
+            width: Math.min(
+              bounds.size.width + padding * 2,
+              800 // Cap at reasonable size
+            ),
+            height: Math.min(
+              bounds.size.height + padding * 2,
+              800
+            ),
+          };
+
+          const result = await ImageManipulator.manipulateAsync(
+            imageUri,
+            [{ crop: cropRegion }],
+            { compress: 0.9, format: "jpeg" }
+          );
+
+          return result.uri;
+        } catch (nativeErr) {
+          console.error("Native crop failed:", nativeErr);
+          // Fallback to web cropping
+          return await cropFaceWeb(imageUri, bounds, padding);
+        }
+      }
     } catch (err) {
       console.error("Face crop failed:", err);
       // Fallback: return original image
@@ -146,6 +158,68 @@ export function useFaceDetection() {
     cropFace,
     clearFaces,
   };
+}
+
+/**
+ * Crop face using canvas on web platform
+ * Loads image, crops the face region, and returns as data URL
+ */
+async function cropFaceWeb(imageUri, bounds, padding) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+
+    img.onload = () => {
+      try {
+        // Calculate crop region with padding
+        const originX = Math.max(0, bounds.origin.x - padding);
+        const originY = Math.max(0, bounds.origin.y - padding);
+        const cropWidth = Math.min(
+          bounds.size.width + padding * 2,
+          img.width - originX
+        );
+        const cropHeight = Math.min(
+          bounds.size.height + padding * 2,
+          img.height - originY
+        );
+
+        // Create canvas for cropped image
+        const canvas = document.createElement("canvas");
+        canvas.width = cropWidth;
+        canvas.height = cropHeight;
+
+        const ctx = canvas.getContext("2d");
+        if (!ctx) {
+          throw new Error("Could not get canvas context");
+        }
+
+        // Draw cropped region onto canvas
+        ctx.drawImage(
+          img,
+          originX,
+          originY,
+          cropWidth,
+          cropHeight,
+          0,
+          0,
+          cropWidth,
+          cropHeight
+        );
+
+        // Convert canvas to data URL
+        const croppedImageUrl = canvas.toDataURL("image/jpeg", 0.9);
+        resolve(croppedImageUrl);
+      } catch (error) {
+        reject(error);
+      }
+    };
+
+    img.onerror = () => {
+      reject(new Error("Failed to load image for cropping"));
+    };
+
+    img.src = imageUri;
+  });
 }
 
 /**
