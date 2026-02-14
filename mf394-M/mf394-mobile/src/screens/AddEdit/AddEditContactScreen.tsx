@@ -236,8 +236,11 @@ export default function AddEditContactScreen() {
 
     // Start face detection
     try {
-      const faces = await detectFaces(uri);
-      if (faces && faces.length > 0) {
+      const result = await detectFaces(uri);
+      const { faces, isRealDetection } = result;
+
+      if (isRealDetection && faces && faces.length > 0) {
+        // Only show face selector if real faces were detected
         // Crop all faces for display before showing in FaceSelector.
         // This ensures each face in the grid shows the cropped headshot,
         // not the full original image. Use detected face bounds directly
@@ -260,6 +263,7 @@ export default function AddEditContactScreen() {
         setSelectedFaceIndex(0);
         setStep('faceSelection');
       } else {
+        // No real faces detected - go to manual cropping interface
         setStep('crop');
       }
     } catch (error) {

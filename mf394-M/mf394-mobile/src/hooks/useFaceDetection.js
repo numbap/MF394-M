@@ -141,7 +141,7 @@ export function useFaceDetection() {
 
   const detectFaces = useCallback(
     async (imageUri) => {
-      if (!isMountedRef.current) return [];
+      if (!isMountedRef.current) return { faces: [], isRealDetection: false };
 
       setIsDetecting(true);
       setError(null);
@@ -157,14 +157,18 @@ export function useFaceDetection() {
         });
 
         let detectedFaces = [];
+        let isRealDetection = false;
 
         // Use face-api on web
         if (isWebPlatform && faceapi && modelsLoaded) {
           try {
             detectedFaces = await detectFacesWeb(imageUri, width, height);
+            if (detectedFaces.length > 0) {
+              isRealDetection = true;
+            }
           } catch (webErr) {
             console.warn(
-              "Web face detection failed, falling back to mock faces:",
+              "Web face detection failed:",
               webErr.message
             );
             detectedFaces = [];
@@ -189,38 +193,34 @@ export function useFaceDetection() {
                   bounds: face.bounds,
                   confidence: face.confidence,
                 }));
+              isRealDetection = true;
             }
           } catch (nativeErr) {
             console.warn("Native face detection failed:", nativeErr.message);
           }
         }
 
-        // Fallback to mock faces if no real detection
+        // Log when no real faces detected - don't create mock fallback
         if (detectedFaces.length === 0) {
           console.warn(
             "No real faces detected. isWebPlatform:", isWebPlatform,
             "faceapi:", !!faceapi,
             "modelsLoaded:", modelsLoaded,
             "FaceDetector:", !!FaceDetector,
-            "Using mock faces for fallback"
+            "User will proceed to manual cropping"
           );
-          detectedFaces = createMockFaces(imageUri, width, height);
         }
 
         if (isMountedRef.current) {
           setFaces(detectedFaces);
         }
-        return detectedFaces;
+        return { faces: detectedFaces, isRealDetection };
       } catch (err) {
         console.error("Face detection error:", err);
         if (isMountedRef.current) {
           setError(err.message);
-          // Fallback to mock faces for development
-          const mockFaces = createMockFaces(imageUri, 1000, 1333);
-          setFaces(mockFaces);
-          return mockFaces;
         }
-        return [];
+        return { faces: [], isRealDetection: false };
       } finally {
         if (isMountedRef.current) {
           setIsDetecting(false);
