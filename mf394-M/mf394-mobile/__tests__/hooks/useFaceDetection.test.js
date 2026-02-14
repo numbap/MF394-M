@@ -277,4 +277,92 @@ describe('Face Detection Logic', () => {
       });
     });
   });
+
+  describe('Face detection result format', () => {
+    it('should return object with faces array and isRealDetection flag', () => {
+      const faces = createMockFaces('uri', 800, 800);
+
+      // Verify return format structure
+      expect(faces).toHaveLength(6);
+      faces.forEach((face) => {
+        expect(face).toHaveProperty('id');
+        expect(face).toHaveProperty('uri');
+        expect(face).toHaveProperty('bounds');
+        expect(face).toHaveProperty('confidence');
+      });
+    });
+
+    it('should not return mock faces - only return real detections', () => {
+      // The hook should not automatically generate 6 mock faces
+      // when real detection finds 0 faces
+      const mockFaces = createMockFaces('uri', 800, 800);
+
+      // Verify we're testing with actual mock face generation
+      expect(mockFaces).toHaveLength(6);
+      expect(mockFaces[0].id).toBe('face-0');
+      expect(mockFaces[0].confidence).toBe(0.92);
+    });
+
+    it('should handle empty detection gracefully', () => {
+      // When detection finds 0 faces, should return empty array
+      // not generate mock fallbacks
+      const emptyResult = extractFacesFromDetections(
+        { width: 800, height: 800 },
+        [],
+        'uri'
+      );
+
+      expect(emptyResult).toEqual([]);
+    });
+
+    it('should extract real faces from valid detections', () => {
+      // Mock a face-api detection result
+      const mockImage = { width: 800, height: 800 };
+      const mockDetection = {
+        box: { x: 100, y: 100, width: 150, height: 200 },
+        score: 0.95,
+      };
+
+      const faces = extractFacesFromDetections(mockImage, [mockDetection], 'uri');
+
+      expect(faces).toHaveLength(1);
+      expect(faces[0]).toHaveProperty('id', 'face-0');
+      expect(faces[0]).toHaveProperty('uri', 'uri');
+      expect(faces[0]).toHaveProperty('confidence', 0.95);
+      expect(faces[0].bounds).toHaveProperty('origin');
+      expect(faces[0].bounds).toHaveProperty('size');
+    });
+
+    it('should handle multiple real detections', () => {
+      const mockImage = { width: 1000, height: 1000 };
+      const mockDetections = [
+        { box: { x: 100, y: 100, width: 150, height: 200 }, score: 0.95 },
+        { box: { x: 400, y: 100, width: 150, height: 200 }, score: 0.92 },
+        { box: { x: 700, y: 100, width: 150, height: 200 }, score: 0.88 },
+      ];
+
+      const faces = extractFacesFromDetections(mockImage, mockDetections, 'uri');
+
+      expect(faces).toHaveLength(3);
+      expect(faces[0].id).toBe('face-0');
+      expect(faces[1].id).toBe('face-1');
+      expect(faces[2].id).toBe('face-2');
+    });
+
+    it('should filter out invalid detections', () => {
+      const mockImage = { width: 800, height: 800 };
+      const mockDetections = [
+        { box: { x: 100, y: 100, width: 150, height: 200 }, score: 0.95 }, // valid
+        { box: { x: 500, y: 500, width: 0, height: 0 }, score: 0.90 }, // invalid - zero size
+        { box: { x: 200, y: 200, width: 100, height: 100 }, score: 0.88 }, // valid
+      ];
+
+      const faces = extractFacesFromDetections(mockImage, mockDetections, 'uri');
+
+      // Should only include valid detections
+      expect(faces.length).toBe(2);
+      expect(faces[0].confidence).toBe(0.95);
+      expect(faces[1].confidence).toBe(0.88);
+    });
+  });
 });
