@@ -420,8 +420,11 @@ export function Cropper(props: CropperProps) {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     backgroundColor: colors.semantic.background,
     padding: spacing.lg,
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
   },
   title: {
     fontSize: typography.headline.large.fontSize,
@@ -438,7 +441,8 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
   },
   canvasWrapper: {
-    marginVertical: spacing.lg,
+    alignItems: 'center',
+    marginBottom: spacing.lg,
   },
   canvas: {
     width: CANVAS_SIZE,
@@ -461,7 +465,9 @@ const styles = StyleSheet.create({
     pointerEvents: 'none',
   },
   sliderContainer: {
-    marginVertical: spacing.lg,
+    width: '100%',
+    marginBottom: spacing.lg,
+    paddingHorizontal: spacing.md,
   },
   sliderWrapper: {
     paddingHorizontal: spacing.md,
@@ -491,6 +497,7 @@ const styles = StyleSheet.create({
   actions: {
     flexDirection: 'row',
     gap: spacing.md,
+    width: '100%',
   },
   cancelButton: {
     flex: 1,
