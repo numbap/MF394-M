@@ -36,9 +36,9 @@ export function useFaceDetection() {
     setError(null);
 
     try {
-      // Verify image can be loaded
-      await new Promise((resolve, reject) => {
-        Image.getSize(imageUri, resolve, reject);
+      // Get actual image dimensions first
+      const { width, height } = await new Promise((resolve, reject) => {
+        Image.getSize(imageUri, (w, h) => resolve({ width: w, height: h }), reject);
       });
 
       let detectedFaces = [];
@@ -71,7 +71,7 @@ export function useFaceDetection() {
       if (detectedFaces.length === 0 && isWebPlatform) {
         // eslint-disable-next-line no-console
         console.info("Using mock faces for web development - upload a real image for actual face detection");
-        detectedFaces = createMockFaces(imageUri);
+        detectedFaces = createMockFaces(imageUri, width, height);
       }
 
       setFaces(detectedFaces);
@@ -79,8 +79,8 @@ export function useFaceDetection() {
     } catch (err) {
       console.error("Face detection error:", err);
       setError(err.message);
-      // Fallback to improved mock faces for development
-      const mockFaces = createMockFaces(imageUri);
+      // Fallback to improved mock faces for development - use reasonable defaults
+      const mockFaces = createMockFaces(imageUri, 1000, 1333);
       setFaces(mockFaces);
       return mockFaces;
     } finally {
@@ -280,72 +280,99 @@ function loadAndCropImage(imageUri, bounds, padding, resolve, reject) {
 
 /**
  * Create realistic mock faces for development/web
- * Generates 6 faces in proportional positions
- * Since we don't know image dimensions, use conservative estimates
+ * Generates 6 faces in proportional positions that scale to image dimensions
+ * @param {string} imageUri - The image URI
+ * @param {number} imageWidth - Actual image width in pixels
+ * @param {number} imageHeight - Actual image height in pixels
  */
-function createMockFaces(imageUri) {
-  // Assume typical photo dimensions and scale proportionally
-  // For most phone photos: width ~1000-4000, height ~1333-5333
-  // Use proportional positions that work with most image sizes
+function createMockFaces(imageUri, imageWidth, imageHeight) {
+  // Reference dimensions (1000x1333) - what the hardcoded values were designed for
+  const refWidth = 1000;
+  const refHeight = 1333;
 
+  // Calculate scale factors
+  const scaleX = imageWidth / refWidth;
+  const scaleY = imageHeight / refHeight;
+
+  // Face size targets: roughly 25% of image width
+  const faceWidth = Math.round(imageWidth * 0.25);
+  const faceHeight = Math.round(faceWidth * 1.2); // Faces are taller than wide
+
+  // Ensure faces fit within image bounds with margins
+  const margin = Math.round(imageWidth * 0.08);
+  const maxX = Math.max(margin, imageWidth - faceWidth - margin);
+  const maxY = Math.max(margin, imageHeight - faceHeight - margin);
+
+  // Generate 6 faces in a 3x2 grid pattern with some variation
   const mockFaces = [
-    // Top left
+    // Top row
     {
       id: "face-0",
       uri: imageUri,
       bounds: {
-        origin: { x: 100, y: 150 },
-        size: { width: 250, height: 300 },
+        origin: { x: Math.round(margin), y: Math.round(margin) },
+        size: { width: faceWidth, height: faceHeight },
       },
       confidence: 0.92,
     },
-    // Top center
     {
       id: "face-1",
       uri: imageUri,
       bounds: {
-        origin: { x: 375, y: 120 },
-        size: { width: 270, height: 330 },
+        origin: {
+          x: Math.round((imageWidth - faceWidth) / 2),
+          y: Math.round(margin),
+        },
+        size: { width: faceWidth, height: faceHeight },
       },
       confidence: 0.89,
     },
-    // Top right
     {
       id: "face-2",
       uri: imageUri,
       bounds: {
-        origin: { x: 650, y: 150 },
-        size: { width: 260, height: 310 },
+        origin: {
+          x: Math.round(imageWidth - faceWidth - margin),
+          y: Math.round(margin),
+        },
+        size: { width: faceWidth, height: faceHeight },
       },
       confidence: 0.87,
     },
-    // Bottom left
+    // Bottom row
     {
       id: "face-3",
       uri: imageUri,
       bounds: {
-        origin: { x: 80, y: 520 },
-        size: { width: 240, height: 290 },
+        origin: {
+          x: Math.round(margin),
+          y: Math.round(imageHeight - faceHeight - margin),
+        },
+        size: { width: faceWidth, height: faceHeight },
       },
       confidence: 0.85,
     },
-    // Bottom center
     {
       id: "face-4",
       uri: imageUri,
       bounds: {
-        origin: { x: 370, y: 480 },
-        size: { width: 280, height: 350 },
+        origin: {
+          x: Math.round((imageWidth - faceWidth) / 2),
+          y: Math.round(imageHeight - faceHeight - margin),
+        },
+        size: { width: faceWidth, height: faceHeight },
       },
       confidence: 0.88,
     },
-    // Bottom right
     {
       id: "face-5",
       uri: imageUri,
       bounds: {
-        origin: { x: 690, y: 520 },
-        size: { width: 250, height: 300 },
+        origin: {
+          x: Math.round(imageWidth - faceWidth - margin),
+          y: Math.round(imageHeight - faceHeight - margin),
+        },
+        size: { width: faceWidth, height: faceHeight },
       },
       confidence: 0.84,
     },
