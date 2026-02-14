@@ -22,6 +22,7 @@
  * 2. If faces are detected, it will show a new screen showing all found faces, and the user can select the face that corresponds with the contact they are tryin to create.
  * 3. If an invalid file is uploaded, display an error message and return to the details form.
 
+ *    The tags should look like badges. When you click on it, it shold change color. But no icons should appear in the badge. Badge with should be the same when activated or deactivated. 
 
  */
 
@@ -103,7 +104,25 @@ export default function AddEditContactScreen() {
     try {
       const faces = await detectFaces(uri);
       if (faces && faces.length > 0) {
-        setDetectedFaces(faces);
+        // Crop all faces for display before showing in FaceSelector.
+        // This ensures each face in the grid shows the cropped headshot,
+        // not the full original image. The hook's internal bounds are preserved
+        // for the final crop when user selects a face.
+        const croppedFaces = await Promise.all(
+          faces.map(async (face, index) => {
+            try {
+              const croppedUri = await cropFace(uri, index);
+              return {
+                ...face,
+                uri: croppedUri, // Use cropped image for display
+              };
+            } catch (err) {
+              console.error(`Failed to crop face ${index}:`, err);
+              return face; // Fallback to original if cropping fails
+            }
+          })
+        );
+        setDetectedFaces(croppedFaces);
         setSelectedFaceIndex(0);
         setStep('faceSelection');
       } else {
