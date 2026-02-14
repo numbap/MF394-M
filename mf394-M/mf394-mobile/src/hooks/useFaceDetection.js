@@ -305,7 +305,8 @@ export function useFaceDetection() {
  */
 async function detectFacesWeb(imageUri, imageWidth, imageHeight) {
   return new Promise((resolve, reject) => {
-    const img = new Image();
+    // Use DOM Image constructor, not React Native Image
+    const img = new window.Image();
     img.crossOrigin = "anonymous";
 
     img.onload = async () => {
