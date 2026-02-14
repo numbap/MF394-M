@@ -420,11 +420,9 @@ export function Cropper(props: CropperProps) {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     backgroundColor: colors.semantic.background,
     padding: spacing.lg,
-    flexDirection: 'column',
-    justifyContent: 'flex-start',
+    width: DEVICE_WIDTH,
   },
   title: {
     fontSize: typography.headline.large.fontSize,
