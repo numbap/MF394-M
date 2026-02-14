@@ -333,8 +333,8 @@ async function detectFacesWebWithFaceApi(imageUri, imageWidth, imageHeight) {
           // Load models
           await loadModels();
 
-          // Detect faces using face-api
-          const detections = await FaceApi.detectAllFaces(img).withTinyFaceDetector();
+          // Detect faces using face-api with tiny face detector
+          const detections = await FaceApi.detectAllFaces(img, new FaceApi.TinyFaceDetectorOptions());
 
           // Convert face-api detections to our format
           const faces = detections
