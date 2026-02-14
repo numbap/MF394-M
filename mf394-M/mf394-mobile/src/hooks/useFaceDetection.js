@@ -23,28 +23,51 @@ const isWebPlatform = Platform.OS === "web";
  */
 async function loadFaceApiFromCDN() {
   if (!isWebPlatform || typeof window === "undefined") {
+    console.log("Not web platform, skipping CDN load");
     return null;
   }
 
   // Check if already loaded
   if (window.faceapi) {
-    console.log("face-api.js already loaded from CDN");
+    console.log("face-api.js already available globally");
     return window.faceapi;
   }
 
+  console.log("Starting to load face-api.js from CDN...");
+
   return new Promise((resolve, reject) => {
     const script = document.createElement("script");
-    script.src = "https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.7/dist/face-api.min.js";
+    // Try the original vladmandic version that worked in old app
+    script.src = "https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js";
     script.async = true;
+    script.crossOrigin = "anonymous";
+
     script.onload = () => {
-      console.log("face-api.js loaded from CDN successfully");
-      faceapi = window.faceapi;
-      resolve(window.faceapi);
+      console.log("Script loaded from CDN");
+      if (window.faceapi) {
+        console.log("face-api.js available on window.faceapi");
+        faceapi = window.faceapi;
+        resolve(window.faceapi);
+      } else {
+        console.error("Script loaded but window.faceapi not available");
+        // Try to find it under different names
+        console.log("Available on window:", Object.keys(window).filter(k => k.includes('face') || k.includes('Face')));
+        reject(new Error("window.faceapi not available after script load"));
+      }
     };
-    script.onerror = () => {
-      console.error("Failed to load face-api.js from CDN");
-      reject(new Error("Failed to load face-api.js"));
+
+    script.onerror = (err) => {
+      console.error("Failed to load face-api.js from CDN:", err);
+      reject(new Error("Failed to load face-api.js from CDN"));
     };
+
+    script.onreadystatechange = function () {
+      if (this.readyState === "loaded" || this.readyState === "complete") {
+        console.log("Script readyState:", this.readyState);
+      }
+    };
+
+    console.log("Appending script to document head");
     document.head.appendChild(script);
   });
 }
@@ -174,7 +197,13 @@ export function useFaceDetection() {
 
         // Fallback to mock faces if no real detection
         if (detectedFaces.length === 0) {
-          console.log("No faces detected, using mock faces for testing");
+          console.warn(
+            "No real faces detected. isWebPlatform:", isWebPlatform,
+            "faceapi:", !!faceapi,
+            "modelsLoaded:", modelsLoaded,
+            "FaceDetector:", !!FaceDetector,
+            "Using mock faces for fallback"
+          );
           detectedFaces = createMockFaces(imageUri, width, height);
         }
 
