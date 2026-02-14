@@ -40,12 +40,6 @@ export function TagSelector({
     }
   };
 
-  // Split tags into rows of 2
-  const tagRows = [];
-  for (let i = 0; i < availableTags.length; i += 2) {
-    tagRows.push(availableTags.slice(i, i + 2));
-  }
-
   return (
     <View style={[styles.container, style]}>
       {/* Header with label and edit button */}
@@ -61,42 +55,30 @@ export function TagSelector({
 
       {/* Tags Grid */}
       {availableTags.length > 0 ? (
-        <View>
-          {tagRows.map((row, rowIndex) => (
-            <View key={rowIndex} style={styles.tagRow}>
-              {row.map((tag) => {
-                const isSelected = selectedTags.includes(tag);
-                return (
-                  <TouchableOpacity
-                    key={tag}
-                    style={[
-                      styles.tagButton,
-                      isSelected && styles.tagButtonSelected,
-                    ]}
-                    onPress={() => handleToggleTag(tag)}
-                  >
-                    {isSelected && (
-                      <FontAwesome
-                        name="check"
-                        size={14}
-                        color={colors.primary[500]}
-                        style={styles.checkIcon}
-                      />
-                    )}
-                    <Text
-                      style={[
-                        styles.tagLabel,
-                        isSelected && styles.tagLabelSelected,
-                      ]}
-                      numberOfLines={1}
-                    >
-                      {tag}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </View>
-          ))}
+        <View style={styles.tagsContainer}>
+          {availableTags.map((tag) => {
+            const isSelected = selectedTags.includes(tag);
+            return (
+              <TouchableOpacity
+                key={tag}
+                style={[
+                  styles.tagButton,
+                  isSelected && styles.tagButtonSelected,
+                ]}
+                onPress={() => handleToggleTag(tag)}
+              >
+                <Text
+                  style={[
+                    styles.tagLabel,
+                    isSelected && styles.tagLabelSelected,
+                  ]}
+                  numberOfLines={1}
+                >
+                  {tag}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
         </View>
       ) : (
         <View style={styles.emptyContainer}>
@@ -145,40 +127,30 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: colors.primary[500],
   },
-  tagRow: {
+  tagsContainer: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: spacing.md,
-    marginBottom: spacing.md,
   },
   tagButton: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
     paddingHorizontal: spacing.md,
-    paddingVertical: spacing.md,
+    paddingVertical: spacing.sm,
     borderWidth: 2,
     borderColor: colors.primary[200],
-    borderRadius: radii.md,
+    borderRadius: radii.xl,
     backgroundColor: colors.semantic.surface,
-    minHeight: 44,
   },
   tagButtonSelected: {
     backgroundColor: colors.primary[50],
     borderColor: colors.primary[500],
   },
-  checkIcon: {
-    marginRight: spacing.xs,
-  },
   tagLabel: {
     fontSize: typography.body.medium.fontSize,
-    fontWeight: '500',
+    fontWeight: '600',
     color: colors.semantic.text,
-    flex: 1,
   },
   tagLabelSelected: {
     color: colors.primary[500],
-    fontWeight: '600',
   },
   emptyContainer: {
     alignItems: 'center',

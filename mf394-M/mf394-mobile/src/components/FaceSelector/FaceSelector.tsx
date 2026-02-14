@@ -10,6 +10,8 @@
  * There is no default face selected, or a Use Face button. The images act as buttons. 
  * No need for percentage match scores. Just crop closely around individual faces. 
  * 
+ * When an image is uploaded, the alogorithm should analyze the image and crop out all of the faces it detects, and then return those cropped images to the user to select from.
+ * 
  */
 
 import React, { useState } from 'react';

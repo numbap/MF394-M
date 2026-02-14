@@ -197,7 +197,9 @@ async function cropFaceWeb(imageUri, bounds, padding) {
  * Helper to load image and perform cropping
  */
 function loadAndCropImage(imageUri, bounds, padding, resolve, reject) {
-  const img = new Image();
+  // Use DOM Image constructor on web, not React Native Image
+  const ImageConstructor = typeof window !== 'undefined' ? window.Image : Image;
+  const img = new ImageConstructor();
   img.crossOrigin = "anonymous";
 
   img.onload = () => {
