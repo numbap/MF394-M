@@ -3,9 +3,15 @@
  *
  * Web: Uses react-easy-crop for polished UX with real-time preview
  * Mobile: Custom implementation with zoom/pan controls
+ *
+ * Layout:
+ * - Takes device width with 1:1 aspect ratio (square)
+ * - Slider below for zoom control (clean, no labels)
+ * - Save/Cancel buttons at bottom
+ * - Returns base64 string for cropped image
  */
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -17,6 +23,7 @@ import {
   ActivityIndicator,
   PanResponder,
   GestureResponderEvent,
+  Dimensions,
 } from 'react-native';
 import { colors, spacing, radii, typography, shadows } from '../../theme/theme';
 
@@ -27,7 +34,58 @@ export interface CropperProps {
   style?: ViewStyle;
 }
 
-const CANVAS_SIZE = 300;
+const DEVICE_WIDTH = Dimensions.get('window').width;
+const CANVAS_SIZE = DEVICE_WIDTH - spacing.lg * 2; // Device width minus padding
+
+// Clean Slider Component
+interface SliderComponentProps {
+  value: number;
+  onValueChange: (value: number) => void;
+  minimumValue: number;
+  maximumValue: number;
+  step: number;
+}
+
+function SliderComponent({
+  value,
+  onValueChange,
+  minimumValue,
+  maximumValue,
+  step,
+}: SliderComponentProps) {
+  const sliderWidth = DEVICE_WIDTH - spacing.lg * 2 - spacing.md * 2;
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponder: () => true,
+      onPanResponderMove: (_evt: GestureResponderEvent, gestureState: any) => {
+        const totalRange = maximumValue - minimumValue;
+        const pixelRange = sliderWidth;
+        const newValue = minimumValue + (gestureState.x0 + gestureState.dx) / pixelRange * totalRange;
+        const snappedValue = Math.round(newValue / step) * step;
+        onValueChange(Math.max(minimumValue, Math.min(maximumValue, snappedValue)));
+      },
+    })
+  ).current;
+
+  const progress = ((value - minimumValue) / (maximumValue - minimumValue)) * 100;
+
+  return (
+    <View style={styles.sliderWrapper} {...panResponder.panHandlers}>
+      <View style={styles.sliderTrack}>
+        <View style={[styles.sliderFill, { width: `${progress}%` }]} />
+        <View
+          style={[
+            styles.sliderThumb,
+            {
+              left: `${progress}%`,
+            },
+          ]}
+        />
+      </View>
+    </View>
+  );
+}
 
 // Web implementation using react-easy-crop
 function WebCropper({ imageUri, onCropConfirm, onCancel }: CropperProps) {
@@ -158,17 +216,6 @@ function WebCropper({ imageUri, onCropConfirm, onCancel }: CropperProps) {
         />
       </div>
 
-      {/* Dimensions Display */}
-      <View style={styles.dimensionsContainer}>
-        <Text style={styles.dimensionsText}>
-          {croppedAreaPixels
-            ? `${Math.round(croppedAreaPixels.width)}×${Math.round(
-                croppedAreaPixels.height
-              )}px`
-            : 'Select crop area'}
-        </Text>
-      </View>
-
       {/* Action Buttons */}
       <View style={styles.actions}>
         <TouchableOpacity
@@ -275,14 +322,17 @@ function MobileCropper({
         { compress: 0.9, format: 'jpeg' }
       );
 
-      return result.uri;
+      // Convert to base64
+      const fs = require('expo-file-system');
+      const base64 = await fs.readAsStringAsync(result.uri, {
+        encoding: fs.EncodingType.Base64,
+      });
+      return `data:image/jpeg;base64,${base64}`;
     } catch (error) {
       console.error('Native crop failed:', error);
       throw error;
     }
   };
-
-  const croppedDimensions = Math.round(CANVAS_SIZE);
 
   return (
     <View style={[styles.container, style]}>
@@ -311,43 +361,17 @@ function MobileCropper({
           {/* Fixed 1:1 Crop Frame */}
           <View style={styles.cropFrame} />
         </View>
-
-        {/* Dimensions Display */}
-        <View style={styles.dimensionsContainer}>
-          <Text style={styles.dimensionsText}>
-            {croppedDimensions}×{croppedDimensions}px
-          </Text>
-        </View>
       </View>
 
-      {/* Zoom Controls */}
-      <View style={styles.zoomControlsContainer}>
-        <TouchableOpacity
-          style={styles.zoomButton}
-          onPress={() => handleZoomChange(Math.max(0.5, zoom - 0.2))}
-        >
-          <Text style={styles.zoomButtonText}>−</Text>
-        </TouchableOpacity>
-
-        <View style={styles.sliderTrack}>
-          <View
-            style={[
-              styles.sliderFill,
-              {
-                width: `${((zoom - 0.5) / 2.5) * 100}%`,
-              },
-            ]}
-          />
-        </View>
-
-        <TouchableOpacity
-          style={styles.zoomButton}
-          onPress={() => handleZoomChange(Math.min(3, zoom + 0.2))}
-        >
-          <Text style={styles.zoomButtonText}>+</Text>
-        </TouchableOpacity>
-
-        <Text style={styles.zoomValue}>{zoom.toFixed(1)}×</Text>
+      {/* Zoom Slider - Clean Interface */}
+      <View style={styles.sliderContainer}>
+        <SliderComponent
+          value={zoom}
+          onValueChange={handleZoomChange}
+          minimumValue={0.5}
+          maximumValue={3}
+          step={0.05}
+        />
       </View>
 
       {/* Action Buttons */}
@@ -387,10 +411,8 @@ export function Cropper(props: CropperProps) {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     backgroundColor: colors.semantic.background,
     padding: spacing.lg,
-    justifyContent: 'space-between',
   },
   title: {
     fontSize: typography.headline.large.fontSize,
@@ -407,10 +429,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
   },
   canvasWrapper: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: spacing.md,
+    marginVertical: spacing.lg,
   },
   canvas: {
     width: CANVAS_SIZE,
@@ -432,57 +451,33 @@ const styles = StyleSheet.create({
     borderColor: colors.primary[500],
     pointerEvents: 'none',
   },
-  dimensionsContainer: {
-    backgroundColor: colors.semantic.surface,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: radii.md,
-    borderWidth: 1,
-    borderColor: colors.semantic.border,
-  },
-  dimensionsText: {
-    fontSize: typography.body.medium.fontSize,
-    fontWeight: '600',
-    color: colors.semantic.text,
-  },
-  zoomControlsContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
+  sliderContainer: {
     marginVertical: spacing.lg,
   },
-  zoomButton: {
-    width: 44,
-    height: 44,
-    borderRadius: radii.md,
-    backgroundColor: colors.semantic.surface,
-    borderWidth: 1,
-    borderColor: colors.semantic.border,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  zoomButtonText: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: colors.semantic.text,
+  sliderWrapper: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.md,
   },
   sliderTrack: {
-    flex: 1,
-    height: 6,
+    height: 8,
     backgroundColor: colors.semantic.border,
     borderRadius: radii.full,
     overflow: 'hidden',
+    justifyContent: 'center',
   },
   sliderFill: {
     height: '100%',
     backgroundColor: colors.primary[500],
   },
-  zoomValue: {
-    fontSize: typography.body.medium.fontSize,
-    fontWeight: '600',
-    color: colors.semantic.text,
-    minWidth: 40,
-    textAlign: 'right',
+  sliderThumb: {
+    position: 'absolute',
+    width: 20,
+    height: 20,
+    borderRadius: radii.full,
+    backgroundColor: colors.primary[500],
+    marginLeft: -10,
+    marginTop: -6,
+    ...shadows.sm,
   },
   actions: {
     flexDirection: 'row',
