@@ -46,6 +46,7 @@ import { ImageSelector } from '../../components/ImageSelector';
 import { CategorySelector, Category } from '../../components/CategorySelector';
 import { TagSelector } from '../../components/TagSelector';
 import { FaceSelector, Face } from '../../components/FaceSelector';
+import { Cropper } from '../../components/Cropper';
 import { useFaceDetection } from '../../hooks/useFaceDetection';
 import { imageService } from '../../services/imageService';
 
@@ -312,6 +313,34 @@ export default function AddEditContactScreen() {
     setStep('crop');
   };
 
+  const handleCropConfirm = async (croppedImageUri: string) => {
+    try {
+      setIsLoading(true);
+      // Upload the cropped image to S3
+      const s3Url = await imageService.uploadImage(croppedImageUri, {
+        type: 'contact-photo',
+      });
+      // Set the S3 URL as the photo
+      setPhotoUri(s3Url);
+      // Return to details screen
+      setStep('details');
+      Alert.alert('Success', 'Photo cropped and uploaded');
+    } catch (error: any) {
+      console.error('Crop and upload failed:', error);
+      Alert.alert(
+        'Error',
+        error?.message || 'Failed to process image. Please try again.'
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleCropCancel = () => {
+    setStep('details');
+    setUploadedImageUri(null);
+  };
+
   const handleImageDeleted = () => {
     setPhotoUri(null);
   };
@@ -534,30 +563,14 @@ export default function AddEditContactScreen() {
         </View>
       )}
 
-      {/* Crop Step - Placeholder */}
-      {step === 'crop' && (
-        <View style={styles.stepContainer}>
-          <Text style={styles.stepTitle}>Crop Photo</Text>
-          <View style={styles.placeholderContainer}>
-            <FontAwesome
-              name="crop"
-              size={64}
-              color={colors.semantic.textSecondary}
-            />
-            <Text style={styles.placeholderLabel}>Crop Editor</Text>
-            <Text style={styles.placeholderSubtext}>
-              Photo cropping coming soon
-            </Text>
-          </View>
-          <View style={styles.buttonGroup}>
-            <TouchableOpacity
-              style={styles.secondaryButton}
-              onPress={() => setStep('details')}
-            >
-              <Text style={styles.secondaryButtonText}>Back</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
+      {/* Crop Step */}
+      {step === 'crop' && uploadedImageUri && (
+        <Cropper
+          imageUri={uploadedImageUri}
+          onCropConfirm={handleCropConfirm}
+          onCancel={handleCropCancel}
+          style={styles.stepContainer}
+        />
       )}
     </View>
   );

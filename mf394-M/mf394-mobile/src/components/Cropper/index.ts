@@ -1,2 +1,2 @@
 export { Cropper } from './Cropper';
-export type { CropperProps, CropRegion } from './Cropper';
+export type { CropperProps } from './Cropper';
