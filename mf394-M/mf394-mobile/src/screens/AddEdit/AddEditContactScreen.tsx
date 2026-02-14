@@ -503,7 +503,7 @@ export default function AddEditContactScreen() {
       {step === 'faceDetection' && (
         <View style={styles.stepContainer}>
           <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color={colors.primary[500]} />
+            <ActivityIndicator size={48} color={colors.primary[500]} />
             <Text style={styles.loadingLabel}>Scanning for Faces</Text>
             <Text style={styles.loadingSubtext}>
               Analyzing your photo...
