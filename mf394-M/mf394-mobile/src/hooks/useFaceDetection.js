@@ -1,8 +1,9 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { Image, Platform } from "react-native";
 import { FACE_DETECTION_MIN_CONFIDENCE } from "../utils/constants";
 
 let FaceDetector;
+let faceapi;
 
 // Import appropriate face detection library based on platform
 if (Platform.OS !== "web") {
@@ -12,6 +13,13 @@ if (Platform.OS !== "web") {
   } catch (e) {
     console.warn("expo-face-detector not available on this platform");
   }
+} else {
+  // Import face-api for web platform
+  try {
+    faceapi = require("face-api.js");
+  } catch (e) {
+    console.warn("face-api.js not available:", e.message);
+  }
 }
 
 const isWebPlatform = Platform.OS === "web";
@@ -20,8 +28,8 @@ const isWebPlatform = Platform.OS === "web";
  * Face Detection Hook
  *
  * Detects faces in images using:
+ * - face-api.js (TinyFaceDetector) on web
  * - expo-face-detector on native (iOS/Android)
- * - Improved mock data on web (with better defaults)
  *
  * Returns array of detected face regions with bounds information.
  */
@@ -29,67 +37,134 @@ export function useFaceDetection() {
   const [faces, setFaces] = useState([]);
   const [isDetecting, setIsDetecting] = useState(false);
   const [error, setError] = useState(null);
+  const [modelsLoaded, setModelsLoaded] = useState(false);
+  const isMountedRef = useRef(true);
 
-  const detectFaces = useCallback(async (imageUri) => {
-    setIsDetecting(true);
-    setError(null);
+  // Track component mount/unmount for async cleanup
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
-    try {
-      // Get actual image dimensions first
-      const { width, height } = await new Promise((resolve, reject) => {
-        Image.getSize(imageUri, (w, h) => resolve({ width: w, height: h }), reject);
-      });
+  // Load face-api models on web
+  useEffect(() => {
+    if (!isWebPlatform || modelsLoaded || typeof window === "undefined") {
+      return;
+    }
 
-      let detectedFaces = [];
+    const loadModels = async () => {
+      try {
+        if (!faceapi || !faceapi.nets) {
+          console.warn("face-api.js library not properly initialized");
+          return;
+        }
 
-      // Use native face detection on mobile platforms
-      if (FaceDetector && Platform.OS !== "web") {
-        try {
-          const result = await FaceDetector.detectAsync(imageUri, {
-            mode: FaceDetector.Constants.Mode.fast,
-            detectLandmarks: FaceDetector.Constants.Landmarks.none,
-            runClassifications: FaceDetector.Constants.Classifications.none,
-          });
+        const modelsUrl = "https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model/";
+        console.log("Loading face-api models from:", modelsUrl);
 
-          if (result.faces && result.faces.length > 0) {
-            detectedFaces = result.faces
-              .filter((face) => (face.confidence || 0) >= FACE_DETECTION_MIN_CONFIDENCE)
-              .map((face, index) => ({
-                id: `face-${index}`,
-                uri: imageUri,
-                bounds: face.bounds,
-                confidence: face.confidence,
-              }));
-          }
-        } catch (nativeErr) {
-          console.warn("Native face detection failed:", nativeErr.message);
+        await faceapi.nets.tinyFaceDetector.load(modelsUrl);
+
+        if (isMountedRef.current) {
+          console.log("face-api models loaded successfully");
+          setModelsLoaded(true);
+        }
+      } catch (err) {
+        console.error("Error loading face-api models:", err);
+        if (isMountedRef.current) {
+          setModelsLoaded(true); // Set true anyway to allow fallback to work
         }
       }
+    };
 
-      // For web, use mock faces for UI testing
-      // Real face detection works on native platforms (iOS/Android) via expo-face-detector
-      if (detectedFaces.length === 0 && isWebPlatform) {
-        // eslint-disable-next-line no-console
-        console.info(
-          "Web: Using mock faces for UI testing. " +
-          "For real face detection with actual face cropping, test on iOS/Android."
-        );
-        detectedFaces = createMockFaces(imageUri, width, height);
+    loadModels();
+  }, [isWebPlatform, modelsLoaded]);
+
+  const detectFaces = useCallback(
+    async (imageUri) => {
+      if (!isMountedRef.current) return [];
+
+      setIsDetecting(true);
+      setError(null);
+
+      try {
+        // Get actual image dimensions first
+        const { width, height } = await new Promise((resolve, reject) => {
+          Image.getSize(
+            imageUri,
+            (w, h) => resolve({ width: w, height: h }),
+            reject
+          );
+        });
+
+        let detectedFaces = [];
+
+        // Use face-api on web
+        if (isWebPlatform && faceapi && modelsLoaded) {
+          try {
+            detectedFaces = await detectFacesWeb(imageUri, width, height);
+          } catch (webErr) {
+            console.warn(
+              "Web face detection failed, falling back to mock faces:",
+              webErr.message
+            );
+            detectedFaces = [];
+          }
+        }
+
+        // Use native face detection on mobile platforms
+        if (detectedFaces.length === 0 && FaceDetector && Platform.OS !== "web") {
+          try {
+            const result = await FaceDetector.detectAsync(imageUri, {
+              mode: FaceDetector.Constants.Mode.fast,
+              detectLandmarks: FaceDetector.Constants.Landmarks.none,
+              runClassifications: FaceDetector.Constants.Classifications.none,
+            });
+
+            if (result.faces && result.faces.length > 0) {
+              detectedFaces = result.faces
+                .filter((face) => (face.confidence || 0) >= FACE_DETECTION_MIN_CONFIDENCE)
+                .map((face, index) => ({
+                  id: `face-${index}`,
+                  uri: imageUri,
+                  bounds: face.bounds,
+                  confidence: face.confidence,
+                }));
+            }
+          } catch (nativeErr) {
+            console.warn("Native face detection failed:", nativeErr.message);
+          }
+        }
+
+        // Fallback to mock faces if no real detection
+        if (detectedFaces.length === 0) {
+          console.log("No faces detected, using mock faces for testing");
+          detectedFaces = createMockFaces(imageUri, width, height);
+        }
+
+        if (isMountedRef.current) {
+          setFaces(detectedFaces);
+        }
+        return detectedFaces;
+      } catch (err) {
+        console.error("Face detection error:", err);
+        if (isMountedRef.current) {
+          setError(err.message);
+          // Fallback to mock faces for development
+          const mockFaces = createMockFaces(imageUri, 1000, 1333);
+          setFaces(mockFaces);
+          return mockFaces;
+        }
+        return [];
+      } finally {
+        if (isMountedRef.current) {
+          setIsDetecting(false);
+        }
       }
-
-      setFaces(detectedFaces);
-      return detectedFaces;
-    } catch (err) {
-      console.error("Face detection error:", err);
-      setError(err.message);
-      // Fallback to improved mock faces for development - use reasonable defaults
-      const mockFaces = createMockFaces(imageUri, 1000, 1333);
-      setFaces(mockFaces);
-      return mockFaces;
-    } finally {
-      setIsDetecting(false);
-    }
-  }, []);
+    },
+    [isWebPlatform, modelsLoaded]
+  );
 
   const cropFace = useCallback(async (imageUri, faceIndex) => {
     try {
@@ -102,8 +177,8 @@ export function useFaceDetection() {
         return imageUri; // Return original if no bounds
       }
 
-      // Add padding around face (20px)
-      const padding = 20;
+      // Add padding around face (25px like in old implementation)
+      const padding = 25;
       const bounds = face.bounds;
 
       // Use appropriate cropping method based on platform
@@ -122,10 +197,7 @@ export function useFaceDetection() {
               bounds.size.width + padding * 2,
               800 // Cap at reasonable size
             ),
-            height: Math.min(
-              bounds.size.height + padding * 2,
-              800
-            ),
+            height: Math.min(bounds.size.height + padding * 2, 800),
           };
 
           const result = await ImageManipulator.manipulateAsync(
@@ -161,6 +233,172 @@ export function useFaceDetection() {
     cropFace,
     clearFaces,
   };
+}
+
+/**
+ * Detect faces on web using face-api.js
+ * Adapted from the working implementation in the old Next.js project
+ */
+async function detectFacesWeb(imageUri, imageWidth, imageHeight) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+
+    img.onload = async () => {
+      try {
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+
+        if (!ctx) {
+          throw new Error("Could not get canvas context");
+        }
+
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx.drawImage(img, 0, 0);
+
+        // Verify faceapi is ready
+        if (!faceapi || !faceapi.detectAllFaces) {
+          throw new Error("face-api.detectAllFaces not available");
+        }
+
+        // Detect faces using face-api with TinyFaceDetector
+        const detections = await faceapi
+          .detectAllFaces(
+            canvas,
+            new faceapi.TinyFaceDetectorOptions({
+              inputSize: 992,
+              scoreThreshold: 0.4,
+            })
+          )
+          .run();
+
+        if (detections && detections.length > 0) {
+          const faces = extractFacesFromDetections(img, detections, imageUri);
+          resolve(faces);
+        } else {
+          console.log("No faces detected by face-api");
+          resolve([]);
+        }
+      } catch (detectErr) {
+        console.error("Error during face detection:", detectErr);
+        reject(detectErr);
+      }
+    };
+
+    img.onerror = (event) => {
+      console.error("Image load failed for face detection");
+      reject(new Error(`Failed to load image for face detection: ${imageUri}`));
+    };
+
+    // Handle file:// URLs and blob URLs
+    if (imageUri.startsWith("file://")) {
+      fetch(imageUri)
+        .then((response) => response.blob())
+        .then((blob) => {
+          img.src = URL.createObjectURL(blob);
+        })
+        .catch((err) => {
+          reject(new Error(`Failed to fetch image: ${err.message}`));
+        });
+    } else {
+      img.src = imageUri;
+    }
+  });
+}
+
+/**
+ * Extract individual faces from face-api detections
+ * Adapted from working implementation - extracts with padding and square aspect ratio
+ */
+function extractFacesFromDetections(img, detections, imageUri) {
+  const faces = [];
+  const padding = 25; // Add padding around detected face
+
+  if (!detections || !Array.isArray(detections) || detections.length === 0) {
+    return faces;
+  }
+
+  for (let i = 0; i < detections.length; i++) {
+    try {
+      const detection = detections[i];
+
+      if (!detection) {
+        continue;
+      }
+
+      // Handle both direct box access and nested detection.box
+      const box = detection.box || (detection.detection && detection.detection.box);
+
+      if (!box) {
+        continue;
+      }
+
+      const { x, y, width, height } = box;
+
+      // Validate box coordinates
+      if (
+        typeof x !== "number" ||
+        typeof y !== "number" ||
+        typeof width !== "number" ||
+        typeof height !== "number"
+      ) {
+        continue;
+      }
+
+      if (width <= 0 || height <= 0) {
+        continue;
+      }
+
+      // Calculate padded dimensions
+      const paddedX = Math.max(0, x - padding);
+      const paddedY = Math.max(0, y - padding);
+      let paddedWidth = Math.min(img.width - paddedX, width + padding * 2);
+      let paddedHeight = Math.min(img.height - paddedY, height + padding * 2);
+
+      if (paddedWidth <= 0 || paddedHeight <= 0) {
+        continue;
+      }
+
+      // Enforce square aspect ratio by using the larger dimension
+      const squareSize = Math.max(paddedWidth, paddedHeight);
+
+      // Adjust crop position to keep face centered if dimensions differ
+      let cropX = paddedX;
+      let cropY = paddedY;
+      let cropWidth = squareSize;
+      let cropHeight = squareSize;
+
+      // Adjust if square crop goes beyond image boundaries
+      if (cropX + cropWidth > img.width) {
+        cropX = img.width - cropWidth;
+      }
+      if (cropY + cropHeight > img.height) {
+        cropY = img.height - cropHeight;
+      }
+
+      // Clamp to valid range
+      cropX = Math.max(0, cropX);
+      cropY = Math.max(0, cropY);
+      cropWidth = Math.min(img.width - cropX, squareSize);
+      cropHeight = Math.min(img.height - cropY, squareSize);
+
+      // Convert detection box to bounds format for consistency
+      faces.push({
+        id: `face-${i}`,
+        uri: imageUri,
+        bounds: {
+          origin: { x: cropX, y: cropY },
+          size: { width: cropWidth, height: cropHeight },
+        },
+        confidence: detection.score || 0.85,
+      });
+    } catch (err) {
+      console.error("Error extracting face at index", i, ":", err);
+    }
+  }
+
+  return faces;
 }
 
 /**
@@ -201,7 +439,7 @@ async function cropFaceWeb(imageUri, bounds, padding) {
  */
 function loadAndCropImage(imageUri, bounds, padding, resolve, reject) {
   // Use DOM Image constructor on web, not React Native Image
-  const ImageConstructor = typeof window !== 'undefined' ? window.Image : Image;
+  const ImageConstructor = typeof window !== "undefined" ? window.Image : Image;
   const img = new ImageConstructor();
   img.crossOrigin = "anonymous";
 
@@ -221,13 +459,10 @@ function loadAndCropImage(imageUri, bounds, padding, resolve, reject) {
 
       // Validate crop dimensions
       if (cropWidth <= 0 || cropHeight <= 0) {
-        throw new Error(
-          `Invalid crop dimensions: ${cropWidth}x${cropHeight}`
-        );
+        throw new Error(`Invalid crop dimensions: ${cropWidth}x${cropHeight}`);
       }
 
-      // eslint-disable-next-line no-console
-      console.info(
+      console.log(
         `Cropping face at (${originX}, ${originY}) size ${cropWidth}x${cropHeight}`
       );
 
@@ -242,17 +477,7 @@ function loadAndCropImage(imageUri, bounds, padding, resolve, reject) {
       }
 
       // Draw cropped region onto canvas
-      ctx.drawImage(
-        img,
-        originX,
-        originY,
-        cropWidth,
-        cropHeight,
-        0,
-        0,
-        cropWidth,
-        cropHeight
-      );
+      ctx.drawImage(img, originX, originY, cropWidth, cropHeight, 0, 0, cropWidth, cropHeight);
 
       // Convert canvas to data URL
       const croppedImageUrl = canvas.toDataURL("image/jpeg", 0.9);
@@ -264,51 +489,33 @@ function loadAndCropImage(imageUri, bounds, padding, resolve, reject) {
 
       resolve(croppedImageUrl);
     } catch (error) {
-      // eslint-disable-next-line no-console
       console.error("Crop failed:", error);
       reject(error);
     }
   };
 
   img.onerror = (err) => {
-    // eslint-disable-next-line no-console
     console.error("Image load failed:", err);
     reject(new Error(`Failed to load image: ${imageUri}`));
   };
 
-  // eslint-disable-next-line no-console
-  console.info(`Loading image for cropping: ${imageUri}`);
+  console.log(`Loading image for cropping: ${imageUri}`);
   img.src = imageUri;
 }
 
 /**
- * Create realistic mock faces for development/web testing
- * On web, we use scaled mock faces positioned in a grid pattern.
- * Real face detection is available on iOS/Android via expo-face-detector.
+ * Create mock faces for fallback testing
  * Generates 6 faces in proportional positions that scale to image dimensions
- * @param {string} imageUri - The image URI
- * @param {number} imageWidth - Actual image width in pixels
- * @param {number} imageHeight - Actual image height in pixels
  */
 function createMockFaces(imageUri, imageWidth, imageHeight) {
-  // Reference dimensions (1000x1333) - what the hardcoded values were designed for
-  const refWidth = 1000;
-  const refHeight = 1333;
-
-  // Calculate scale factors
-  const scaleX = imageWidth / refWidth;
-  const scaleY = imageHeight / refHeight;
-
   // Face size targets: roughly 25% of image width
   const faceWidth = Math.round(imageWidth * 0.25);
   const faceHeight = Math.round(faceWidth * 1.2); // Faces are taller than wide
 
   // Ensure faces fit within image bounds with margins
   const margin = Math.round(imageWidth * 0.08);
-  const maxX = Math.max(margin, imageWidth - faceWidth - margin);
-  const maxY = Math.max(margin, imageHeight - faceHeight - margin);
 
-  // Generate 6 faces in a 3x2 grid pattern with some variation
+  // Generate 6 faces in a 3x2 grid pattern
   const mockFaces = [
     // Top row
     {
