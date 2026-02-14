@@ -386,7 +386,7 @@ async function detectFacesWeb(imageUri, imageWidth, imageHeight) {
  * Extract individual faces from face-api detections
  * Adapted from working implementation - extracts with padding and square aspect ratio
  */
-function extractFacesFromDetections(img, detections, imageUri) {
+export function extractFacesFromDetections(img, detections, imageUri) {
   const faces = [];
   const padding = 25; // Add padding around detected face
 
@@ -582,7 +582,7 @@ function loadAndCropImage(imageUri, bounds, padding, resolve, reject) {
  * Create mock faces for fallback testing
  * Generates 6 faces in proportional positions that scale to image dimensions
  */
-function createMockFaces(imageUri, imageWidth, imageHeight) {
+export function createMockFaces(imageUri, imageWidth, imageHeight) {
   // Face size targets: roughly 25% of image width
   const faceWidth = Math.round(imageWidth * 0.25);
   const faceHeight = Math.round(faceWidth * 1.2); // Faces are taller than wide
