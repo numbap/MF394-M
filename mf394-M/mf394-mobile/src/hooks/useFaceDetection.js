@@ -3,6 +3,8 @@ import { Image, Platform } from "react-native";
 import { FACE_DETECTION_MIN_CONFIDENCE } from "../utils/constants";
 
 let FaceDetector;
+let FaceApi;
+let modelsLoaded = false;
 
 // Import appropriate face detection library based on platform
 if (Platform.OS !== "web") {
@@ -11,6 +13,13 @@ if (Platform.OS !== "web") {
     FaceDetector = ExpoFaceDetector.FaceDetector;
   } catch (e) {
     console.warn("expo-face-detector not available on this platform");
+  }
+} else {
+  // For web, use face-api with TensorFlow.js
+  try {
+    FaceApi = require("@vladmandic/face-api");
+  } catch (e) {
+    console.warn("face-api not available for web face detection");
   }
 }
 
@@ -66,13 +75,23 @@ export function useFaceDetection() {
         }
       }
 
-      // For web, use mock faces (development/testing only)
-      // Real face detection is available on native platforms (iOS/Android) via expo-face-detector
+      // For web, try real face detection with face-api
+      if (detectedFaces.length === 0 && isWebPlatform && FaceApi) {
+        try {
+          detectedFaces = await detectFacesWebWithFaceApi(imageUri, width, height);
+        } catch (webErr) {
+          console.warn("Web face detection failed:", webErr.message);
+          // Fallback to mock faces
+          detectedFaces = createMockFaces(imageUri, width, height);
+        }
+      }
+
+      // If still no faces detected, use mock data for development
       if (detectedFaces.length === 0 && isWebPlatform) {
         // eslint-disable-next-line no-console
         console.info(
-          "Web: Using realistic mock faces for testing. " +
-          "For real face detection, test on iOS/Android where expo-face-detector is available."
+          "Web: Using mock faces for testing. " +
+          "Real face detection is available on iOS/Android via expo-face-detector."
         );
         detectedFaces = createMockFaces(imageUri, width, height);
       }
@@ -282,9 +301,110 @@ function loadAndCropImage(imageUri, bounds, padding, resolve, reject) {
 }
 
 /**
+ * Detect faces on web using face-api with TensorFlow.js
+ * Provides real face detection in the browser
+ */
+async function detectFacesWebWithFaceApi(imageUri, imageWidth, imageHeight) {
+  return new Promise((resolve, reject) => {
+    try {
+      // Load models if not already loaded
+      const loadModels = async () => {
+        if (!modelsLoaded && FaceApi) {
+          try {
+            // Use CDN models from jsdelivr
+            const MODEL_URL = "https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model/";
+            await FaceApi.nets.tinyFaceDetector.load(MODEL_URL);
+            modelsLoaded = true;
+            // eslint-disable-next-line no-console
+            console.info("face-api models loaded");
+          } catch (modelErr) {
+            console.warn("Failed to load face-api models:", modelErr.message);
+            throw modelErr;
+          }
+        }
+      };
+
+      // Load the image
+      const img = new (window.Image)();
+      img.crossOrigin = "anonymous";
+
+      img.onload = async () => {
+        try {
+          // Load models
+          await loadModels();
+
+          // Detect faces using face-api
+          const detections = await FaceApi.detectAllFaces(img).withTinyFaceDetector();
+
+          // Convert face-api detections to our format
+          const faces = detections
+            .map((detection, index) => {
+              const box = detection.detection.box;
+              return {
+                id: `face-${index}`,
+                uri: imageUri,
+                bounds: {
+                  origin: {
+                    x: Math.round(box.x),
+                    y: Math.round(box.y),
+                  },
+                  size: {
+                    width: Math.round(box.width),
+                    height: Math.round(box.height),
+                  },
+                },
+                confidence: Math.round(detection.detection.score * 100) / 100,
+              };
+            });
+
+          if (faces.length > 0) {
+            // eslint-disable-next-line no-console
+            console.info(
+              `Detected ${faces.length} face${faces.length !== 1 ? "s" : ""} using face-api`
+            );
+          } else {
+            // eslint-disable-next-line no-console
+            console.warn("No faces detected by face-api");
+          }
+
+          resolve(faces);
+        } catch (error) {
+          console.error("Face detection failed:", error);
+          reject(error);
+        }
+      };
+
+      img.onerror = (err) => {
+        console.error("Failed to load image for face detection:", err);
+        reject(new Error(`Failed to load image: ${imageUri}`));
+      };
+
+      // Handle file:// URLs
+      if (imageUri.startsWith("file://")) {
+        fetch(imageUri)
+          .then((response) => response.blob())
+          .then((blob) => {
+            const blobUrl = URL.createObjectURL(blob);
+            img.src = blobUrl;
+          })
+          .catch((err) => {
+            console.error("Failed to fetch file:", err);
+            reject(err);
+          });
+      } else {
+        img.src = imageUri;
+      }
+    } catch (error) {
+      console.error("Web face detection setup failed:", error);
+      reject(error);
+    }
+  });
+}
+
+/**
  * Create realistic mock faces for development/web testing
  * On web, we use scaled mock faces positioned in a grid pattern.
- * Real face detection is available on iOS/Android via expo-face-detector.
+ * Real face detection is available via face-api or on iOS/Android via expo-face-detector.
  * Generates 6 faces in proportional positions that scale to image dimensions
  * @param {string} imageUri - The image URI
  * @param {number} imageWidth - Actual image width in pixels
