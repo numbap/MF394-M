@@ -4,11 +4,18 @@ module.exports = {
   setupFilesAfterEnv: ["<rootDir>/__tests__/setup.js"],
   moduleNameMapper: {
     "^@env$": "<rootDir>/__tests__/mocks/env.mock.js",
+    "^@expo/vector-icons$": "<rootDir>/__tests__/mocks/expo-vector-icons.mock.js",
   },
-  collectCoverageFrom: [
-    "src/**/*.js",
-    "!src/**/*.test.js",
-    "!src/**/index.js",
+  transformIgnorePatterns: [
+    "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg)",
   ],
-  testMatch: ["**/__tests__/**/*.test.js"],
+  collectCoverageFrom: [
+    "src/**/*.{js,jsx,ts,tsx}",
+    "!src/**/*.test.{js,jsx,ts,tsx}",
+    "!src/**/index.{js,ts}",
+  ],
+  testMatch: [
+    "**/__tests__/**/*.test.{js,jsx,ts,tsx}",
+    "**/*.test.{js,jsx,ts,tsx}",
+  ],
 };

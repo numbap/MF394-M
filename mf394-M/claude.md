@@ -369,6 +369,7 @@ Claude may autonomously (without asking):
 - Don't ask for playwright or pip install
 - Don't ask for npm run build or npm run
 - Don't ask for npm uninstall
+- Don't ask for kill commands
 
 ### Code Changes:
 

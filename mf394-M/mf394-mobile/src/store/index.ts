@@ -15,6 +15,7 @@ import { authApi } from './api/auth.api';
 import authReducer from './slices/auth.slice';
 import uiReducer from './slices/ui.slice';
 import syncReducer from './slices/sync.slice';
+import contactsReducer from './slices/contacts.slice';
 
 import { syncMiddleware } from './middleware/sync.middleware';
 import { errorHandlingMiddleware } from './middleware/errorHandling.middleware';
@@ -28,6 +29,7 @@ export const store = configureStore({
     auth: authReducer,
     ui: uiReducer,
     sync: syncReducer,
+    contacts: contactsReducer,
 
     // RTK Query APIs
     [contactsApi.reducerPath]: contactsApi.reducer,

@@ -10,7 +10,7 @@ import { tokenStorage } from "../utils/secureStore";
 import { colors } from "../theme/theme";
 
 import LoginScreen from "../screens/Auth/LoginScreen";
-import HomeScreen from "../screens/Home/HomeScreen";
+import { ListingScreen } from "../screens/Listing";
 import QuizGameScreen from "../screens/Games/QuizGameScreen";
 import PracticeGameScreen from "../screens/Games/PracticeGameScreen";
 import StatsScreen from "../screens/Stats/StatsScreen";
@@ -97,14 +97,19 @@ function HomeStack() {
       }}
     >
       <Stack.Screen
-        name="Home"
-        component={HomeScreen}
+        name="Listing"
+        component={ListingScreen}
         options={{ title: "Contacts" }}
       />
       <Stack.Screen
         name="AddContact"
         component={AddEditContactScreen}
         options={{ title: "Add Contact" }}
+      />
+      <Stack.Screen
+        name="EditContact"
+        component={AddEditContactScreen}
+        options={{ title: "Edit Contact" }}
       />
       <Stack.Screen
         name="PartyMode"

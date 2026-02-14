@@ -47,6 +47,7 @@ import { CategorySelector, Category } from '../../components/CategorySelector';
 import { TagSelector } from '../../components/TagSelector';
 import { FaceSelector, Face } from '../../components/FaceSelector';
 import { Cropper } from '../../components/Cropper';
+import { FormButtons } from '../../components/FormButtons';
 import { useFaceDetection } from '../../hooks/useFaceDetection';
 import { imageService } from '../../services/imageService';
 
@@ -279,24 +280,17 @@ export default function AddEditContactScreen() {
     setIsLoading(true);
 
     try {
-      if (!uploadedImageUri) {
-        throw new Error('No image uploaded');
+      // Use the already-cropped image from the grid, not crop again
+      const selectedFace = detectedFaces[faceIndex];
+      if (!selectedFace) {
+        throw new Error('Face not found');
       }
 
-      // Step 1: Crop the selected face
-      const croppedImageUri = await cropFace(uploadedImageUri, faceIndex);
+      // Store locally - upload will happen when saving contact
+      setPhotoUri(selectedFace.uri);
 
-      // Step 2: Upload to S3 (uploadImage handles compression internally)
-      const s3Url = await imageService.uploadImage(croppedImageUri, {
-        type: 'contact-photo',
-      });
-
-      // Step 4: Set the S3 URL as the photo
-      setPhotoUri(s3Url);
-
-      // Step 5: Return to details screen
+      // Return to details screen
       setStep('details');
-      Alert.alert('Success', 'Photo processed and uploaded');
     } catch (error: any) {
       console.error('Image processing failed:', error);
       Alert.alert(
@@ -316,17 +310,14 @@ export default function AddEditContactScreen() {
   const handleCropConfirm = async (croppedImageUri: string) => {
     try {
       setIsLoading(true);
-      // Upload the cropped image to S3
-      const s3Url = await imageService.uploadImage(croppedImageUri, {
-        type: 'contact-photo',
-      });
-      // Set the S3 URL as the photo
-      setPhotoUri(s3Url);
+
+      // Store locally - upload will happen when saving contact
+      setPhotoUri(croppedImageUri);
+
       // Return to details screen
       setStep('details');
-      Alert.alert('Success', 'Photo cropped and uploaded');
     } catch (error: any) {
-      console.error('Crop and upload failed:', error);
+      console.error('Crop failed:', error);
       Alert.alert(
         'Error',
         error?.message || 'Failed to process image. Please try again.'
@@ -346,33 +337,69 @@ export default function AddEditContactScreen() {
   };
 
   const handleSave = async () => {
-    if (!name.trim()) {
-      Alert.alert('Error', 'Please enter a name');
+    // Validate form before saving
+    if (!isFormValid()) {
+      if (!name.trim()) {
+        Alert.alert('Error', 'Please enter a name');
+      } else {
+        Alert.alert('Error', 'Please provide either a photo or a hint');
+      }
       return;
     }
 
     try {
       setIsLoading(true);
-      const contactData = {
-        name: name.trim(),
-        hint: hint.trim() || undefined,
-        summary: summary.trim() || undefined,
-        category,
-        groups: tags,
-        photo: photoUri || undefined,
-      };
 
-      // TODO: Implement photo upload to S3
-      // For now, just create contact without photo
+      // Upload photo to S3 if one is selected
+      let uploadedPhotoUrl = photoUri;
+      const isMockMode = process.env.AUTH_MOCK === 'true';
 
-      await createContact(contactData).unwrap();
-      Alert.alert('Success', 'Contact created successfully');
-      navigation.goBack();
+      if (photoUri && !isMockMode) {
+        try {
+          uploadedPhotoUrl = await imageService.uploadImage(photoUri, {
+            type: 'contact-photo',
+          });
+        } catch (uploadError: any) {
+          console.error('Photo upload failed:', uploadError);
+          Alert.alert(
+            'Upload Error',
+            'Failed to upload photo. Save contact without photo?',
+            [
+              { text: 'Cancel', style: 'cancel' },
+              {
+                text: 'Save Without Photo',
+                onPress: async () => {
+                  uploadedPhotoUrl = undefined;
+                  await saveContactData(uploadedPhotoUrl);
+                },
+              },
+            ]
+          );
+          return;
+        }
+      }
+
+      await saveContactData(uploadedPhotoUrl);
     } catch (error: any) {
       Alert.alert('Error', error?.message || 'Failed to save contact');
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const saveContactData = async (photoUrl: string | null | undefined) => {
+    const contactData = {
+      name: name.trim(),
+      hint: hint.trim() || undefined,
+      summary: summary.trim() || undefined,
+      category,
+      groups: tags,
+      photo: photoUrl || undefined,
+    };
+
+    await createContact(contactData).unwrap();
+    Alert.alert('Success', 'Contact created successfully');
+    navigation.goBack();
   };
 
   const handleDelete = () => {
@@ -400,6 +427,16 @@ export default function AddEditContactScreen() {
   const handleEditTags = () => {
     // TODO: Navigate to tag management interface
     Alert.alert('Tag Management', 'Tag editing interface coming soon');
+  };
+
+  // Form validation: button should be disabled if form is not ready
+  // Form is valid when: name is provided AND (has image OR has hint)
+  const isFormValid = () => {
+    const hasName = name.trim().length > 0;
+    const hasImage = photoUri !== null;
+    const hasHint = hint.trim().length > 0;
+
+    return hasName && (hasImage || hasHint);
   };
 
   return (
@@ -479,56 +516,29 @@ export default function AddEditContactScreen() {
             />
           </View>
 
-          {/* Button Groups with spacing */}
-          <View style={styles.buttonGroupSpaced}>
-            {/* Cancel Button */}
-            <TouchableOpacity
-              style={styles.secondaryButton}
-              onPress={() => navigation.goBack()}
-            >
-              <Text style={styles.secondaryButtonText}>Cancel</Text>
-            </TouchableOpacity>
-
-            {/* Spacer */}
-            <View style={{ flex: 1 }} />
-
-            {/* Action Buttons */}
-            <View style={styles.actionButtons}>
-              {/* Save/Add Button */}
-              <TouchableOpacity
-                style={[styles.saveButton, isLoading && styles.saveButtonDisabled]}
-                onPress={handleSave}
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <ActivityIndicator color="#fff" />
-                ) : (
-                  <>
-                    <FontAwesome
-                      name="save"
-                      size={18}
-                      color="#fff"
-                      style={styles.buttonIcon}
-                    />
-                    <Text style={styles.saveButtonText}>
-                      {isEditing ? 'Save' : 'Add'} Contact
-                    </Text>
-                  </>
-                )}
-              </TouchableOpacity>
-
-              {/* Delete Button (Edit Only) */}
-              {isEditing && (
-                <TouchableOpacity
-                  style={styles.deleteButton}
-                  onPress={handleDelete}
-                  disabled={isLoading}
-                >
-                  <FontAwesome name="trash" size={18} color="#fff" />
-                </TouchableOpacity>
-              )}
-            </View>
-          </View>
+          {/* Form Action Buttons */}
+          <FormButtons
+            primaryButton={{
+              label: `${isEditing ? 'Save' : 'Add'} Contact`,
+              icon: 'save',
+              onPress: handleSave,
+              isLoading: isLoading,
+              disabled: !isFormValid(),
+            }}
+            deleteButton={
+              isEditing
+                ? {
+                    label: '',
+                    icon: 'trash',
+                    onPress: handleDelete,
+                  }
+                : undefined
+            }
+            cancelButton={{
+              label: 'Cancel',
+              onPress: () => navigation.goBack(),
+            }}
+          />
         </ScrollView>
       )}
 
@@ -616,28 +626,6 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
     minHeight: 80,
   },
-  buttonGroup: {
-    flexDirection: 'row',
-    gap: spacing.md,
-    marginBottom: spacing.lg,
-  },
-  buttonGroupSpaced: {
-    flexDirection: 'column',
-    gap: spacing.lg,
-    marginTop: spacing.xl,
-  },
-  primaryButton: {
-    flex: 1,
-    backgroundColor: colors.primary[500],
-    paddingVertical: spacing.md,
-    borderRadius: radii.md,
-    alignItems: 'center',
-  },
-  primaryButtonText: {
-    color: '#fff',
-    fontWeight: '600',
-    fontSize: typography.body.large.fontSize,
-  },
   secondaryButton: {
     backgroundColor: colors.semantic.surface,
     borderWidth: 1,
@@ -652,39 +640,6 @@ const styles = StyleSheet.create({
     color: colors.semantic.text,
     fontWeight: '600',
     fontSize: typography.body.large.fontSize,
-  },
-  actionButtons: {
-    flexDirection: 'row',
-    gap: spacing.md,
-  },
-  saveButton: {
-    flex: 1,
-    backgroundColor: colors.accent[500],
-    paddingVertical: spacing.lg,
-    borderRadius: radii.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'row',
-    gap: spacing.sm,
-  },
-  saveButtonDisabled: {
-    opacity: 0.5,
-  },
-  saveButtonText: {
-    color: '#fff',
-    fontWeight: '700',
-    fontSize: typography.body.large.fontSize,
-  },
-  deleteButton: {
-    backgroundColor: colors.semantic.error,
-    paddingVertical: spacing.lg,
-    paddingHorizontal: spacing.lg,
-    borderRadius: radii.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  buttonIcon: {
-    marginRight: spacing.sm,
   },
   loadingContainer: {
     flex: 1,

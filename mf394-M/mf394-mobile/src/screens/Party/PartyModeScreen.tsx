@@ -16,7 +16,6 @@ import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity,
   ScrollView,
   ActivityIndicator,
   Alert,
@@ -26,8 +25,9 @@ import { FontAwesome } from '@expo/vector-icons';
 import { colors, spacing, radii, typography } from '../../theme/theme';
 import { ImageSelector } from '../../components/ImageSelector';
 import { BulkNamer, NamedFace } from '../../components/BulkNamer';
-import { CategorySelector, Category } from '../../components/CategorySelector';
-import { TagSelector } from '../../components/TagSelector';
+import { CategoryTagsStep } from '../../components/CategoryTagsStep';
+import { type Category } from '../../components/CategorySelector';
+import { FormButtons } from '../../components/FormButtons';
 import { useFaceDetection } from '../../hooks/useFaceDetection';
 import * as imageService from '../../services/imageService';
 import { useCreateContactMutation } from '../../store/api/contacts.api';
@@ -71,7 +71,9 @@ export default function PartyModeScreen() {
     setStep('detecting');
 
     try {
-      const faces = await detectFaces(uri);
+      const result = await detectFaces(uri);
+      const faces = result?.faces || [];
+      console.log('[PartyMode] Face detection complete:', faces.length, 'faces');
 
       if (!faces || faces.length === 0) {
         Alert.alert('No Faces Found', 'Could not detect any faces in this image. Try another photo.');
@@ -81,16 +83,18 @@ export default function PartyModeScreen() {
       }
 
       // Process each detected face: crop and create face thumbnails
+      console.log('[PartyMode] Processing', faces.length, 'faces for cropping...');
       const processedFaces = await Promise.all(
         faces.map(async (face, index) => {
           try {
             const croppedUri = await cropFace(uri, index);
+            console.log(`[PartyMode] Successfully cropped face ${index}`);
             return {
               id: `face-${index}`,
               uri: croppedUri,
             };
           } catch (error) {
-            console.warn(`Failed to crop face ${index}:`, error);
+            console.warn(`[PartyMode] Failed to crop face ${index}:`, error);
             // Fallback to full image if crop fails
             return {
               id: `face-${index}`,
@@ -100,9 +104,12 @@ export default function PartyModeScreen() {
         })
       );
 
+      console.log('[PartyMode] All faces processed:', processedFaces.length);
       setDetectedFaces(processedFaces);
+      console.log('[PartyMode] Setting step to naming');
       setStep('naming');
     } catch (error: any) {
+      console.error('[PartyMode] Error during face detection:', error);
       Alert.alert('Error', 'Failed to detect faces. Please try again.');
       setStep('upload');
       setUploadedImageUri(null);
@@ -211,12 +218,13 @@ export default function PartyModeScreen() {
           </View>
 
           {/* Back Button */}
-          <TouchableOpacity
-            style={styles.secondaryButton}
-            onPress={() => navigation.goBack()}
-          >
-            <Text style={styles.secondaryButtonText}>← Back</Text>
-          </TouchableOpacity>
+          <FormButtons
+            cancelButton={{
+              label: 'Back',
+              icon: 'arrow-left',
+              onPress: () => navigation.goBack(),
+            }}
+          />
         </ScrollView>
       )}
 
@@ -233,105 +241,57 @@ export default function PartyModeScreen() {
 
       {/* Naming Step */}
       {step === 'naming' && detectedFaces.length > 0 && (
-        <View style={styles.stepContainer}>
+        <View style={styles.namingStepContainer}>
           <BulkNamer
             faces={detectedFaces}
             onNamesChange={setNamedFaces}
+            initialNames={namedFaces}
+            style={styles.bulkNamerContent}
           />
 
           {/* Navigation Buttons */}
-          <View style={styles.buttonGroup}>
-            <TouchableOpacity
-              style={styles.secondaryButton}
-              onPress={() => {
-                setStep('upload');
-                setUploadedImageUri(null);
-                setDetectedFaces([]);
-                setNamedFaces([]);
+          <View style={styles.buttonFooter}>
+            <FormButtons
+              primaryButton={{
+                label: `Continue (${namedFaces.length})`,
+                icon: 'arrow-right',
+                onPress: () => setStep('category'),
+                disabled: !namedFaces.length,
               }}
-            >
-              <Text style={styles.secondaryButtonText}>← Back to Upload</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[styles.primaryButton, !namedFaces.length && styles.disabledButton]}
-              onPress={() => setStep('category')}
-              disabled={!namedFaces.length}
-            >
-              <Text style={styles.primaryButtonText}>
-                Continue ({namedFaces.length})
-              </Text>
-            </TouchableOpacity>
+              cancelButton={{
+                label: 'Back to Upload',
+                icon: 'arrow-left',
+                onPress: () => {
+                  setStep('upload');
+                  setUploadedImageUri(null);
+                  setDetectedFaces([]);
+                  setNamedFaces([]);
+                },
+              }}
+            />
           </View>
         </View>
       )}
 
       {/* Category + Tags Step */}
       {step === 'category' && (
-        <ScrollView style={styles.stepContainer}>
-          <Text style={styles.stepTitle}>Finalize Bulk Import</Text>
-          <Text style={styles.stepSubtitle}>
-            {namedFaces.length} contact{namedFaces.length !== 1 ? 's' : ''} ready to add
-          </Text>
-
-          {/* Category Selection */}
-          <View style={styles.formGroup}>
-            <CategorySelector
-              categories={CATEGORIES}
-              selectedValue={category}
-              onSelect={setCategory}
-              label="Category"
-              required
-            />
-          </View>
-
-          {/* Tags */}
-          <View style={styles.formGroup}>
-            <TagSelector
-              availableTags={AVAILABLE_TAGS}
-              selectedTags={tags}
-              onTagsChange={setTags}
-              onEditTags={handleEditTags}
-            />
-          </View>
-
-          {/* Contact List Preview */}
-          <View style={styles.previewBox}>
-            <Text style={styles.previewTitle}>Contacts to Create:</Text>
-            {namedFaces.map((face, index) => (
-              <View key={face.id} style={styles.previewItem}>
-                <Text style={styles.previewItemNumber}>{index + 1}.</Text>
-                <Text style={styles.previewItemName}>{face.name}</Text>
-                <FontAwesome name="check-circle" size={16} color={colors.semantic.success} />
-              </View>
-            ))}
-          </View>
-
-          {/* Navigation Buttons */}
-          <View style={styles.buttonGroup}>
-            <TouchableOpacity
-              style={styles.secondaryButton}
-              onPress={() => setStep('naming')}
-            >
-              <Text style={styles.secondaryButtonText}>← Back</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[styles.saveButton, !canSave && styles.disabledButton]}
-              onPress={handleSave}
-              disabled={!canSave}
-            >
-              {isSaving ? (
-                <ActivityIndicator color="#fff" />
-              ) : (
-                <>
-                  <FontAwesome name="save" size={18} color="#fff" />
-                  <Text style={styles.saveButtonText}>Save All</Text>
-                </>
-              )}
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
+        <CategoryTagsStep
+          contactCount={namedFaces.length}
+          category={category}
+          tags={tags}
+          categories={CATEGORIES}
+          availableTags={AVAILABLE_TAGS}
+          contacts={namedFaces.map((face) => ({
+            id: face.id,
+            name: face.name,
+          }))}
+          onCategoryChange={setCategory}
+          onTagsChange={setTags}
+          onEditTags={handleEditTags}
+          onSave={handleSave}
+          onBack={() => setStep('naming')}
+          isSaving={isSaving}
+        />
       )}
     </View>
   );
@@ -389,86 +349,19 @@ const styles = StyleSheet.create({
     fontSize: typography.body.medium.fontSize,
     color: colors.semantic.textSecondary,
   },
-  previewBox: {
-    backgroundColor: colors.semantic.surface,
-    borderRadius: radii.md,
-    padding: spacing.lg,
-    marginBottom: spacing.lg,
-  },
-  previewTitle: {
-    fontSize: typography.body.large.fontSize,
-    fontWeight: '600',
-    color: colors.semantic.text,
-    marginBottom: spacing.md,
-  },
-  previewItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    paddingVertical: spacing.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.semantic.border,
-  },
-  previewItemNumber: {
-    fontSize: typography.body.medium.fontSize,
-    fontWeight: '600',
-    color: colors.semantic.textSecondary,
-    width: 24,
-  },
-  previewItemName: {
+  namingStepContainer: {
     flex: 1,
-    fontSize: typography.body.medium.fontSize,
-    color: colors.semantic.text,
+    flexDirection: 'column',
+    backgroundColor: colors.semantic.background,
   },
-  buttonGroup: {
-    flexDirection: 'row',
-    gap: spacing.md,
-    marginTop: spacing.xl,
-  },
-  primaryButton: {
+  bulkNamerContent: {
     flex: 1,
-    backgroundColor: colors.primary[500],
-    paddingVertical: spacing.md,
-    borderRadius: radii.md,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
-  primaryButtonText: {
-    color: '#fff',
-    fontWeight: '600',
-    fontSize: typography.body.large.fontSize,
-  },
-  secondaryButton: {
-    flex: 1,
-    backgroundColor: colors.semantic.surface,
-    borderWidth: 1,
-    borderColor: colors.semantic.border,
-    paddingVertical: spacing.md,
-    borderRadius: radii.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  secondaryButtonText: {
-    color: colors.semantic.text,
-    fontWeight: '600',
-    fontSize: typography.body.large.fontSize,
-  },
-  saveButton: {
-    flex: 1,
-    backgroundColor: colors.accent[500],
-    paddingVertical: spacing.md,
-    borderRadius: radii.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'row',
-    gap: spacing.sm,
-  },
-  saveButtonText: {
-    color: '#fff',
-    fontWeight: '700',
-    fontSize: typography.body.large.fontSize,
-  },
-  disabledButton: {
-    opacity: 0.5,
+  buttonFooter: {
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.lg,
+    backgroundColor: colors.semantic.background,
+    borderTopWidth: 1,
+    borderTopColor: colors.semantic.border,
   },
 });

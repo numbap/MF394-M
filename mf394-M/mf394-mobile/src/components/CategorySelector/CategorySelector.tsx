@@ -1,14 +1,7 @@
-import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Modal,
-  ScrollView,
-  StyleSheet,
-} from 'react-native';
-import { FontAwesome } from '@expo/vector-icons';
-import { colors, spacing, radii, typography } from '../../theme/theme';
+import React, { useState } from "react";
+import { View, Text, TouchableOpacity, Modal, ScrollView, StyleSheet } from "react-native";
+import { FontAwesome } from "@expo/vector-icons";
+import { colors, spacing, radii, typography } from "../../theme/theme";
 
 export interface Category {
   label: string;
@@ -28,7 +21,7 @@ export function CategorySelector({
   categories,
   selectedValue,
   onSelect,
-  label = 'Category',
+  label = "Category",
   required = false,
 }: CategorySelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -43,11 +36,7 @@ export function CategorySelector({
         </Text>
       )}
 
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => setIsOpen(true)}
-        activeOpacity={0.7}
-      >
+      <TouchableOpacity style={styles.button} onPress={() => setIsOpen(true)} activeOpacity={0.7}>
         <View style={styles.buttonContent}>
           {selectedCategory && (
             <>
@@ -60,11 +49,7 @@ export function CategorySelector({
             </>
           )}
         </View>
-        <FontAwesome
-          name="chevron-down"
-          size={16}
-          color={colors.semantic.textSecondary}
-        />
+        <FontAwesome name="chevron-down" size={16} color={colors.semantic.textSecondary} />
       </TouchableOpacity>
 
       <Modal
@@ -84,10 +69,7 @@ export function CategorySelector({
               {categories.map((category) => (
                 <TouchableOpacity
                   key={category.value}
-                  style={[
-                    styles.option,
-                    selectedValue === category.value && styles.optionSelected,
-                  ]}
+                  style={[styles.option, selectedValue === category.value && styles.optionSelected]}
                   onPress={() => {
                     onSelect(category.value);
                     setIsOpen(false);
@@ -97,9 +79,7 @@ export function CategorySelector({
                     name={category.icon as any}
                     size={20}
                     color={
-                      selectedValue === category.value
-                        ? colors.primary[500]
-                        : colors.semantic.text
+                      selectedValue === category.value ? colors.primary[500] : colors.semantic.text
                     }
                   />
                   <View style={styles.optionTextContainer}>
@@ -113,11 +93,7 @@ export function CategorySelector({
                     </Text>
                   </View>
                   {selectedValue === category.value && (
-                    <FontAwesome
-                      name="check"
-                      size={18}
-                      color={colors.primary[500]}
-                    />
+                    <FontAwesome name="check" size={18} color={colors.primary[500]} />
                   )}
                 </TouchableOpacity>
               ))}
@@ -131,11 +107,11 @@ export function CategorySelector({
 
 const styles = StyleSheet.create({
   container: {
-    width: '100%',
+    width: "100%",
   },
   label: {
     fontSize: typography.body.medium.fontSize,
-    fontWeight: '600',
+    fontWeight: "600",
     color: colors.semantic.text,
     marginBottom: spacing.sm,
   },
@@ -143,9 +119,9 @@ const styles = StyleSheet.create({
     color: colors.semantic.error,
   },
   button: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.md,
     borderWidth: 1,
@@ -154,41 +130,41 @@ const styles = StyleSheet.create({
     backgroundColor: colors.semantic.surface,
   },
   buttonContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: spacing.md,
     flex: 1,
   },
   buttonText: {
     fontSize: typography.body.large.fontSize,
     color: colors.semantic.text,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'flex-end',
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "flex-end",
   },
   modalContent: {
     backgroundColor: colors.semantic.background,
     borderTopLeftRadius: radii.lg,
     borderTopRightRadius: radii.lg,
-    maxHeight: '80%',
+    maxHeight: "80%",
     paddingTop: spacing.lg,
   },
   modalTitle: {
     fontSize: typography.title.medium.fontSize,
-    fontWeight: '700',
+    fontWeight: "700",
     color: colors.semantic.text,
     marginBottom: spacing.lg,
     paddingHorizontal: spacing.lg,
   },
   optionsList: {
-    maxHeight: '100%',
+    maxHeight: "100%",
   },
   option: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: spacing.md,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
@@ -204,10 +180,10 @@ const styles = StyleSheet.create({
   optionLabel: {
     fontSize: typography.body.large.fontSize,
     color: colors.semantic.text,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   optionLabelSelected: {
     color: colors.primary[500],
-    fontWeight: '600',
+    fontWeight: "600",
   },
 });

@@ -134,9 +134,9 @@ export const colors = {
     textSecondary: '#778588', // iron-500
     textTertiary: '#adb6b8', // iron-300
     disabled: '#e4e7e7', // iron-100
-    success: '#547fab', // primary-500
+    success: '#10b981', // emerald green
     warning: '#d4b82b', // secondary-500
-    error: '#dd4b22', // accent-500
+    error: '#dc2626', // red
     info: '#547fab', // primary-500
   },
 };

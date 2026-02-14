@@ -12,6 +12,8 @@
  * 
  * When an image is uploaded, the alogorithm should analyze the image and crop out all of the faces it detects, and then return those cropped images to the user to select from.
  * 
+ * When the user clicks on a cropped face, it shold return the based64 string of the cropped image to the main form of the Add or Edit flow to be used as the thumbnail. 
+ * If no face is detected, redirect to the cropper so that the user can select their the face themselves. 
  */
 
 import React, { useState } from 'react';

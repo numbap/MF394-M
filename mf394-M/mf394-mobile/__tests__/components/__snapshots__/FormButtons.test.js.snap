@@ -1,0 +1,971 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FormButtons Snapshots matches snapshot with all three buttons 1`] = `
+<View
+  style={
+    {
+      "flexDirection": "column",
+      "gap": 12,
+      "marginTop": 20,
+      "width": "100%",
+    }
+  }
+>
+  <View
+    accessibilityState={
+      {
+        "busy": undefined,
+        "checked": undefined,
+        "disabled": undefined,
+        "expanded": undefined,
+        "selected": undefined,
+      }
+    }
+    accessibilityValue={
+      {
+        "max": undefined,
+        "min": undefined,
+        "now": undefined,
+        "text": undefined,
+      }
+    }
+    accessible={true}
+    collapsable={false}
+    focusable={true}
+    onClick={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      {
+        "alignItems": "center",
+        "backgroundColor": "#547fab",
+        "borderRadius": 8,
+        "flexDirection": "row",
+        "gap": 8,
+        "justifyContent": "center",
+        "opacity": 1,
+        "paddingHorizontal": 16,
+        "paddingVertical": 16,
+        "width": "100%",
+      }
+    }
+    testID="primary-button"
+  >
+    <Text
+      style={
+        {
+          "marginRight": 4,
+        }
+      }
+    >
+      save
+    </Text>
+    <Text
+      style={
+        {
+          "color": "#fff",
+          "fontSize": 16,
+          "fontWeight": "700",
+        }
+      }
+    >
+      Save
+    </Text>
+  </View>
+  <View
+    accessibilityState={
+      {
+        "busy": undefined,
+        "checked": undefined,
+        "disabled": undefined,
+        "expanded": undefined,
+        "selected": undefined,
+      }
+    }
+    accessibilityValue={
+      {
+        "max": undefined,
+        "min": undefined,
+        "now": undefined,
+        "text": undefined,
+      }
+    }
+    accessible={true}
+    collapsable={false}
+    focusable={true}
+    onClick={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      {
+        "alignItems": "center",
+        "backgroundColor": "#dd4b22",
+        "borderRadius": 8,
+        "flexDirection": "row",
+        "gap": 8,
+        "justifyContent": "center",
+        "opacity": 1,
+        "paddingHorizontal": 16,
+        "paddingVertical": 16,
+        "width": "100%",
+      }
+    }
+    testID="delete-button"
+  >
+    <Text
+      style={
+        {
+          "marginRight": 4,
+        }
+      }
+    >
+      trash
+    </Text>
+    <Text
+      style={
+        {
+          "color": "#fff",
+          "fontSize": 16,
+          "fontWeight": "700",
+        }
+      }
+    >
+      Delete
+    </Text>
+  </View>
+  <View
+    style={
+      {
+        "height": 12,
+      }
+    }
+  />
+  <View
+    accessibilityState={
+      {
+        "busy": undefined,
+        "checked": undefined,
+        "disabled": undefined,
+        "expanded": undefined,
+        "selected": undefined,
+      }
+    }
+    accessibilityValue={
+      {
+        "max": undefined,
+        "min": undefined,
+        "now": undefined,
+        "text": undefined,
+      }
+    }
+    accessible={true}
+    collapsable={false}
+    focusable={true}
+    onClick={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      {
+        "alignItems": "center",
+        "backgroundColor": "#ece7df",
+        "borderColor": "#c8ced0",
+        "borderRadius": 8,
+        "borderWidth": 1,
+        "flexDirection": "row",
+        "gap": 8,
+        "justifyContent": "center",
+        "opacity": 1,
+        "paddingHorizontal": 16,
+        "paddingVertical": 16,
+        "width": "100%",
+      }
+    }
+    testID="cancel-button"
+  >
+    <Text
+      style={
+        {
+          "marginRight": 4,
+        }
+      }
+    >
+      arrow-left
+    </Text>
+    <Text
+      style={
+        {
+          "color": "#181b1b",
+          "fontSize": 16,
+          "fontWeight": "600",
+        }
+      }
+    >
+      Go Back
+    </Text>
+  </View>
+</View>
+`;
+
+exports[`FormButtons Snapshots matches snapshot with delete button icon only 1`] = `
+<View
+  style={
+    {
+      "flexDirection": "column",
+      "gap": 12,
+      "marginTop": 20,
+      "width": "100%",
+    }
+  }
+>
+  <View
+    accessibilityState={
+      {
+        "busy": undefined,
+        "checked": undefined,
+        "disabled": undefined,
+        "expanded": undefined,
+        "selected": undefined,
+      }
+    }
+    accessibilityValue={
+      {
+        "max": undefined,
+        "min": undefined,
+        "now": undefined,
+        "text": undefined,
+      }
+    }
+    accessible={true}
+    collapsable={false}
+    focusable={true}
+    onClick={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      {
+        "alignItems": "center",
+        "backgroundColor": "#547fab",
+        "borderRadius": 8,
+        "flexDirection": "row",
+        "gap": 8,
+        "justifyContent": "center",
+        "opacity": 1,
+        "paddingHorizontal": 16,
+        "paddingVertical": 16,
+        "width": "100%",
+      }
+    }
+    testID="primary-button"
+  >
+    <Text
+      style={
+        {
+          "marginRight": 4,
+        }
+      }
+    >
+      save
+    </Text>
+    <Text
+      style={
+        {
+          "color": "#fff",
+          "fontSize": 16,
+          "fontWeight": "700",
+        }
+      }
+    >
+      Save
+    </Text>
+  </View>
+  <View
+    accessibilityState={
+      {
+        "busy": undefined,
+        "checked": undefined,
+        "disabled": undefined,
+        "expanded": undefined,
+        "selected": undefined,
+      }
+    }
+    accessibilityValue={
+      {
+        "max": undefined,
+        "min": undefined,
+        "now": undefined,
+        "text": undefined,
+      }
+    }
+    accessible={true}
+    collapsable={false}
+    focusable={true}
+    onClick={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      {
+        "alignItems": "center",
+        "backgroundColor": "#dd4b22",
+        "borderRadius": 8,
+        "flexDirection": "row",
+        "gap": 8,
+        "justifyContent": "center",
+        "opacity": 1,
+        "paddingHorizontal": 16,
+        "paddingVertical": 16,
+        "width": "100%",
+      }
+    }
+    testID="delete-button"
+  >
+    <Text>
+      trash
+    </Text>
+  </View>
+  <View
+    style={
+      {
+        "height": 12,
+      }
+    }
+  />
+  <View
+    accessibilityState={
+      {
+        "busy": undefined,
+        "checked": undefined,
+        "disabled": undefined,
+        "expanded": undefined,
+        "selected": undefined,
+      }
+    }
+    accessibilityValue={
+      {
+        "max": undefined,
+        "min": undefined,
+        "now": undefined,
+        "text": undefined,
+      }
+    }
+    accessible={true}
+    collapsable={false}
+    focusable={true}
+    onClick={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      {
+        "alignItems": "center",
+        "backgroundColor": "#ece7df",
+        "borderColor": "#c8ced0",
+        "borderRadius": 8,
+        "borderWidth": 1,
+        "flexDirection": "row",
+        "gap": 8,
+        "justifyContent": "center",
+        "opacity": 1,
+        "paddingHorizontal": 16,
+        "paddingVertical": 16,
+        "width": "100%",
+      }
+    }
+    testID="cancel-button"
+  >
+    <Text
+      style={
+        {
+          "color": "#181b1b",
+          "fontSize": 16,
+          "fontWeight": "600",
+        }
+      }
+    >
+      Cancel
+    </Text>
+  </View>
+</View>
+`;
+
+exports[`FormButtons Snapshots matches snapshot with disabled primary button 1`] = `
+<View
+  style={
+    {
+      "flexDirection": "column",
+      "gap": 12,
+      "marginTop": 20,
+      "width": "100%",
+    }
+  }
+>
+  <View
+    accessibilityState={
+      {
+        "busy": undefined,
+        "checked": undefined,
+        "disabled": true,
+        "expanded": undefined,
+        "selected": undefined,
+      }
+    }
+    accessibilityValue={
+      {
+        "max": undefined,
+        "min": undefined,
+        "now": undefined,
+        "text": undefined,
+      }
+    }
+    accessible={true}
+    collapsable={false}
+    focusable={false}
+    onClick={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      {
+        "alignItems": "center",
+        "backgroundColor": "#547fab",
+        "borderRadius": 8,
+        "flexDirection": "row",
+        "gap": 8,
+        "justifyContent": "center",
+        "opacity": 0.5,
+        "paddingHorizontal": 16,
+        "paddingVertical": 16,
+        "width": "100%",
+      }
+    }
+    testID="primary-button"
+  >
+    <Text
+      style={
+        {
+          "marginRight": 4,
+        }
+      }
+    >
+      save
+    </Text>
+    <Text
+      style={
+        {
+          "color": "#fff",
+          "fontSize": 16,
+          "fontWeight": "700",
+        }
+      }
+    >
+      Add Contact
+    </Text>
+  </View>
+  <View
+    style={
+      {
+        "height": 12,
+      }
+    }
+  />
+  <View
+    accessibilityState={
+      {
+        "busy": undefined,
+        "checked": undefined,
+        "disabled": undefined,
+        "expanded": undefined,
+        "selected": undefined,
+      }
+    }
+    accessibilityValue={
+      {
+        "max": undefined,
+        "min": undefined,
+        "now": undefined,
+        "text": undefined,
+      }
+    }
+    accessible={true}
+    collapsable={false}
+    focusable={true}
+    onClick={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      {
+        "alignItems": "center",
+        "backgroundColor": "#ece7df",
+        "borderColor": "#c8ced0",
+        "borderRadius": 8,
+        "borderWidth": 1,
+        "flexDirection": "row",
+        "gap": 8,
+        "justifyContent": "center",
+        "opacity": 1,
+        "paddingHorizontal": 16,
+        "paddingVertical": 16,
+        "width": "100%",
+      }
+    }
+    testID="cancel-button"
+  >
+    <Text
+      style={
+        {
+          "color": "#181b1b",
+          "fontSize": 16,
+          "fontWeight": "600",
+        }
+      }
+    >
+      Cancel
+    </Text>
+  </View>
+</View>
+`;
+
+exports[`FormButtons Snapshots matches snapshot with loading state 1`] = `
+<View
+  style={
+    {
+      "flexDirection": "column",
+      "gap": 12,
+      "marginTop": 20,
+      "width": "100%",
+    }
+  }
+>
+  <View
+    accessibilityState={
+      {
+        "busy": undefined,
+        "checked": undefined,
+        "disabled": true,
+        "expanded": undefined,
+        "selected": undefined,
+      }
+    }
+    accessibilityValue={
+      {
+        "max": undefined,
+        "min": undefined,
+        "now": undefined,
+        "text": undefined,
+      }
+    }
+    accessible={true}
+    collapsable={false}
+    focusable={false}
+    onClick={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      {
+        "alignItems": "center",
+        "backgroundColor": "#547fab",
+        "borderRadius": 8,
+        "flexDirection": "row",
+        "gap": 8,
+        "justifyContent": "center",
+        "opacity": 0.5,
+        "paddingHorizontal": 16,
+        "paddingVertical": 16,
+        "width": "100%",
+      }
+    }
+    testID="primary-button"
+  >
+    <ActivityIndicator
+      color="#fff"
+      size="small"
+    />
+  </View>
+  <View
+    accessibilityState={
+      {
+        "busy": undefined,
+        "checked": undefined,
+        "disabled": true,
+        "expanded": undefined,
+        "selected": undefined,
+      }
+    }
+    accessibilityValue={
+      {
+        "max": undefined,
+        "min": undefined,
+        "now": undefined,
+        "text": undefined,
+      }
+    }
+    accessible={true}
+    collapsable={false}
+    focusable={false}
+    onClick={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      {
+        "alignItems": "center",
+        "backgroundColor": "#dd4b22",
+        "borderRadius": 8,
+        "flexDirection": "row",
+        "gap": 8,
+        "justifyContent": "center",
+        "opacity": 0.5,
+        "paddingHorizontal": 16,
+        "paddingVertical": 16,
+        "width": "100%",
+      }
+    }
+    testID="delete-button"
+  >
+    <Text
+      style={
+        {
+          "marginRight": 4,
+        }
+      }
+    >
+      trash
+    </Text>
+    <Text
+      style={
+        {
+          "color": "#fff",
+          "fontSize": 16,
+          "fontWeight": "700",
+        }
+      }
+    >
+      Delete
+    </Text>
+  </View>
+  <View
+    style={
+      {
+        "height": 12,
+      }
+    }
+  />
+  <View
+    accessibilityState={
+      {
+        "busy": undefined,
+        "checked": undefined,
+        "disabled": true,
+        "expanded": undefined,
+        "selected": undefined,
+      }
+    }
+    accessibilityValue={
+      {
+        "max": undefined,
+        "min": undefined,
+        "now": undefined,
+        "text": undefined,
+      }
+    }
+    accessible={true}
+    collapsable={false}
+    focusable={false}
+    onClick={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      {
+        "alignItems": "center",
+        "backgroundColor": "#ece7df",
+        "borderColor": "#c8ced0",
+        "borderRadius": 8,
+        "borderWidth": 1,
+        "flexDirection": "row",
+        "gap": 8,
+        "justifyContent": "center",
+        "opacity": 0.5,
+        "paddingHorizontal": 16,
+        "paddingVertical": 16,
+        "width": "100%",
+      }
+    }
+    testID="cancel-button"
+  >
+    <Text
+      style={
+        {
+          "color": "#181b1b",
+          "fontSize": 16,
+          "fontWeight": "600",
+        }
+      }
+    >
+      Cancel
+    </Text>
+  </View>
+</View>
+`;
+
+exports[`FormButtons Snapshots matches snapshot with only cancel button 1`] = `
+<View
+  style={
+    {
+      "flexDirection": "column",
+      "gap": 12,
+      "marginTop": 20,
+      "width": "100%",
+    }
+  }
+>
+  <View
+    style={
+      {
+        "height": 12,
+      }
+    }
+  />
+  <View
+    accessibilityState={
+      {
+        "busy": undefined,
+        "checked": undefined,
+        "disabled": undefined,
+        "expanded": undefined,
+        "selected": undefined,
+      }
+    }
+    accessibilityValue={
+      {
+        "max": undefined,
+        "min": undefined,
+        "now": undefined,
+        "text": undefined,
+      }
+    }
+    accessible={true}
+    collapsable={false}
+    focusable={true}
+    onClick={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      {
+        "alignItems": "center",
+        "backgroundColor": "#ece7df",
+        "borderColor": "#c8ced0",
+        "borderRadius": 8,
+        "borderWidth": 1,
+        "flexDirection": "row",
+        "gap": 8,
+        "justifyContent": "center",
+        "opacity": 1,
+        "paddingHorizontal": 16,
+        "paddingVertical": 16,
+        "width": "100%",
+      }
+    }
+    testID="cancel-button"
+  >
+    <Text
+      style={
+        {
+          "color": "#181b1b",
+          "fontSize": 16,
+          "fontWeight": "600",
+        }
+      }
+    >
+      Cancel
+    </Text>
+  </View>
+</View>
+`;
+
+exports[`FormButtons Snapshots matches snapshot with primary and cancel buttons 1`] = `
+<View
+  style={
+    {
+      "flexDirection": "column",
+      "gap": 12,
+      "marginTop": 20,
+      "width": "100%",
+    }
+  }
+>
+  <View
+    accessibilityState={
+      {
+        "busy": undefined,
+        "checked": undefined,
+        "disabled": undefined,
+        "expanded": undefined,
+        "selected": undefined,
+      }
+    }
+    accessibilityValue={
+      {
+        "max": undefined,
+        "min": undefined,
+        "now": undefined,
+        "text": undefined,
+      }
+    }
+    accessible={true}
+    collapsable={false}
+    focusable={true}
+    onClick={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      {
+        "alignItems": "center",
+        "backgroundColor": "#547fab",
+        "borderRadius": 8,
+        "flexDirection": "row",
+        "gap": 8,
+        "justifyContent": "center",
+        "opacity": 1,
+        "paddingHorizontal": 16,
+        "paddingVertical": 16,
+        "width": "100%",
+      }
+    }
+    testID="primary-button"
+  >
+    <Text
+      style={
+        {
+          "marginRight": 4,
+        }
+      }
+    >
+      plus
+    </Text>
+    <Text
+      style={
+        {
+          "color": "#fff",
+          "fontSize": 16,
+          "fontWeight": "700",
+        }
+      }
+    >
+      Add Contact
+    </Text>
+  </View>
+  <View
+    style={
+      {
+        "height": 12,
+      }
+    }
+  />
+  <View
+    accessibilityState={
+      {
+        "busy": undefined,
+        "checked": undefined,
+        "disabled": undefined,
+        "expanded": undefined,
+        "selected": undefined,
+      }
+    }
+    accessibilityValue={
+      {
+        "max": undefined,
+        "min": undefined,
+        "now": undefined,
+        "text": undefined,
+      }
+    }
+    accessible={true}
+    collapsable={false}
+    focusable={true}
+    onClick={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      {
+        "alignItems": "center",
+        "backgroundColor": "#ece7df",
+        "borderColor": "#c8ced0",
+        "borderRadius": 8,
+        "borderWidth": 1,
+        "flexDirection": "row",
+        "gap": 8,
+        "justifyContent": "center",
+        "opacity": 1,
+        "paddingHorizontal": 16,
+        "paddingVertical": 16,
+        "width": "100%",
+      }
+    }
+    testID="cancel-button"
+  >
+    <Text
+      style={
+        {
+          "color": "#181b1b",
+          "fontSize": 16,
+          "fontWeight": "600",
+        }
+      }
+    >
+      Cancel
+    </Text>
+  </View>
+</View>
+`;

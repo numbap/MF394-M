@@ -17,15 +17,13 @@ import {
   Text,
   StyleSheet,
   Image,
-  TouchableOpacity,
   ViewStyle,
   Platform,
-  ActivityIndicator,
   PanResponder,
   GestureResponderEvent,
   Dimensions,
 } from 'react-native';
-import { FontAwesome } from '@expo/vector-icons';
+import { FormButtons } from '../FormButtons';
 import { colors, spacing, radii, typography, shadows } from '../../theme/theme';
 
 export interface CropperProps {
@@ -55,31 +53,50 @@ function SliderComponent({
   step,
 }: SliderComponentProps) {
   const sliderWidth = DEVICE_WIDTH - spacing.lg * 2 - spacing.md * 2;
+  const sliderRef = useRef<View>(null);
+  const [sliderX, setSliderX] = useState(0);
+
   const panResponder = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
       onMoveShouldSetPanResponder: () => true,
-      onPanResponderMove: (_evt: GestureResponderEvent, gestureState: any) => {
-        const totalRange = maximumValue - minimumValue;
-        const pixelRange = sliderWidth;
-        const newValue = minimumValue + (gestureState.x0 + gestureState.dx) / pixelRange * totalRange;
-        const snappedValue = Math.round(newValue / step) * step;
-        onValueChange(Math.max(minimumValue, Math.min(maximumValue, snappedValue)));
+      onPanResponderGrant: (evt: GestureResponderEvent) => {
+        // Get touch position relative to slider
+        if (sliderRef.current) {
+          sliderRef.current.measure((_x, _y, _width, _height, pageX) => {
+            setSliderX(pageX);
+            updateValueFromTouch(evt.nativeEvent.pageX, pageX);
+          });
+        }
+      },
+      onPanResponderMove: (evt: GestureResponderEvent) => {
+        updateValueFromTouch(evt.nativeEvent.pageX, sliderX);
       },
     })
   ).current;
 
-  const progress = ((value - minimumValue) / (maximumValue - minimumValue)) * 100;
+  const updateValueFromTouch = (touchX: number, trackX: number) => {
+    const position = touchX - trackX;
+    const clampedPosition = Math.max(0, Math.min(sliderWidth, position));
+    const percentage = clampedPosition / sliderWidth;
+    const totalRange = maximumValue - minimumValue;
+    const rawValue = minimumValue + percentage * totalRange;
+    const snappedValue = Math.round(rawValue / step) * step;
+    onValueChange(Math.max(minimumValue, Math.min(maximumValue, snappedValue)));
+  };
+
+  const progress = (value - minimumValue) / (maximumValue - minimumValue);
+  const thumbPosition = progress * sliderWidth;
 
   return (
     <View style={styles.sliderWrapper} {...panResponder.panHandlers}>
-      <View style={styles.sliderTrack}>
-        <View style={[styles.sliderFill, { width: `${progress}%` }]} />
+      <View ref={sliderRef} style={styles.sliderTrack}>
+        <View style={[styles.sliderFill, { width: thumbPosition }]} />
         <View
           style={[
             styles.sliderThumb,
             {
-              left: `${progress}%`,
+              left: thumbPosition,
             },
           ]}
         />
@@ -91,7 +108,7 @@ function SliderComponent({
 // Web implementation using react-easy-crop
 function WebCropper({ imageUri, onCropConfirm, onCancel }: CropperProps) {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
-  const [zoom, setZoom] = useState(0.5); // Default 50%
+  const [zoom, setZoom] = useState(2); // Default 200%
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -196,7 +213,17 @@ function WebCropper({ imageUri, onCropConfirm, onCancel }: CropperProps) {
       <Text style={styles.title}>Crop Photo</Text>
 
       {/* Cropper Container */}
-      <div style={styles.webCropperContainer}>
+      <div
+        style={{
+          width: CANVAS_SIZE,
+          height: CANVAS_SIZE,
+          backgroundColor: colors.neutral.iron[900],
+          borderRadius: radii.lg,
+          overflow: 'hidden',
+          marginBottom: spacing.lg,
+          position: 'relative',
+        }}
+      >
         <EasyCrop
           image={imageUri}
           crop={crop}
@@ -217,32 +244,31 @@ function WebCropper({ imageUri, onCropConfirm, onCancel }: CropperProps) {
         />
       </div>
 
-      {/* Action Buttons */}
-      <View style={styles.actions}>
-        <TouchableOpacity
-          style={styles.cancelButton}
-          onPress={onCancel}
-          disabled={isLoading}
-        >
-          <FontAwesome name="times" size={18} color={colors.semantic.text} />
-          <Text style={styles.cancelButtonText}>Cancel</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[styles.confirmButton, isLoading && styles.confirmButtonDisabled]}
-          onPress={handleConfirm}
-          disabled={isLoading || !croppedAreaPixels}
-        >
-          {isLoading ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <>
-              <FontAwesome name="check" size={18} color="#fff" />
-              <Text style={styles.confirmButtonText}>Save Crop</Text>
-            </>
-          )}
-        </TouchableOpacity>
+      {/* Zoom Slider */}
+      <View style={styles.sliderContainer}>
+        <SliderComponent
+          value={zoom}
+          onValueChange={setZoom}
+          minimumValue={0.5}
+          maximumValue={3}
+          step={0.05}
+        />
       </View>
+
+      {/* Action Buttons */}
+      <FormButtons
+        primaryButton={{
+          label: 'Crop',
+          icon: 'crop',
+          onPress: handleConfirm,
+          isLoading: isLoading,
+        }}
+        cancelButton={{
+          label: 'Cancel',
+          icon: 'times',
+          onPress: onCancel,
+        }}
+      />
     </View>
   );
 }
@@ -254,25 +280,61 @@ function MobileCropper({
   onCancel,
   style,
 }: CropperProps) {
-  const [zoom, setZoom] = useState(0.5); // Default 50%
+  const [zoom, setZoom] = useState(2); // Default 200%
   const [offsetX, setOffsetX] = useState(0);
   const [offsetY, setOffsetY] = useState(0);
   const [imageDimensions, setImageDimensions] = useState({ width: 0, height: 0 });
   const [isLoading, setIsLoading] = useState(false);
 
+  // Track pinch gesture state
+  const initialDistance = useRef<number | null>(null);
+  const initialZoom = useRef<number>(zoom);
+
+  // Calculate distance between two touch points
+  const getDistance = (touches: any[]) => {
+    const [touch1, touch2] = touches;
+    const dx = touch1.pageX - touch2.pageX;
+    const dy = touch1.pageY - touch2.pageY;
+    return Math.sqrt(dx * dx + dy * dy);
+  };
+
   const panResponder = React.useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
       onMoveShouldSetPanResponder: () => true,
-      onPanResponderMove: (_evt: GestureResponderEvent, gestureState: any) => {
-        const newOffsetX = offsetX + gestureState.dx;
-        const newOffsetY = offsetY + gestureState.dy;
+      onPanResponderGrant: (evt: GestureResponderEvent) => {
+        // Check for pinch gesture (2 touches)
+        if (evt.nativeEvent.touches.length === 2) {
+          initialDistance.current = getDistance(evt.nativeEvent.touches);
+          initialZoom.current = zoom;
+        }
+      },
+      onPanResponderMove: (evt: GestureResponderEvent, gestureState: any) => {
+        // Pinch to zoom (2 touches)
+        if (evt.nativeEvent.touches.length === 2) {
+          const currentDistance = getDistance(evt.nativeEvent.touches);
+          if (initialDistance.current) {
+            const scale = currentDistance / initialDistance.current;
+            const newZoom = initialZoom.current * scale;
+            // Clamp zoom to valid range
+            const clampedZoom = Math.max(0.5, Math.min(3, newZoom));
+            setZoom(clampedZoom);
+          }
+        } else {
+          // Pan gesture (1 touch)
+          const newOffsetX = offsetX + gestureState.dx;
+          const newOffsetY = offsetY + gestureState.dy;
 
-        const maxOffsetX = (imageDimensions.width * zoom - CANVAS_SIZE) / 2;
-        const maxOffsetY = (imageDimensions.height * zoom - CANVAS_SIZE) / 2;
+          const maxOffsetX = (imageDimensions.width * zoom - CANVAS_SIZE) / 2;
+          const maxOffsetY = (imageDimensions.height * zoom - CANVAS_SIZE) / 2;
 
-        setOffsetX(Math.max(-maxOffsetX, Math.min(maxOffsetX, newOffsetX)));
-        setOffsetY(Math.max(-maxOffsetY, Math.min(maxOffsetY, newOffsetY)));
+          setOffsetX(Math.max(-maxOffsetX, Math.min(maxOffsetX, newOffsetX)));
+          setOffsetY(Math.max(-maxOffsetY, Math.min(maxOffsetY, newOffsetY)));
+        }
+      },
+      onPanResponderRelease: () => {
+        // Reset pinch tracking
+        initialDistance.current = null;
       },
     })
   ).current;
@@ -380,31 +442,19 @@ function MobileCropper({
       </View>
 
       {/* Action Buttons */}
-      <View style={styles.actions}>
-        <TouchableOpacity
-          style={styles.cancelButton}
-          onPress={onCancel}
-          disabled={isLoading}
-        >
-          <FontAwesome name="times" size={18} color={colors.semantic.text} />
-          <Text style={styles.cancelButtonText}>Cancel</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[styles.confirmButton, isLoading && styles.confirmButtonDisabled]}
-          onPress={handleConfirm}
-          disabled={isLoading}
-        >
-          {isLoading ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <>
-              <FontAwesome name="check" size={18} color="#fff" />
-              <Text style={styles.confirmButtonText}>Crop</Text>
-            </>
-          )}
-        </TouchableOpacity>
-      </View>
+      <FormButtons
+        primaryButton={{
+          label: 'Crop',
+          icon: 'crop',
+          onPress: handleConfirm,
+          isLoading: isLoading,
+        }}
+        cancelButton={{
+          label: 'Cancel',
+          icon: 'times',
+          onPress: onCancel,
+        }}
+      />
     </View>
   );
 }
@@ -428,14 +478,6 @@ const styles = StyleSheet.create({
     fontSize: typography.headline.large.fontSize,
     fontWeight: '700',
     color: colors.semantic.text,
-    marginBottom: spacing.lg,
-  },
-  webCropperContainer: {
-    flex: 1,
-    width: '100%',
-    backgroundColor: colors.neutral.iron[900],
-    borderRadius: radii.lg,
-    overflow: 'hidden',
     marginBottom: spacing.lg,
   },
   canvasWrapper: {
@@ -469,69 +511,28 @@ const styles = StyleSheet.create({
   },
   sliderWrapper: {
     paddingHorizontal: spacing.md,
-    paddingVertical: spacing.md,
+    paddingVertical: spacing.lg,
   },
   sliderTrack: {
     height: 8,
     backgroundColor: colors.semantic.border,
     borderRadius: radii.full,
-    overflow: 'hidden',
     justifyContent: 'center',
+    position: 'relative',
   },
   sliderFill: {
     height: '100%',
     backgroundColor: colors.primary[500],
+    borderRadius: radii.full,
   },
   sliderThumb: {
     position: 'absolute',
-    width: 20,
-    height: 20,
+    width: 28,
+    height: 28,
     borderRadius: radii.full,
     backgroundColor: colors.primary[500],
-    marginLeft: -10,
-    marginTop: -6,
-    ...shadows.sm,
-  },
-  actions: {
-    flexDirection: 'row',
-    gap: spacing.md,
-    width: '100%',
-  },
-  cancelButton: {
-    flex: 1,
-    backgroundColor: colors.semantic.surface,
-    borderWidth: 1,
-    borderColor: colors.semantic.border,
-    borderRadius: radii.md,
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.md,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.sm,
-  },
-  cancelButtonText: {
-    color: colors.semantic.text,
-    fontWeight: '600',
-    fontSize: typography.body.large.fontSize,
-  },
-  confirmButton: {
-    flex: 1,
-    backgroundColor: colors.primary[500],
-    borderRadius: radii.md,
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.md,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.sm,
-  },
-  confirmButtonDisabled: {
-    opacity: 0.6,
-  },
-  confirmButtonText: {
-    color: '#fff',
-    fontWeight: '600',
-    fontSize: typography.body.large.fontSize,
+    marginLeft: -14,
+    top: -10,
+    ...shadows.md,
   },
 });
