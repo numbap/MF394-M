@@ -16,13 +16,10 @@ import {
   ViewStyle,
 } from 'react-native';
 import { colors, spacing, radii, shadows } from '../../theme/theme';
+import type { Contact } from '../../store/api/contacts.api';
 
 export interface ContactCardProps {
-  id: string;
-  name: string;
-  hint?: string;
-  photo?: string;
-  category: 'friends-family' | 'community' | 'work' | 'goals-hobbies' | 'miscellaneous';
+  contact: Contact;
   onPress?: () => void;
   onLongPress?: () => void;
   style?: ViewStyle;
@@ -45,15 +42,12 @@ const CATEGORY_LABELS: Record<string, string> = {
 };
 
 export function ContactCard({
-  id,
-  name,
-  hint,
-  photo,
-  category,
+  contact,
   onPress,
   onLongPress,
   style,
 }: ContactCardProps) {
+  const { name, hint, photo, category } = contact;
   const categoryColor = CATEGORY_COLORS[category] || colors.primary[500];
   const categoryEmoji = CATEGORY_LABELS[category] || '📌';
 

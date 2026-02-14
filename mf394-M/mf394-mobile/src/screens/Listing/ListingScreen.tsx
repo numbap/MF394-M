@@ -8,7 +8,7 @@
  * - Status bar showing visible count
  */
 
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo } from "react";
 import {
   View,
   Text,
@@ -18,44 +18,43 @@ import {
   Pressable,
   ScrollView,
   SafeAreaView,
-} from 'react-native';
-import { useSelector, useDispatch } from 'react-redux';
-import { FontAwesome } from '@expo/vector-icons';
-import { colors, spacing, radii, typography } from '../../theme/theme';
-import { RootState, AppDispatch } from '../../store';
-import { setContacts, setLoading } from '../../store/slices/contacts.slice';
-import { Contact } from '../../store/api/contacts.api';
-import { transformMockContacts } from '../../utils/contactDataTransform';
-import { ContactCard } from '../../components/ContactCard';
-import { SummaryThumbnail } from '../../components/SummaryThumbnail';
-import mockUserData from '../../mock_user.json';
+} from "react-native";
+import { useSelector, useDispatch } from "react-redux";
+import { FontAwesome } from "@expo/vector-icons";
+import { colors, spacing, radii, typography } from "../../theme/theme";
+import { RootState, AppDispatch } from "../../store";
+import { setContacts, setLoading } from "../../store/slices/contacts.slice";
+import { Contact } from "../../store/api/contacts.api";
+import { transformMockContacts } from "../../utils/contactDataTransform";
+import { ContactCard } from "../../components/ContactCard";
+import { SummaryThumbnail } from "../../components/SummaryThumbnail";
 
 // Category definitions with icons
 const CATEGORIES = [
   {
-    label: 'Friends & Family',
-    value: 'friends-family',
-    icon: 'heart',
+    label: "Friends & Family",
+    value: "friends-family",
+    icon: "heart",
   },
   {
-    label: 'Community',
-    value: 'community',
-    icon: 'globe',
+    label: "Community",
+    value: "community",
+    icon: "globe",
   },
   {
-    label: 'Work',
-    value: 'work',
-    icon: 'briefcase',
+    label: "Work",
+    value: "work",
+    icon: "briefcase",
   },
   {
-    label: 'Goals & Hobbies',
-    value: 'goals-hobbies',
-    icon: 'trophy',
+    label: "Goals & Hobbies",
+    value: "goals-hobbies",
+    icon: "trophy",
   },
   {
-    label: 'Miscellaneous',
-    value: 'miscellaneous',
-    icon: 'star',
+    label: "Miscellaneous",
+    value: "miscellaneous",
+    icon: "star",
   },
 ];
 
@@ -71,12 +70,26 @@ export default function ListingScreen({ navigation }: any) {
 
   // Load mock data on mount
   useEffect(() => {
-    if (contacts.length === 0 && mockUserData.contacts) {
-      dispatch(setLoading(true));
-      const transformed = transformMockContacts(mockUserData.contacts);
-      dispatch(setContacts(transformed));
-      dispatch(setLoading(false));
-    }
+    const loadMockData = async () => {
+      if (contacts.length === 0) {
+        try {
+          dispatch(setLoading(true));
+          const mockUserDataRaw = require("../../mock_user.json");
+          const mockUserData =
+            typeof mockUserDataRaw === "string" ? JSON.parse(mockUserDataRaw) : mockUserDataRaw;
+
+          if (mockUserData?.contacts) {
+            const transformed = transformMockContacts(mockUserData.contacts);
+            dispatch(setContacts(transformed));
+          }
+        } catch (error) {
+          console.error("Failed to load mock data:", error);
+        } finally {
+          dispatch(setLoading(false));
+        }
+      }
+    };
+    loadMockData();
   }, [dispatch, contacts.length]);
 
   // Get available tags from category-filtered contacts
@@ -159,24 +172,24 @@ export default function ListingScreen({ navigation }: any) {
 
   // Handle contact long-press (edit)
   const handleContactLongPress = (contactId: string) => {
-    navigation.navigate('EditContact', { contactId });
+    navigation.navigate("EditContact", { contactId });
   };
 
   // Get category label for header
   const getCategoryHeader = () => {
     if (selectedCategories.length === 0) {
-      return 'Select a Category';
+      return "Select a Category";
     }
     if (selectedCategories.length === 1) {
-      return CATEGORIES.find((c) => c.value === selectedCategories[0])?.label || '';
+      return CATEGORIES.find((c) => c.value === selectedCategories[0])?.label || "";
     }
     if (selectedCategories.length === 2) {
       const labels = selectedCategories
         .map((cat) => CATEGORIES.find((c) => c.value === cat)?.label)
         .filter(Boolean);
-      return labels.join(' + ');
+      return labels.join(" + ");
     }
-    return 'Multiple Selected';
+    return "Multiple Selected";
   };
 
   return (
@@ -196,8 +209,7 @@ export default function ListingScreen({ navigation }: any) {
                 delayLongPress={500}
                 style={[
                   styles.categoryButton,
-                  selectedCategories.includes(cat.value) &&
-                    styles.categoryButtonSelected,
+                  selectedCategories.includes(cat.value) && styles.categoryButtonSelected,
                 ]}
               >
                 <FontAwesome
@@ -230,10 +242,7 @@ export default function ListingScreen({ navigation }: any) {
                     ]}
                   >
                     <Text
-                      style={[
-                        styles.tagText,
-                        selectedTags.includes(tag) && styles.tagTextSelected,
-                      ]}
+                      style={[styles.tagText, selectedTags.includes(tag) && styles.tagTextSelected]}
                     >
                       {tag}
                     </Text>
@@ -248,7 +257,7 @@ export default function ListingScreen({ navigation }: any) {
             <View style={styles.buttonGroup}>
               <TouchableOpacity
                 style={styles.actionButton}
-                onPress={() => navigation.navigate('AddContact')}
+                onPress={() => navigation.navigate("AddContact")}
               >
                 <FontAwesome name="user-plus" size={18} color="#fff" />
                 <Text style={styles.actionButtonText}>Add</Text>
@@ -256,7 +265,7 @@ export default function ListingScreen({ navigation }: any) {
 
               <TouchableOpacity
                 style={styles.actionButton}
-                onPress={() => navigation.navigate('PartyMode')}
+                onPress={() => navigation.navigate("PartyMode")}
               >
                 <FontAwesome name="users" size={18} color="#fff" />
                 <Text style={styles.actionButtonText}>Party</Text>
@@ -269,7 +278,7 @@ export default function ListingScreen({ navigation }: any) {
               onPress={() => setIsGalleryView(!isGalleryView)}
             >
               <FontAwesome
-                name={isGalleryView ? 'th-list' : 'th'}
+                name={isGalleryView ? "th-list" : "th"}
                 size={18}
                 color={colors.semantic.text}
               />
@@ -293,11 +302,7 @@ export default function ListingScreen({ navigation }: any) {
                     onLongPress={() => handleContactLongPress(contact._id)}
                     delayLongPress={500}
                   >
-                    <SummaryThumbnail
-                      id={contact._id}
-                      name={contact.name}
-                      photo={contact.photo}
-                    />
+                    <SummaryThumbnail id={contact._id} name={contact.name} photo={contact.photo} />
                   </Pressable>
                 ))}
               </View>
@@ -310,13 +315,7 @@ export default function ListingScreen({ navigation }: any) {
                     onLongPress={() => handleContactLongPress(contact._id)}
                     delayLongPress={500}
                   >
-                    <ContactCard
-                      id={contact._id}
-                      name={contact.name}
-                      hint={contact.hint}
-                      photo={contact.photo}
-                      category={contact.category}
-                    />
+                    <ContactCard contact={contact} />
                   </Pressable>
                 ))}
               </View>
@@ -353,23 +352,23 @@ const styles = StyleSheet.create({
   },
   filterHeader: {
     fontSize: typography.title.large.fontSize,
-    fontWeight: '700',
+    fontWeight: "700",
     color: colors.semantic.text,
     marginBottom: spacing.lg,
   },
   categoryRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginBottom: spacing.lg,
   },
   categoryButton: {
-    width: '18%',
+    width: "18%",
     aspectRatio: 1,
     borderRadius: radii.md,
     borderWidth: 2,
     borderColor: colors.semantic.border,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     backgroundColor: colors.semantic.surface,
   },
   categoryButtonSelected: {
@@ -381,13 +380,13 @@ const styles = StyleSheet.create({
   },
   tagsLabel: {
     fontSize: typography.body.medium.fontSize,
-    fontWeight: '600',
+    fontWeight: "600",
     color: colors.semantic.text,
     marginBottom: spacing.md,
   },
   tagsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
     gap: spacing.sm,
   },
   tagButton: {
@@ -405,26 +404,26 @@ const styles = StyleSheet.create({
   tagText: {
     fontSize: typography.body.small.fontSize,
     color: colors.semantic.text,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   tagTextSelected: {
-    color: '#fff',
+    color: "#fff",
   },
   actionRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   buttonGroup: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: spacing.md,
     flex: 1,
   },
   actionButton: {
     flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     gap: spacing.sm,
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.lg,
@@ -432,15 +431,15 @@ const styles = StyleSheet.create({
     borderRadius: radii.md,
   },
   actionButtonText: {
-    color: '#fff',
-    fontWeight: '600',
+    color: "#fff",
+    fontWeight: "600",
     fontSize: typography.body.medium.fontSize,
   },
   viewToggle: {
     width: 44,
     height: 44,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     borderRadius: radii.md,
     backgroundColor: colors.semantic.surface,
     borderWidth: 1,
@@ -452,17 +451,17 @@ const styles = StyleSheet.create({
   },
   emptyState: {
     paddingVertical: spacing.xl,
-    alignItems: 'center',
+    alignItems: "center",
   },
   emptyStateText: {
     fontSize: typography.body.large.fontSize,
     color: colors.semantic.textSecondary,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   thumbnailGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
     gap: spacing.md,
   },
   cardsList: {
@@ -478,6 +477,6 @@ const styles = StyleSheet.create({
   statusText: {
     fontSize: typography.body.small.fontSize,
     color: colors.semantic.textSecondary,
-    fontWeight: '500',
+    fontWeight: "500",
   },
 });
