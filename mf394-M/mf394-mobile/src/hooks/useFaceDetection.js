@@ -3,7 +3,6 @@ import { Image, Platform } from "react-native";
 import { FACE_DETECTION_MIN_CONFIDENCE } from "../utils/constants";
 
 let FaceDetector;
-let TrackingLibrary;
 
 // Import appropriate face detection library based on platform
 if (Platform.OS !== "web") {
@@ -12,13 +11,6 @@ if (Platform.OS !== "web") {
     FaceDetector = ExpoFaceDetector.FaceDetector;
   } catch (e) {
     console.warn("expo-face-detector not available on this platform");
-  }
-} else {
-  // For web, use tracking.js
-  try {
-    TrackingLibrary = require("tracking");
-  } catch (e) {
-    console.warn("tracking.js not available for face detection");
   }
 }
 
@@ -74,21 +66,14 @@ export function useFaceDetection() {
         }
       }
 
-      // For web, try real face detection with tracking.js
-      if (detectedFaces.length === 0 && isWebPlatform && TrackingLibrary) {
-        try {
-          detectedFaces = await detectFacesWeb(imageUri, width, height);
-        } catch (webErr) {
-          console.warn("Web face detection failed:", webErr.message);
-          // Fallback to mock faces
-          detectedFaces = createMockFaces(imageUri, width, height);
-        }
-      }
-
-      // If still no faces detected, use mock data for development
+      // For web, use mock faces (development/testing only)
+      // Real face detection is available on native platforms (iOS/Android) via expo-face-detector
       if (detectedFaces.length === 0 && isWebPlatform) {
         // eslint-disable-next-line no-console
-        console.info("Using mock faces for development - upload a real image for actual face detection");
+        console.info(
+          "Web: Using realistic mock faces for testing. " +
+          "For real face detection, test on iOS/Android where expo-face-detector is available."
+        );
         detectedFaces = createMockFaces(imageUri, width, height);
       }
 
@@ -297,93 +282,9 @@ function loadAndCropImage(imageUri, bounds, padding, resolve, reject) {
 }
 
 /**
- * Detect faces on web using tracking.js
- * tracking.js uses cascade classifiers for face detection
- */
-async function detectFacesWeb(imageUri, imageWidth, imageHeight) {
-  return new Promise((resolve, reject) => {
-    try {
-      // Load the image
-      const img = new (window.Image)();
-      img.crossOrigin = "anonymous";
-
-      img.onload = () => {
-        try {
-          // Create canvas and draw image
-          const canvas = document.createElement("canvas");
-          canvas.width = imageWidth;
-          canvas.height = imageHeight;
-          const ctx = canvas.getContext("2d");
-          if (!ctx) {
-            throw new Error("Could not get canvas context");
-          }
-          ctx.drawImage(img, 0, 0);
-
-          // Initialize tracking.js tracker
-          const tracker = new TrackingLibrary.ObjectTracker("face");
-          tracker.setInitialScale(4);
-          tracker.setStepSize(2);
-          tracker.setEdgesDensity(0.1);
-
-          // Run detection
-          const rects = tracker.track(canvas);
-
-          // Convert tracking.js rectangles to face bounds format
-          const faces = rects
-            .filter((rect) => rect.width > 30 && rect.height > 30) // Filter out tiny detections
-            .map((rect, index) => ({
-              id: `face-${index}`,
-              uri: imageUri,
-              bounds: {
-                origin: { x: rect.x, y: rect.y },
-                size: { width: rect.width, height: rect.height },
-              },
-              confidence: 0.85, // tracking.js doesn't provide confidence scores
-            }));
-
-          if (faces.length > 0) {
-            // eslint-disable-next-line no-console
-            console.info(
-              `Detected ${faces.length} face${faces.length !== 1 ? "s" : ""} using tracking.js`
-            );
-          }
-
-          resolve(faces);
-        } catch (error) {
-          console.error("Face detection on canvas failed:", error);
-          reject(error);
-        }
-      };
-
-      img.onerror = (err) => {
-        console.error("Failed to load image for face detection:", err);
-        reject(new Error(`Failed to load image: ${imageUri}`));
-      };
-
-      // Handle file:// URLs
-      if (imageUri.startsWith("file://")) {
-        fetch(imageUri)
-          .then((response) => response.blob())
-          .then((blob) => {
-            const blobUrl = URL.createObjectURL(blob);
-            img.src = blobUrl;
-          })
-          .catch((err) => {
-            console.error("Failed to fetch file:", err);
-            reject(err);
-          });
-      } else {
-        img.src = imageUri;
-      }
-    } catch (error) {
-      console.error("Web face detection setup failed:", error);
-      reject(error);
-    }
-  });
-}
-
-/**
- * Create realistic mock faces for development/web
+ * Create realistic mock faces for development/web testing
+ * On web, we use scaled mock faces positioned in a grid pattern.
+ * Real face detection is available on iOS/Android via expo-face-detector.
  * Generates 6 faces in proportional positions that scale to image dimensions
  * @param {string} imageUri - The image URI
  * @param {number} imageWidth - Actual image width in pixels

@@ -368,6 +368,7 @@ Claude may autonomously (without asking):
 - Don't ask for git reset or git add commands.
 - Don't ask for playwright or pip install
 - Don't ask for npm run build or npm run
+- Don't ask for npm uninstall
 
 ### Code Changes:
 
