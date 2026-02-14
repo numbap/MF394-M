@@ -25,6 +25,7 @@ import {
   GestureResponderEvent,
   Dimensions,
 } from 'react-native';
+import { FontAwesome } from '@expo/vector-icons';
 import { colors, spacing, radii, typography, shadows } from '../../theme/theme';
 
 export interface CropperProps {
@@ -90,7 +91,7 @@ function SliderComponent({
 // Web implementation using react-easy-crop
 function WebCropper({ imageUri, onCropConfirm, onCancel }: CropperProps) {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
-  const [zoom, setZoom] = useState(1);
+  const [zoom, setZoom] = useState(0.5); // Default 50%
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -223,6 +224,7 @@ function WebCropper({ imageUri, onCropConfirm, onCancel }: CropperProps) {
           onPress={onCancel}
           disabled={isLoading}
         >
+          <FontAwesome name="times" size={18} color={colors.semantic.text} />
           <Text style={styles.cancelButtonText}>Cancel</Text>
         </TouchableOpacity>
 
@@ -234,7 +236,10 @@ function WebCropper({ imageUri, onCropConfirm, onCancel }: CropperProps) {
           {isLoading ? (
             <ActivityIndicator color="#fff" />
           ) : (
-            <Text style={styles.confirmButtonText}>Save Crop</Text>
+            <>
+              <FontAwesome name="check" size={18} color="#fff" />
+              <Text style={styles.confirmButtonText}>Save Crop</Text>
+            </>
           )}
         </TouchableOpacity>
       </View>
@@ -249,7 +254,7 @@ function MobileCropper({
   onCancel,
   style,
 }: CropperProps) {
-  const [zoom, setZoom] = useState(1);
+  const [zoom, setZoom] = useState(0.5); // Default 50%
   const [offsetX, setOffsetX] = useState(0);
   const [offsetY, setOffsetY] = useState(0);
   const [imageDimensions, setImageDimensions] = useState({ width: 0, height: 0 });
@@ -381,6 +386,7 @@ function MobileCropper({
           onPress={onCancel}
           disabled={isLoading}
         >
+          <FontAwesome name="times" size={18} color={colors.semantic.text} />
           <Text style={styles.cancelButtonText}>Cancel</Text>
         </TouchableOpacity>
 
@@ -392,7 +398,10 @@ function MobileCropper({
           {isLoading ? (
             <ActivityIndicator color="#fff" />
           ) : (
-            <Text style={styles.confirmButtonText}>Save Crop</Text>
+            <>
+              <FontAwesome name="check" size={18} color="#fff" />
+              <Text style={styles.confirmButtonText}>Crop</Text>
+            </>
           )}
         </TouchableOpacity>
       </View>
@@ -490,8 +499,11 @@ const styles = StyleSheet.create({
     borderColor: colors.semantic.border,
     borderRadius: radii.md,
     paddingVertical: spacing.md,
+    paddingHorizontal: spacing.md,
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    gap: spacing.sm,
   },
   cancelButtonText: {
     color: colors.semantic.text,
@@ -503,8 +515,11 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary[500],
     borderRadius: radii.md,
     paddingVertical: spacing.md,
+    paddingHorizontal: spacing.md,
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    gap: spacing.sm,
   },
   confirmButtonDisabled: {
     opacity: 0.6,
