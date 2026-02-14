@@ -1,12 +1,11 @@
 /**
- * Cropper Component
+ * Cropper Component - Hybrid Implementation
  *
- * Interactive 1:1 image cropper with zoom and pan.
- * Users can zoom via slider and drag to pan the image.
- * Fixed square crop frame in center shows the final crop area.
+ * Web: Uses react-easy-crop for polished UX with real-time preview
+ * Mobile: Custom implementation with zoom/pan controls
  */
 
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -28,9 +27,176 @@ export interface CropperProps {
   style?: ViewStyle;
 }
 
-const CANVAS_SIZE = 300; // Fixed square canvas size
+const CANVAS_SIZE = 300;
 
-export function Cropper({
+// Web implementation using react-easy-crop
+function WebCropper({ imageUri, onCropConfirm, onCancel }: CropperProps) {
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleConfirm = async () => {
+    if (!croppedAreaPixels) return;
+    setIsLoading(true);
+
+    try {
+      const croppedImage = await cropImageUsingCanvas(imageUri, croppedAreaPixels);
+      onCropConfirm(croppedImage);
+    } catch (error) {
+      console.error('Crop failed:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const cropImageUsingCanvas = (
+    imageUri: string,
+    croppedAreaPixels: any
+  ): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      try {
+        let uriToLoad = imageUri;
+
+        if (imageUri.startsWith('file://')) {
+          fetch(imageUri)
+            .then((response) => response.blob())
+            .then((blob) => {
+              const blobUrl = URL.createObjectURL(blob);
+              performCanvasCrop(blobUrl, croppedAreaPixels, resolve, reject);
+            })
+            .catch(reject);
+        } else {
+          performCanvasCrop(uriToLoad, croppedAreaPixels, resolve, reject);
+        }
+      } catch (error) {
+        reject(error);
+      }
+    });
+  };
+
+  const performCanvasCrop = (
+    imageUri: string,
+    croppedAreaPixels: any,
+    resolve: (value: string) => void,
+    reject: (reason?: any) => void
+  ) => {
+    const img = new (window as any).Image();
+    img.crossOrigin = 'anonymous';
+
+    img.onload = () => {
+      try {
+        const canvas = document.createElement('canvas');
+        const size = Math.round(
+          Math.min(croppedAreaPixels.width, croppedAreaPixels.height)
+        );
+        canvas.width = size;
+        canvas.height = size;
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          throw new Error('Could not get canvas context');
+        }
+
+        ctx.drawImage(
+          img,
+          croppedAreaPixels.x,
+          croppedAreaPixels.y,
+          croppedAreaPixels.width,
+          croppedAreaPixels.height,
+          0,
+          0,
+          size,
+          size
+        );
+
+        const croppedImageUrl = canvas.toDataURL('image/jpeg', 0.9);
+
+        if (imageUri.startsWith('blob:')) {
+          URL.revokeObjectURL(imageUri);
+        }
+
+        resolve(croppedImageUrl);
+      } catch (error) {
+        reject(error);
+      }
+    };
+
+    img.onerror = () => {
+      reject(new Error(`Failed to load image: ${imageUri}`));
+    };
+
+    img.src = imageUri;
+  };
+
+  // Import EasyCrop component for web
+  const EasyCrop = require('react-easy-crop').default;
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Crop Photo</Text>
+
+      {/* Cropper Container */}
+      <div style={styles.webCropperContainer}>
+        <EasyCrop
+          image={imageUri}
+          crop={crop}
+          zoom={zoom}
+          aspect={1}
+          onCropChange={setCrop}
+          onCropComplete={(_croppedArea: any, croppedAreaPixels: any) => {
+            setCroppedAreaPixels(croppedAreaPixels);
+          }}
+          onZoomChange={setZoom}
+          style={{
+            containerStyle: {
+              width: '100%',
+              height: '100%',
+              backgroundColor: '#000',
+            },
+          }}
+        />
+      </div>
+
+      {/* Dimensions Display */}
+      <View style={styles.dimensionsContainer}>
+        <Text style={styles.dimensionsText}>
+          {croppedAreaPixels
+            ? `${Math.round(croppedAreaPixels.width)}×${Math.round(
+                croppedAreaPixels.height
+              )}px`
+            : 'Select crop area'}
+        </Text>
+      </View>
+
+      {/* Action Buttons */}
+      <View style={styles.actions}>
+        <TouchableOpacity
+          style={styles.cancelButton}
+          onPress={onCancel}
+          disabled={isLoading}
+        >
+          <Text style={styles.cancelButtonText}>Cancel</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.confirmButton, isLoading && styles.confirmButtonDisabled]}
+          onPress={handleConfirm}
+          disabled={isLoading || !croppedAreaPixels}
+        >
+          {isLoading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.confirmButtonText}>Save Crop</Text>
+          )}
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+}
+
+// Mobile implementation with custom cropper
+function MobileCropper({
   imageUri,
   onCropConfirm,
   onCancel,
@@ -41,7 +207,8 @@ export function Cropper({
   const [offsetY, setOffsetY] = useState(0);
   const [imageDimensions, setImageDimensions] = useState({ width: 0, height: 0 });
   const [isLoading, setIsLoading] = useState(false);
-  const panResponder = useRef(
+
+  const panResponder = React.useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
       onMoveShouldSetPanResponder: () => true,
@@ -67,7 +234,6 @@ export function Cropper({
 
   const handleZoomChange = (value: number) => {
     setZoom(value);
-    // Reset offsets when zooming to prevent out-of-bounds
     setOffsetX(0);
     setOffsetY(0);
   };
@@ -75,99 +241,13 @@ export function Cropper({
   const handleConfirm = async () => {
     setIsLoading(true);
     try {
-      const croppedUri = await cropImage();
+      const croppedUri = await cropImageNative();
       onCropConfirm(croppedUri);
     } catch (error) {
       console.error('Cropping failed:', error);
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const cropImage = async (): Promise<string> => {
-    if (Platform.OS === 'web') {
-      return await cropImageWeb();
-    } else {
-      return await cropImageNative();
-    }
-  };
-
-  const cropImageWeb = (): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      try {
-        let uriToLoad = imageUri;
-
-        if (imageUri.startsWith('file://')) {
-          fetch(imageUri)
-            .then((response) => response.blob())
-            .then((blob) => {
-              const blobUrl = URL.createObjectURL(blob);
-              performWebCrop(blobUrl, resolve, reject);
-            })
-            .catch(reject);
-        } else {
-          performWebCrop(uriToLoad, resolve, reject);
-        }
-      } catch (error) {
-        reject(error);
-      }
-    });
-  };
-
-  const performWebCrop = (
-    imageUri: string,
-    resolve: (value: string) => void,
-    reject: (reason?: any) => void
-  ) => {
-    const img = new (window as any).Image();
-    img.crossOrigin = 'anonymous';
-
-    img.onload = () => {
-      try {
-        const canvas = document.createElement('canvas');
-        canvas.width = CANVAS_SIZE;
-        canvas.height = CANVAS_SIZE;
-
-        const ctx = canvas.getContext('2d');
-        if (!ctx) {
-          throw new Error('Could not get canvas context');
-        }
-
-        const scaledWidth = imageDimensions.width * zoom;
-        const scaledHeight = imageDimensions.height * zoom;
-
-        const sourceX = (scaledWidth / 2 - CANVAS_SIZE / 2 - offsetX) / zoom;
-        const sourceY = (scaledHeight / 2 - CANVAS_SIZE / 2 - offsetY) / zoom;
-
-        ctx.drawImage(
-          img,
-          sourceX,
-          sourceY,
-          CANVAS_SIZE / zoom,
-          CANVAS_SIZE / zoom,
-          0,
-          0,
-          CANVAS_SIZE,
-          CANVAS_SIZE
-        );
-
-        const croppedImageUrl = canvas.toDataURL('image/jpeg', 0.9);
-
-        if (imageUri.startsWith('blob:')) {
-          URL.revokeObjectURL(imageUri);
-        }
-
-        resolve(croppedImageUrl);
-      } catch (error) {
-        reject(error);
-      }
-    };
-
-    img.onerror = () => {
-      reject(new Error(`Failed to load image: ${imageUri}`));
-    };
-
-    img.src = imageUri;
   };
 
   const cropImageNative = async (): Promise<string> => {
@@ -296,6 +376,15 @@ export function Cropper({
   );
 }
 
+// Main Cropper component - routes to web or mobile implementation
+export function Cropper(props: CropperProps) {
+  if (Platform.OS === 'web') {
+    return <WebCropper {...props} />;
+  } else {
+    return <MobileCropper {...props} />;
+  }
+}
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -307,6 +396,14 @@ const styles = StyleSheet.create({
     fontSize: typography.headline.large.fontSize,
     fontWeight: '700',
     color: colors.semantic.text,
+    marginBottom: spacing.lg,
+  },
+  webCropperContainer: {
+    flex: 1,
+    width: '100%',
+    backgroundColor: colors.neutral.iron[900],
+    borderRadius: radii.lg,
+    overflow: 'hidden',
     marginBottom: spacing.lg,
   },
   canvasWrapper: {
