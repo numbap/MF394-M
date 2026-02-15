@@ -16,6 +16,8 @@ import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import PartyModeScreen from './PartyModeScreen';
 import { imageService } from '../../services/imageService';
+import contactsReducer from '../../store/slices/contacts.slice';
+import syncReducer from '../../store/slices/sync.slice';
 
 // Create a mock store for testing
 const createMockStore = () => {
@@ -23,6 +25,10 @@ const createMockStore = () => {
     reducer: {
       // RTK Query API reducers
       api: (state = {}) => state,
+      contacts: contactsReducer,
+      sync: syncReducer,
+      auth: (state = { accessToken: null }) => state,
+      ui: (state = { toasts: [] }) => state,
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({
@@ -382,7 +388,7 @@ describe('PartyModeScreen', () => {
         isRealDetection: true,
       });
 
-      const { getByTestId } = renderWithProvider(<PartyModeScreen />);
+      const { getByTestId, store } = renderWithProvider(<PartyModeScreen />);
 
       // Upload, detect, and name
       fireEvent.press(getByTestId('image-selector'));
@@ -409,7 +415,13 @@ describe('PartyModeScreen', () => {
       fireEvent.press(getByTestId('save-button'));
 
       await waitFor(() => {
-        expect(mockCreateContact).toHaveBeenCalledTimes(2);
+        // Verify contacts were added to Redux store (optimistic update)
+        const state = store.getState();
+        expect(state.contacts.data).toHaveLength(2);
+        expect(state.contacts.data[0].name).toBe('Person 1');
+        expect(state.contacts.data[1].name).toBe('Person 2');
+
+        // Verify navigation occurred
         expect(mockNavigate).toHaveBeenCalledWith('Listing',
           expect.objectContaining({
             category: expect.any(String),
@@ -472,7 +484,7 @@ describe('PartyModeScreen', () => {
         isRealDetection: true,
       });
 
-      const { getByTestId, getByText } = renderWithProvider(<PartyModeScreen />);
+      const { getByTestId, getByText, store } = renderWithProvider(<PartyModeScreen />);
 
       // Upload, crop, and name
       fireEvent.press(getByTestId('image-selector'));
@@ -505,7 +517,9 @@ describe('PartyModeScreen', () => {
       fireEvent.press(getByTestId('save-button'));
 
       await waitFor(() => {
-        expect(mockCreateContact).toHaveBeenCalledTimes(1);
+        // Verify contact was added to Redux store
+        const state = store.getState();
+        expect(state.contacts.data).toHaveLength(1);
       });
     });
   });
@@ -649,7 +663,7 @@ describe('PartyModeScreen', () => {
       expect(getByText('Upload a group photo to create multiple contacts')).toBeTruthy();
     });
 
-    it('handles save failure gracefully', async () => {
+    it('handles save failure gracefully with fallback', async () => {
       mockDetectFaces.mockResolvedValue({
         faces: [
           {
@@ -661,11 +675,10 @@ describe('PartyModeScreen', () => {
         isRealDetection: true,
       });
 
-      mockCreateContact.mockReturnValue({
-        unwrap: jest.fn().mockRejectedValue(new Error('Network error')),
-      });
+      // Mock image upload to fail
+      (imageService.uploadImage as jest.Mock).mockRejectedValue(new Error('Network error'));
 
-      const { getByTestId, getByText } = renderWithProvider(<PartyModeScreen />);
+      const { getByTestId, store } = renderWithProvider(<PartyModeScreen />);
 
       // Upload, detect, name
       fireEvent.press(getByTestId('image-selector'));
@@ -689,9 +702,19 @@ describe('PartyModeScreen', () => {
 
       fireEvent.press(getByTestId('save-button'));
 
-      // Should show error
+      // Should still save contact locally with fallback (using local URI)
       await waitFor(() => {
-        expect(getByText('Network error')).toBeTruthy();
+        const state = store.getState();
+        expect(state.contacts.data).toHaveLength(1);
+        // Verify it used the local URI as fallback
+        expect(state.contacts.data[0].photo).toContain('cropped-');
+
+        // Should still navigate
+        expect(mockNavigate).toHaveBeenCalledWith('Listing',
+          expect.objectContaining({
+            category: expect.any(String),
+          })
+        );
       });
     });
   });
@@ -710,7 +733,7 @@ describe('PartyModeScreen', () => {
         isRealDetection: true,
       });
 
-      const { getByTestId } = renderWithProvider(<PartyModeScreen />);
+      const { getByTestId, store } = renderWithProvider(<PartyModeScreen />);
 
       // Upload, detect, name
       fireEvent.press(getByTestId('image-selector'));
@@ -736,19 +759,21 @@ describe('PartyModeScreen', () => {
       fireEvent.press(getByTestId('save-button'));
 
       await waitFor(() => {
-        expect(mockCreateContact).toHaveBeenCalledTimes(1);
+        // Verify contact was added to Redux store
+        const state = store.getState();
+        expect(state.contacts.data).toHaveLength(1);
+
+        // Verify sync queue is empty (no queuing in demo mode)
+        expect(state.sync.queue).toHaveLength(0);
       });
 
       // Verify imageService.uploadImage was NOT called (because AUTH_MOCK is true)
       // In mock mode, we use local URIs directly
       expect(imageService.uploadImage).not.toHaveBeenCalled();
 
-      // Verify createContact was called with local URI (starts with 'cropped-')
-      expect(mockCreateContact).toHaveBeenCalledWith(
-        expect.objectContaining({
-          photo: expect.stringContaining('cropped-'),
-        })
-      );
+      // Verify the contact uses local URI (starts with 'cropped-')
+      const state = store.getState();
+      expect(state.contacts.data[0].photo).toContain('cropped-');
     });
 
     it('uses local image URIs in mock mode', async () => {
@@ -763,7 +788,7 @@ describe('PartyModeScreen', () => {
         isRealDetection: true,
       });
 
-      const { getByTestId } = renderWithProvider(<PartyModeScreen />);
+      const { getByTestId, store } = renderWithProvider(<PartyModeScreen />);
 
       fireEvent.press(getByTestId('image-selector'));
 
@@ -786,13 +811,207 @@ describe('PartyModeScreen', () => {
       fireEvent.press(getByTestId('save-button'));
 
       await waitFor(() => {
-        expect(mockCreateContact).toHaveBeenCalledTimes(1);
+        const state = store.getState();
+        expect(state.contacts.data).toHaveLength(1);
       });
 
       // In AUTH_MOCK mode, the photo should be the cropped local URI
-      const createContactCall = mockCreateContact.mock.calls[0][0];
-      expect(createContactCall.photo).toBeTruthy();
-      expect(createContactCall.photo).not.toContain('s3.amazonaws.com');
+      const state = store.getState();
+      const contact = state.contacts.data[0];
+      expect(contact.photo).toBeTruthy();
+      expect(contact.photo).not.toContain('s3.amazonaws.com');
+      expect(contact.photo).toContain('cropped-');
+    });
+  });
+
+  describe('Offline-first sync queue integration', () => {
+    it('dispatches contacts to Redux immediately (optimistic update)', async () => {
+      mockDetectFaces.mockResolvedValue({
+        faces: [
+          {
+            id: 'face-0',
+            uri: 'mock-group-image-uri',
+            bounds: { origin: { x: 0, y: 0 }, size: { width: 100, height: 100 } },
+          },
+        ],
+        isRealDetection: true,
+      });
+
+      const { getByTestId, store } = renderWithProvider(<PartyModeScreen />);
+
+      // Upload, detect, name
+      fireEvent.press(getByTestId('image-selector'));
+
+      await waitFor(() => {
+        expect(getByTestId('bulk-namer')).toBeTruthy();
+      });
+
+      fireEvent.press(getByTestId('name-face-0'));
+
+      await waitFor(() => {
+        expect(getByTestId('primary-button')).toBeTruthy();
+      });
+
+      fireEvent.press(getByTestId('primary-button'));
+
+      await waitFor(() => {
+        expect(getByTestId('category-tags-step')).toBeTruthy();
+      });
+
+      // Before save, store should be empty
+      expect(store.getState().contacts.data).toHaveLength(0);
+
+      fireEvent.press(getByTestId('save-button'));
+
+      // After save, contact should be in Redux immediately (optimistic)
+      await waitFor(() => {
+        expect(store.getState().contacts.data).toHaveLength(1);
+        expect(store.getState().contacts.data[0].name).toBe('Person 1');
+      });
+    });
+
+    it('skips sync queue in demo mode (AUTH_MOCK=true)', async () => {
+      mockDetectFaces.mockResolvedValue({
+        faces: [
+          {
+            id: 'face-0',
+            uri: 'mock-group-image-uri',
+            bounds: { origin: { x: 0, y: 0 }, size: { width: 100, height: 100 } },
+          },
+        ],
+        isRealDetection: true,
+      });
+
+      const { getByTestId, store } = renderWithProvider(<PartyModeScreen />);
+
+      fireEvent.press(getByTestId('image-selector'));
+
+      await waitFor(() => {
+        expect(getByTestId('bulk-namer')).toBeTruthy();
+      });
+
+      fireEvent.press(getByTestId('name-face-0'));
+
+      await waitFor(() => {
+        expect(getByTestId('primary-button')).toBeTruthy();
+      });
+
+      fireEvent.press(getByTestId('primary-button'));
+
+      await waitFor(() => {
+        expect(getByTestId('category-tags-step')).toBeTruthy();
+      });
+
+      fireEvent.press(getByTestId('save-button'));
+
+      await waitFor(() => {
+        // Contact should be in Redux
+        expect(store.getState().contacts.data).toHaveLength(1);
+
+        // Sync queue should be empty (no queuing in demo mode)
+        expect(store.getState().sync.queue).toHaveLength(0);
+      });
+    });
+
+    it('generates unique temp IDs for each contact', async () => {
+      mockDetectFaces.mockResolvedValue({
+        faces: [
+          {
+            id: 'face-0',
+            uri: 'mock-group-image-uri',
+            bounds: { origin: { x: 0, y: 0 }, size: { width: 100, height: 100 } },
+          },
+          {
+            id: 'face-1',
+            uri: 'mock-group-image-uri',
+            bounds: { origin: { x: 100, y: 0 }, size: { width: 100, height: 100 } },
+          },
+        ],
+        isRealDetection: true,
+      });
+
+      const { getByTestId, store } = renderWithProvider(<PartyModeScreen />);
+
+      fireEvent.press(getByTestId('image-selector'));
+
+      await waitFor(() => {
+        expect(getByTestId('bulk-namer')).toBeTruthy();
+      });
+
+      fireEvent.press(getByTestId('name-face-0'));
+      fireEvent.press(getByTestId('name-face-1'));
+
+      await waitFor(() => {
+        expect(getByTestId('primary-button')).toBeTruthy();
+      });
+
+      fireEvent.press(getByTestId('primary-button'));
+
+      await waitFor(() => {
+        expect(getByTestId('category-tags-step')).toBeTruthy();
+      });
+
+      fireEvent.press(getByTestId('save-button'));
+
+      await waitFor(() => {
+        const state = store.getState();
+        expect(state.contacts.data).toHaveLength(2);
+
+        // Verify IDs are unique and match pattern: contact_${timestamp}_${index}_${random}
+        const id1 = state.contacts.data[0]._id;
+        const id2 = state.contacts.data[1]._id;
+
+        expect(id1).toMatch(/^contact_\d+_\d+_[a-z0-9]+$/);
+        expect(id2).toMatch(/^contact_\d+_\d+_[a-z0-9]+$/);
+        expect(id1).not.toBe(id2);
+      });
+    });
+
+    it('saves contacts with correct timestamps', async () => {
+      mockDetectFaces.mockResolvedValue({
+        faces: [
+          {
+            id: 'face-0',
+            uri: 'mock-group-image-uri',
+            bounds: { origin: { x: 0, y: 0 }, size: { width: 100, height: 100 } },
+          },
+        ],
+        isRealDetection: true,
+      });
+
+      const { getByTestId, store } = renderWithProvider(<PartyModeScreen />);
+
+      const beforeSave = Date.now();
+
+      fireEvent.press(getByTestId('image-selector'));
+
+      await waitFor(() => {
+        expect(getByTestId('bulk-namer')).toBeTruthy();
+      });
+
+      fireEvent.press(getByTestId('name-face-0'));
+
+      await waitFor(() => {
+        expect(getByTestId('primary-button')).toBeTruthy();
+      });
+
+      fireEvent.press(getByTestId('primary-button'));
+
+      await waitFor(() => {
+        expect(getByTestId('category-tags-step')).toBeTruthy();
+      });
+
+      fireEvent.press(getByTestId('save-button'));
+
+      await waitFor(() => {
+        const state = store.getState();
+        const contact = state.contacts.data[0];
+
+        // Verify timestamps are reasonable
+        expect(contact.created).toBeGreaterThanOrEqual(beforeSave);
+        expect(contact.created).toBeLessThanOrEqual(Date.now());
+        expect(contact.edited).toBe(contact.created);
+      });
     });
   });
 

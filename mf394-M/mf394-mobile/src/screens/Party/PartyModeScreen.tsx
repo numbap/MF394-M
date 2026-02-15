@@ -18,20 +18,26 @@ import {
   StyleSheet,
   ScrollView,
   ActivityIndicator,
-  Alert,
 } from 'react-native';
+import { showAlert } from '../../utils/showAlert';
 import { useNavigation } from '@react-navigation/native';
+import { useDispatch } from 'react-redux';
 import { FontAwesome } from '@expo/vector-icons';
 import { colors, spacing, radii, typography } from '../../theme/theme';
 import { ImageSelector } from '../../components/ImageSelector';
 import { BulkNamer, NamedFace } from '../../components/BulkNamer';
 import { CategoryTagsStep } from '../../components/CategoryTagsStep';
 import { FormButtons } from '../../components/FormButtons';
+import { FormGroup } from '../../components/FormGroup';
+import { LoadingState } from '../../components/LoadingState';
+import { InfoBox } from '../../components/InfoBox';
 import { Cropper } from '../../components/Cropper';
 import { FullScreenSpinner } from '../../components/FullScreenSpinner';
 import { useFaceDetection } from '../../hooks/useFaceDetection';
 import { imageService } from '../../services/imageService';
-import { useCreateContactMutation } from '../../store/api/contacts.api';
+import { Contact, useCreateContactMutation } from '../../store/api/contacts.api';
+import { addContact } from '../../store/slices/contacts.slice';
+import { addToQueue } from '../../store/slices/sync.slice';
 import { CATEGORIES, DEFAULT_CATEGORY, AVAILABLE_TAGS } from '../../constants';
 import { AUTH_MOCK } from '../../utils/constants';
 import { cropFaceWithBounds } from '../../utils/imageCropping';
@@ -40,6 +46,7 @@ type Step = 'upload' | 'detecting' | 'naming' | 'category' | 'crop';
 
 export default function PartyModeScreen() {
   const navigation = useNavigation();
+  const dispatch = useDispatch();
   const [step, setStep] = useState<Step>('upload');
   const [uploadedImageUri, setUploadedImageUri] = useState<string | null>(null);
   const [detectedFaces, setDetectedFaces] = useState<Array<{ id: string; uri: string }>>([]);
@@ -96,7 +103,7 @@ export default function PartyModeScreen() {
       setStep('naming');
     } catch (error: any) {
       console.error('[PartyMode] Error during face detection:', error);
-      Alert.alert('Error', 'Failed to detect faces. Please try again.');
+      showAlert('Error', 'Failed to detect faces. Please try again.');
       setStep('upload');
       setUploadedImageUri(null);
     }
@@ -127,7 +134,7 @@ export default function PartyModeScreen() {
 
   const handleSave = async () => {
     if (namedFaces.length === 0) {
-      Alert.alert('No Names', 'Please add at least one name before saving.');
+      showAlert('No Names', 'Please add at least one name before saving.');
       return;
     }
 
@@ -135,10 +142,12 @@ export default function PartyModeScreen() {
     setSaveError(null);
 
     try {
-      // Create all contacts in parallel
-      const createPromises = namedFaces.map(async (namedFace) => {
+      const now = Date.now();
+
+      // Process each named face
+      for (const [index, namedFace] of namedFaces.entries()) {
         try {
-          // Upload photo (or use local URI in mock mode)
+          // Upload photo only in production mode
           let photoUrl = namedFace.faceUri;
           if (!AUTH_MOCK) {
             photoUrl = await imageService.uploadImage(namedFace.faceUri, {
@@ -147,25 +156,79 @@ export default function PartyModeScreen() {
             });
           }
 
-          // Create contact
-          const contactData = {
+          // Create contact object with client-side temporary ID
+          const tempId = `contact_${now}_${index}_${Math.random().toString(36).substr(2, 9)}`;
+          const newContact: Contact = {
+            _id: tempId,
             name: namedFace.name.trim(),
-            category,
+            category: category as Contact['category'],
             groups: tags,
             photo: photoUrl,
+            created: now,
+            edited: now,
           };
 
-          return await createContact(contactData).unwrap();
+          // STEP 1: Optimistic update - add to Redux immediately
+          dispatch(addContact(newContact));
+
+          // STEP 2: Queue for server sync (production mode only)
+          if (!AUTH_MOCK) {
+            // Prepare contact data for API (without temp ID)
+            const apiContactData = {
+              name: newContact.name,
+              category: newContact.category,
+              groups: newContact.groups,
+              photo: newContact.photo,
+              hint: newContact.hint,
+              summary: newContact.summary,
+            };
+
+            // Queue the RTK Query mutation for background sync
+            dispatch(
+              addToQueue({
+                id: `${tempId}_sync`,
+                timestamp: now,
+                action: {
+                  type: 'contactsApi/executeMutation',
+                  payload: {
+                    endpoint: 'createContact',
+                    data: apiContactData,
+                    tempId: tempId, // For ID reconciliation later
+                  },
+                },
+                retryCount: 0,
+                maxRetries: 3,
+              })
+            );
+
+            // Trigger immediate sync attempt (if online)
+            dispatch({ type: 'sync/processSyncQueue' });
+          }
+
+          console.log(
+            `[PartyMode] Saved contact ${index + 1}/${namedFaces.length}: ${newContact.name} (${AUTH_MOCK ? 'demo' : 'queued for sync'})`
+          );
         } catch (error) {
-          console.error(`Failed to create contact "${namedFace.name}":`, error);
-          throw error;
+          console.error(`Failed to process contact "${namedFace.name}":`, error);
+
+          // Even on error, save locally with fallback
+          const fallbackContact: Contact = {
+            _id: `contact_${now}_${index}_${Math.random().toString(36).substr(2, 9)}`,
+            name: namedFace.name.trim(),
+            category: category as Contact['category'],
+            groups: tags,
+            photo: namedFace.faceUri, // Use local URI as fallback
+            created: now,
+            edited: now,
+          };
+          dispatch(addContact(fallbackContact));
         }
-      });
+      }
 
-      await Promise.all(createPromises);
-
-      // Success! Navigate to listing with filters applied
+      // Success! All contacts saved locally
       setIsSaving(false);
+
+      // Navigate to listing with filters applied
       navigation.navigate('Listing', {
         category,
         tags,
@@ -173,6 +236,7 @@ export default function PartyModeScreen() {
     } catch (error: any) {
       console.error('Bulk save failed:', error);
       setSaveError(error?.message || 'Failed to create contacts. Please try again.');
+      setIsSaving(false);
     }
   };
 
@@ -182,7 +246,7 @@ export default function PartyModeScreen() {
   };
 
   const handleEditTags = () => {
-    Alert.alert('Tag Management', 'Tag editing interface coming soon');
+    showAlert('Tag Management', 'Tag editing interface coming soon');
   };
 
   const canSave = namedFaces.length > 0 && !isSaving;
@@ -196,21 +260,18 @@ export default function PartyModeScreen() {
           <Text style={styles.stepSubtitle}>Upload a group photo to create multiple contacts</Text>
 
           {/* Image Selector */}
-          <View style={styles.formGroup}>
+          <FormGroup>
             <ImageSelector
               imageUri={uploadedImageUri}
               onImageSelected={handleImageSelected}
               onImageDeleted={handleImageDeleted}
             />
-          </View>
+          </FormGroup>
 
           {/* Info */}
-          <View style={styles.infoBox}>
-            <FontAwesome name="info-circle" size={20} color={colors.primary[500]} />
-            <Text style={styles.infoText}>
-              Upload a photo with multiple faces. We'll detect each person and let you name them.
-            </Text>
-          </View>
+          <FormGroup>
+            <InfoBox text="Upload a photo with multiple faces. We'll detect each person and let you name them." />
+          </FormGroup>
 
           {/* Back Button */}
           <FormButtons
@@ -226,11 +287,10 @@ export default function PartyModeScreen() {
       {/* Face Detection Step */}
       {step === 'detecting' && (
         <View style={styles.stepContainer}>
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color={colors.primary[500]} />
-            <Text style={styles.loadingLabel}>Detecting Faces</Text>
-            <Text style={styles.loadingSubtext}>Analyzing your photo...</Text>
-          </View>
+          <LoadingState
+            title="Detecting Faces"
+            subtitle="Analyzing your photo..."
+          />
         </View>
       )}
 
@@ -336,38 +396,6 @@ const styles = StyleSheet.create({
     fontSize: typography.body.medium.fontSize,
     color: colors.semantic.textSecondary,
     marginBottom: spacing.lg,
-  },
-  formGroup: {
-    marginBottom: spacing.lg,
-  },
-  infoBox: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    backgroundColor: colors.semantic.surface,
-    padding: spacing.lg,
-    borderRadius: radii.md,
-    marginBottom: spacing.lg,
-  },
-  infoText: {
-    flex: 1,
-    fontSize: typography.body.medium.fontSize,
-    color: colors.semantic.text,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: spacing.lg,
-  },
-  loadingLabel: {
-    fontSize: typography.title.large.fontSize,
-    fontWeight: '700',
-    color: colors.semantic.text,
-  },
-  loadingSubtext: {
-    fontSize: typography.body.medium.fontSize,
-    color: colors.semantic.textSecondary,
   },
   namingStepContainer: {
     flex: 1,
