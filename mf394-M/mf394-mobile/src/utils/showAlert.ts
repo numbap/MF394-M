@@ -15,7 +15,7 @@
  * ```
  */
 
-import { EventEmitter } from 'events';
+import EventEmitter from 'eventemitter3';
 import { AlertButton } from '../components/AlertDialog';
 
 interface AlertOptions {
