@@ -129,6 +129,7 @@ export const colors = {
     background: '#f5f3ef', // bone-50
     surface: '#ece7df', // bone-100
     surfaceHover: '#d8cec0', // bone-200
+    inputBackground: '#ffffff', // white - lighter than background for form inputs
     border: '#c8ced0', // iron-200
     text: '#181b1b', // iron-900
     textSecondary: '#778588', // iron-500

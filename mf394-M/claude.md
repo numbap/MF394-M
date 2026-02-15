@@ -379,7 +379,7 @@ Claude may autonomously (without asking):
 - Create new files and components without asking
 - Adding new libraries without asking
 - Concatenate files without asking
--
+- Never say "Co-Authored-By: Claude Haiku 4.5 <noreply@anthropic.com>"" or anything along those lines.
 
 ### When to Still Ask:
 
@@ -387,3 +387,7 @@ Claude may autonomously (without asking):
 - Architectural changes to existing patterns
 - Destructive operations (force push, delete branches)
 - Changes to claude.md itself
+
+## More
+
+- This should be an optimistic app. Wehre changes get applied locally online and offline, and then get sync'd to the live platform when connected.

@@ -3,9 +3,10 @@
  *
  * Displays a contact as an interactive card with photo, name, hint, and category.
  * Supports press-and-hold for editing.
+ * Shows category icon in a yellow square and optional info icon in a blue square.
  */
 
-import React from 'react';
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -14,9 +15,10 @@ import {
   Image,
   Pressable,
   ViewStyle,
-} from 'react-native';
-import { colors, spacing, radii, shadows } from '../../theme/theme';
-import type { Contact } from '../../store/api/contacts.api';
+} from "react-native";
+import { FontAwesome } from "@expo/vector-icons";
+import { colors, spacing, radii, shadows } from "../../theme/theme";
+import type { Contact } from "../../store/api/contacts.api";
 
 export interface ContactCardProps {
   contact: Contact;
@@ -25,69 +27,74 @@ export interface ContactCardProps {
   style?: ViewStyle;
 }
 
-const CATEGORY_COLORS: Record<string, string> = {
-  'friends-family': colors.primary[500],
-  community: colors.secondary[500],
-  work: colors.accent[500],
-  'goals-hobbies': colors.copper[500],
-  miscellaneous: colors.neutral.iron[500],
+const CATEGORY_ICONS: Record<string, string> = {
+  "friends-family": "users",
+  community: "globe",
+  work: "briefcase",
+  "goals-hobbies": "trophy",
+  miscellaneous: "bookmark",
 };
 
-const CATEGORY_LABELS: Record<string, string> = {
-  'friends-family': '👨‍👩‍👧',
-  community: '👥',
-  work: '💼',
-  'goals-hobbies': '🎯',
-  miscellaneous: '📌',
-};
+export function ContactCard({ contact, onPress, onLongPress, style }: ContactCardProps) {
+  const { name, hint, photo, category, summary } = contact;
+  const [showSummary, setShowSummary] = useState(false);
 
-export function ContactCard({
-  contact,
-  onPress,
-  onLongPress,
-  style,
-}: ContactCardProps) {
-  const { name, hint, photo, category } = contact;
-  const categoryColor = CATEGORY_COLORS[category] || colors.primary[500];
-  const categoryEmoji = CATEGORY_LABELS[category] || '📌';
+  const categoryIcon = CATEGORY_ICONS[category] || "bookmark";
+
+  const hasSummary = !!summary;
 
   return (
     <Pressable
       onPress={onPress}
       onLongPress={onLongPress}
-      style={({ pressed }) => [
-        styles.container,
-        pressed && styles.pressed,
-        style,
-      ]}
+      style={({ pressed }) => [styles.container, pressed && styles.pressed, style]}
     >
       <View style={styles.photoContainer}>
         {photo ? (
-          <Image
-            source={{ uri: photo }}
-            style={styles.photo}
-            resizeMode="cover"
-          />
+          <Image source={{ uri: photo }} style={styles.photo} resizeMode="cover" />
         ) : (
           <View style={[styles.photoPlaceholder, { backgroundColor: colors.neutral.iron[100] }]}>
-            <Text style={styles.placeholderText}>👤</Text>
+            <FontAwesome name={"user-circle" as any} size={48} color={colors.semantic.textSecondary} />
           </View>
         )}
       </View>
 
-      <View style={styles.content}>
-        <Text style={styles.name} numberOfLines={2}>
-          {name}
-        </Text>
-        {hint && (
-          <Text style={styles.hint} numberOfLines={1}>
-            {hint}
-          </Text>
-        )}
-      </View>
+      {/* Contact Card bottom section */}
+      <View style={[styles.bottomSection, showSummary && styles.bottomSectionActive]}>
+        {/* Category icon - top right corner */}
+        <View style={[styles.categoryIconBox, { backgroundColor: colors.secondary[500] }]}>
+          <FontAwesome name={categoryIcon as any} size={18} color={colors.semantic.text} />
+        </View>
 
-      <View style={[styles.categoryIcon, { backgroundColor: categoryColor }]}>
-        <Text style={styles.categoryEmoji}>{categoryEmoji}</Text>
+        {/* Info icon - bottom right corner (only if summary exists) */}
+        {hasSummary && (
+          <TouchableOpacity
+            style={[styles.infoIconBox, { backgroundColor: colors.semantic.info }]}
+            onPress={() => setShowSummary(!showSummary)}
+          >
+            <FontAwesome name={"info" as any} size={18} color="white" />
+          </TouchableOpacity>
+        )}
+
+        {/* Content area with proper right margin */}
+        <View style={styles.contentArea}>
+          {showSummary && hasSummary ? (
+            <Text style={styles.summary} numberOfLines={3}>
+              {summary}
+            </Text>
+          ) : (
+            <>
+              <Text style={styles.name} numberOfLines={2}>
+                {name}
+              </Text>
+              {hint && (
+                <Text style={styles.hint} numberOfLines={1}>
+                  {hint}
+                </Text>
+              )}
+            </>
+          )}
+        </View>
       </View>
     </Pressable>
   );
@@ -97,36 +104,47 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: colors.semantic.surface,
     borderRadius: radii.lg,
-    overflow: 'hidden',
+    overflow: "hidden",
     ...shadows.md,
   },
   pressed: {
     opacity: 0.8,
   },
   photoContainer: {
-    width: '100%',
+    width: "100%",
     aspectRatio: 1,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   photo: {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
   },
   photoPlaceholder: {
-    width: '100%',
-    height: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
+    width: "100%",
+    height: "100%",
+    justifyContent: "center",
+    alignItems: "center",
   },
-  placeholderText: {
-    fontSize: 48,
+  bottomSection: {
+    position: "relative",
+    height: 120,
+    paddingTop: spacing.lg,
+    paddingBottom: spacing.lg,
+    paddingLeft: spacing.md,
+    paddingRight: spacing.md + 36, // Margin to prevent icon overlap
+    justifyContent: "center",
+    backgroundColor: colors.semantic.surface,
   },
-  content: {
-    padding: spacing.md,
+  bottomSectionActive: {
+    backgroundColor: colors.secondary[100],
+  },
+  contentArea: {
+    flex: 1,
+    paddingRight: spacing.sm,
   },
   name: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
     color: colors.semantic.text,
     marginBottom: spacing.xs,
   },
@@ -134,17 +152,29 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: colors.semantic.textSecondary,
   },
-  categoryIcon: {
-    position: 'absolute',
-    bottom: spacing.md,
-    right: spacing.md,
-    width: 32,
-    height: 32,
-    borderRadius: radii.full,
-    justifyContent: 'center',
-    alignItems: 'center',
+  summary: {
+    fontSize: 12,
+    color: colors.semantic.text,
+    lineHeight: 18,
   },
-  categoryEmoji: {
-    fontSize: 16,
+  categoryIconBox: {
+    position: "absolute",
+    top: 0,
+    right: 0,
+    width: 36,
+    height: 36,
+    borderRadius: radii.sm,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  infoIconBox: {
+    position: "absolute",
+    bottom: 0,
+    right: 0,
+    width: 36,
+    height: 36,
+    borderRadius: radii.sm,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

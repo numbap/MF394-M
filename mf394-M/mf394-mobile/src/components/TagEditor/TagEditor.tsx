@@ -136,6 +136,7 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.sm,
     fontSize: 14,
     color: colors.semantic.text,
+    backgroundColor: colors.semantic.inputBackground,
   },
   addButton: {
     backgroundColor: colors.primary[500],

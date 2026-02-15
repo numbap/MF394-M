@@ -13,7 +13,6 @@ import {
   View,
   Text,
   StyleSheet,
-  FlatList,
   TouchableOpacity,
   Pressable,
   ScrollView,
@@ -28,6 +27,8 @@ import { Contact } from "../../store/api/contacts.api";
 import { transformMockContacts } from "../../utils/contactDataTransform";
 import { ContactCard } from "../../components/ContactCard";
 import { SummaryThumbnail } from "../../components/SummaryThumbnail";
+import { CategoryTagFilter } from "../../components/CategoryTagFilter";
+import { StorageService } from "../../services/storage.service";
 
 // Category definitions with icons
 const CATEGORIES = [
@@ -68,29 +69,48 @@ export default function ListingScreen({ navigation }: any) {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [isGalleryView, setIsGalleryView] = useState(false);
 
-  // Load mock data on mount
+  // Load contacts from storage or mock data on mount
   useEffect(() => {
-    const loadMockData = async () => {
+    const loadContacts = async () => {
       if (contacts.length === 0) {
         try {
           dispatch(setLoading(true));
-          const mockUserDataRaw = require("../../mock_user.json");
-          const mockUserData =
-            typeof mockUserDataRaw === "string" ? JSON.parse(mockUserDataRaw) : mockUserDataRaw;
 
-          if (mockUserData?.contacts) {
-            const transformed = transformMockContacts(mockUserData.contacts);
-            dispatch(setContacts(transformed));
+          // Try to load from storage first
+          const storedContacts = await StorageService.loadContacts();
+
+          if (storedContacts.length > 0) {
+            // Use stored contacts
+            dispatch(setContacts(storedContacts));
+          } else {
+            // Fallback to mock data if storage is empty
+            const mockUserDataRaw = require("../../mock_user.json");
+            const mockUserData =
+              typeof mockUserDataRaw === "string" ? JSON.parse(mockUserDataRaw) : mockUserDataRaw;
+
+            if (mockUserData?.contacts) {
+              const transformed = transformMockContacts(mockUserData.contacts);
+              dispatch(setContacts(transformed));
+              // Save to storage for next time
+              await StorageService.saveContacts(transformed);
+            }
           }
         } catch (error) {
-          console.error("Failed to load mock data:", error);
+          console.error("Failed to load contacts:", error);
         } finally {
           dispatch(setLoading(false));
         }
       }
     };
-    loadMockData();
+    loadContacts();
   }, [dispatch, contacts.length]);
+
+  // Persist contacts to storage whenever they change
+  useEffect(() => {
+    if (contacts.length > 0) {
+      StorageService.saveContacts(contacts);
+    }
+  }, [contacts]);
 
   // Get available tags from category-filtered contacts
   const availableTags = useMemo(() => {
@@ -175,55 +195,17 @@ export default function ListingScreen({ navigation }: any) {
     navigation.navigate("EditContact", { contactId });
   };
 
-  // Get category label for header
-  const getCategoryHeader = () => {
-    if (selectedCategories.length === 0) {
-      return "Select a Category";
-    }
-    if (selectedCategories.length === 1) {
-      return CATEGORIES.find((c) => c.value === selectedCategories[0])?.label || "";
-    }
-    if (selectedCategories.length === 2) {
-      const labels = selectedCategories
-        .map((cat) => CATEGORIES.find((c) => c.value === cat)?.label)
-        .filter(Boolean);
-      return labels.join(" + ");
-    }
-    return "Multiple Selected";
-  };
-
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         {/* Category Filter Header */}
         <View style={styles.section}>
-          <Text style={styles.filterHeader}>{getCategoryHeader()}</Text>
-
-          {/* Category Icons */}
-          <View style={styles.categoryRow}>
-            {CATEGORIES.map((cat) => (
-              <Pressable
-                key={cat.value}
-                onPress={() => handleCategoryPress(cat.value)}
-                onLongPress={handleCategoryLongPress}
-                delayLongPress={500}
-                style={[
-                  styles.categoryButton,
-                  selectedCategories.includes(cat.value) && styles.categoryButtonSelected,
-                ]}
-              >
-                <FontAwesome
-                  name={cat.icon as any}
-                  size={24}
-                  color={
-                    selectedCategories.includes(cat.value)
-                      ? colors.primary[500]
-                      : colors.semantic.textSecondary
-                  }
-                />
-              </Pressable>
-            ))}
-          </View>
+          <CategoryTagFilter
+            categories={CATEGORIES}
+            selectedCategories={selectedCategories}
+            onCategoryPress={handleCategoryPress}
+            onCategoryLongPress={handleCategoryLongPress}
+          />
 
           {/* Tag Filter */}
           {selectedCategories.length > 0 && availableTags.length > 0 && (
@@ -349,31 +331,6 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.lg,
     borderBottomWidth: 1,
     borderBottomColor: colors.semantic.border,
-  },
-  filterHeader: {
-    fontSize: typography.title.large.fontSize,
-    fontWeight: "700",
-    color: colors.semantic.text,
-    marginBottom: spacing.lg,
-  },
-  categoryRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: spacing.lg,
-  },
-  categoryButton: {
-    width: "18%",
-    aspectRatio: 1,
-    borderRadius: radii.md,
-    borderWidth: 2,
-    borderColor: colors.semantic.border,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: colors.semantic.surface,
-  },
-  categoryButtonSelected: {
-    borderColor: colors.primary[500],
-    backgroundColor: colors.primary[50],
   },
   tagsSection: {
     marginBottom: spacing.lg,

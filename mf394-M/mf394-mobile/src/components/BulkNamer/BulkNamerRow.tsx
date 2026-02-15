@@ -111,6 +111,7 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.sm,
     fontSize: typography.body.medium.fontSize,
     color: colors.semantic.text,
+    backgroundColor: colors.semantic.inputBackground,
     marginBottom: spacing.xs,
   },
   charCounter: {

@@ -26,7 +26,7 @@
 
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -39,8 +39,11 @@ import {
   Platform,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesome } from '@expo/vector-icons';
-import { useCreateContactMutation } from '../../store/api/contacts.api';
+import { addContact, updateContact, deleteContact } from '../../store/slices/contacts.slice';
+import { Contact } from '../../store/api/contacts.api';
+import { RootState } from '../../store';
 import { colors, spacing, radii, typography } from '../../theme/theme';
 import { ImageSelector } from '../../components/ImageSelector';
 import { CategorySelector, Category } from '../../components/CategorySelector';
@@ -48,6 +51,7 @@ import { TagSelector } from '../../components/TagSelector';
 import { FaceSelector, Face } from '../../components/FaceSelector';
 import { Cropper } from '../../components/Cropper';
 import { FormButtons } from '../../components/FormButtons';
+import { Toast } from '../../components/Toast';
 import { useFaceDetection } from '../../hooks/useFaceDetection';
 import { imageService } from '../../services/imageService';
 
@@ -209,8 +213,19 @@ const AVAILABLE_TAGS = [
 export default function AddEditContactScreen() {
   const route = useRoute();
   const navigation = useNavigation();
+  const dispatch = useDispatch();
   const [step, setStep] = useState<Step>('details');
   const [isLoading, setIsLoading] = useState(false);
+
+  // Get contactId from route params for edit mode
+  const contactId = (route.params as any)?.contactId;
+  const isEditing = !!contactId;
+
+  // Get existing contact from Redux if editing
+  const contacts = useSelector((state: RootState) => state.contacts.data);
+  const existingContact = isEditing
+    ? contacts.find((c) => c._id === contactId)
+    : null;
 
   // Form state
   const [name, setName] = useState('');
@@ -225,12 +240,24 @@ export default function AddEditContactScreen() {
   const [detectedFaces, setDetectedFaces] = useState<Face[]>([]);
   const [selectedFaceIndex, setSelectedFaceIndex] = useState<number>(0);
 
-  // API mutations
-  const [createContact] = useCreateContactMutation();
+  // Toast state
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const [toastVariant, setToastVariant] = useState<'success' | 'error' | 'info'>('success');
+
   const { detectFaces, cropFace, faces: detectionFaces } = useFaceDetection();
 
-  // Determine if editing or creating
-  const isEditing = false; // TODO: Get from route params
+  // Pre-populate form if editing
+  useEffect(() => {
+    if (existingContact) {
+      setName(existingContact.name);
+      setHint(existingContact.hint || '');
+      setSummary(existingContact.summary || '');
+      setCategory(existingContact.category);
+      setTags(existingContact.groups || []);
+      setPhotoUri(existingContact.photo || null);
+    }
+  }, [existingContact]);
 
   const handleImageSelected = async (uri: string) => {
     setUploadedImageUri(uri);
@@ -350,59 +377,78 @@ export default function AddEditContactScreen() {
     try {
       setIsLoading(true);
 
-      // Upload photo to S3 if one is selected
-      let uploadedPhotoUrl = photoUri;
-      const isMockMode = process.env.AUTH_MOCK === 'true';
-
-      if (photoUri && !isMockMode) {
-        try {
-          uploadedPhotoUrl = await imageService.uploadImage(photoUri, {
-            type: 'contact-photo',
-          });
-        } catch (uploadError: any) {
-          console.error('Photo upload failed:', uploadError);
-          Alert.alert(
-            'Upload Error',
-            'Failed to upload photo. Save contact without photo?',
-            [
-              { text: 'Cancel', style: 'cancel' },
-              {
-                text: 'Save Without Photo',
-                onPress: async () => {
-                  uploadedPhotoUrl = undefined;
-                  await saveContactData(uploadedPhotoUrl);
-                },
-              },
-            ]
-          );
-          return;
-        }
-      }
+      // For now, we're in local-only mode, so just use the photoUri directly
+      // When we connect to the live API, we'll upload to S3 here
+      const uploadedPhotoUrl = photoUri;
 
       await saveContactData(uploadedPhotoUrl);
     } catch (error: any) {
-      Alert.alert('Error', error?.message || 'Failed to save contact');
+      setToastMessage(error?.message || 'Failed to save contact');
+      setToastVariant('error');
+      setShowToast(true);
     } finally {
       setIsLoading(false);
     }
   };
 
   const saveContactData = async (photoUrl: string | null | undefined) => {
-    const contactData = {
-      name: name.trim(),
-      hint: hint.trim() || undefined,
-      summary: summary.trim() || undefined,
-      category,
-      groups: tags,
-      photo: photoUrl || undefined,
-    };
+    const now = Date.now();
 
-    await createContact(contactData).unwrap();
-    Alert.alert('Success', 'Contact created successfully');
-    navigation.goBack();
+    if (isEditing && existingContact) {
+      // Update existing contact
+      const updatedContact: Contact = {
+        ...existingContact,
+        name: name.trim(),
+        hint: hint.trim() || undefined,
+        summary: summary.trim() || undefined,
+        category: category as Contact['category'],
+        groups: tags,
+        photo: photoUrl || undefined,
+        edited: now,
+      };
+
+      dispatch(updateContact(updatedContact));
+
+      // Show success toast
+      setToastMessage('Contact updated successfully');
+      setToastVariant('success');
+      setShowToast(true);
+
+      // Navigate back after short delay for toast visibility
+      setTimeout(() => {
+        navigation.goBack();
+      }, 500);
+    } else {
+      // Create new contact
+      const newContact: Contact = {
+        _id: `contact_${now}_${Math.random().toString(36).substr(2, 9)}`,
+        name: name.trim(),
+        hint: hint.trim() || undefined,
+        summary: summary.trim() || undefined,
+        category: category as Contact['category'],
+        groups: tags,
+        photo: photoUrl || undefined,
+        created: now,
+        edited: now,
+      };
+
+      dispatch(addContact(newContact));
+
+      // Show success toast
+      setToastMessage('Contact added successfully');
+      setToastVariant('success');
+      setShowToast(true);
+
+      // Navigate back after short delay for toast visibility
+      setTimeout(() => {
+        navigation.goBack();
+      }, 500);
+    }
   };
 
   const handleDelete = () => {
+    if (!isEditing || !contactId) return;
+
     Alert.alert('Delete Contact', 'Are you sure you want to delete this contact?', [
       { text: 'Cancel', onPress: () => {} },
       {
@@ -410,11 +456,22 @@ export default function AddEditContactScreen() {
         onPress: async () => {
           try {
             setIsLoading(true);
-            // TODO: Implement delete mutation
-            Alert.alert('Success', 'Contact deleted successfully');
-            navigation.goBack();
+
+            dispatch(deleteContact(contactId));
+
+            // Show success toast
+            setToastMessage('Contact deleted successfully');
+            setToastVariant('success');
+            setShowToast(true);
+
+            // Navigate back after short delay
+            setTimeout(() => {
+              navigation.goBack();
+            }, 500);
           } catch (error: any) {
-            Alert.alert('Error', error?.message || 'Failed to delete contact');
+            setToastMessage(error?.message || 'Failed to delete contact');
+            setToastVariant('error');
+            setShowToast(true);
           } finally {
             setIsLoading(false);
           }
@@ -441,6 +498,16 @@ export default function AddEditContactScreen() {
 
   return (
     <View style={styles.container}>
+      {/* Toast Notification */}
+      {showToast && (
+        <Toast
+          message={toastMessage}
+          variant={toastVariant}
+          visible={showToast}
+          onDismiss={() => setShowToast(false)}
+        />
+      )}
+
       {/* Details Step */}
       {step === 'details' && (
         <ScrollView style={styles.stepContainer}>
@@ -621,6 +688,7 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
     fontSize: typography.body.large.fontSize,
     color: colors.semantic.text,
+    backgroundColor: colors.semantic.inputBackground,
   },
   multilineInput: {
     textAlignVertical: 'top',
