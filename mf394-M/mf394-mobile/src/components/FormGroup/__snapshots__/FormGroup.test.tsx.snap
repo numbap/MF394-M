@@ -1,0 +1,18 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FormGroup matches snapshot 1`] = `
+<View
+  style={
+    [
+      {
+        "marginBottom": 16,
+      },
+      undefined,
+    ]
+  }
+>
+  <Text>
+    Snapshot Test
+  </Text>
+</View>
+`;

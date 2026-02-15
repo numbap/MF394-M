@@ -1,0 +1,123 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TagButton matches snapshot - selected 1`] = `
+<View
+  accessibilityState={
+    {
+      "busy": undefined,
+      "checked": undefined,
+      "disabled": undefined,
+      "expanded": undefined,
+      "selected": undefined,
+    }
+  }
+  accessibilityValue={
+    {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
+    }
+  }
+  accessible={true}
+  collapsable={false}
+  focusable={true}
+  onClick={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+  style={
+    {
+      "backgroundColor": "#eef2f7",
+      "borderColor": "#547fab",
+      "borderRadius": 16,
+      "borderWidth": 2,
+      "opacity": 1,
+      "paddingHorizontal": 12,
+      "paddingVertical": 8,
+    }
+  }
+>
+  <Text
+    numberOfLines={1}
+    style={
+      [
+        {
+          "color": "#181b1b",
+          "fontSize": 14,
+          "fontWeight": "600",
+        },
+        {
+          "color": "#547fab",
+        },
+        undefined,
+      ]
+    }
+  >
+    Sports
+  </Text>
+</View>
+`;
+
+exports[`TagButton matches snapshot - unselected 1`] = `
+<View
+  accessibilityState={
+    {
+      "busy": undefined,
+      "checked": undefined,
+      "disabled": undefined,
+      "expanded": undefined,
+      "selected": undefined,
+    }
+  }
+  accessibilityValue={
+    {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
+    }
+  }
+  accessible={true}
+  collapsable={false}
+  focusable={true}
+  onClick={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+  style={
+    {
+      "backgroundColor": "#ece7df",
+      "borderColor": "#bbccdd",
+      "borderRadius": 16,
+      "borderWidth": 2,
+      "opacity": 1,
+      "paddingHorizontal": 12,
+      "paddingVertical": 8,
+    }
+  }
+>
+  <Text
+    numberOfLines={1}
+    style={
+      [
+        {
+          "color": "#181b1b",
+          "fontSize": 14,
+          "fontWeight": "600",
+        },
+        false,
+        undefined,
+      ]
+    }
+  >
+    Sports
+  </Text>
+</View>
+`;

@@ -14,8 +14,9 @@ import {
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { colors, spacing, radii, typography } from '../../theme/theme';
-import { CategorySelector, Category } from '../CategorySelector';
-import { TagSelector } from '../TagSelector';
+import { Category } from '../CategorySelector';
+import { CategoryTagSelector } from '../CategoryTagSelector';
+import { FormGroup } from '../FormGroup';
 import { FormButtons } from '../FormButtons';
 
 export interface ContactPreview {
@@ -61,26 +62,18 @@ export function CategoryTagsStep({
         {contactCount} contact{contactCount !== 1 ? 's' : ''} ready to add
       </Text>
 
-      {/* Category Selection */}
-      <View style={styles.formGroup}>
-        <CategorySelector
+      {/* Category and Tags Selection */}
+      <FormGroup>
+        <CategoryTagSelector
           categories={categories}
-          selectedValue={category}
-          onSelect={onCategoryChange}
-          label="Category"
-          required
-        />
-      </View>
-
-      {/* Tags */}
-      <View style={styles.formGroup}>
-        <TagSelector
+          selectedCategory={category}
+          onCategoryChange={onCategoryChange}
           availableTags={availableTags}
           selectedTags={tags}
           onTagsChange={onTagsChange}
           onEditTags={onEditTags}
         />
-      </View>
+      </FormGroup>
 
       {/* Contact List Preview */}
       <View style={styles.previewBox}>
@@ -127,9 +120,6 @@ const styles = StyleSheet.create({
   stepSubtitle: {
     fontSize: typography.body.medium.fontSize,
     color: colors.semantic.textSecondary,
-    marginBottom: spacing.lg,
-  },
-  formGroup: {
     marginBottom: spacing.lg,
   },
   previewBox: {

@@ -1,0 +1,43 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`LoadingState matches snapshot 1`] = `
+<View
+  style={
+    [
+      {
+        "alignItems": "center",
+        "flex": 1,
+        "gap": 16,
+        "justifyContent": "center",
+      },
+      undefined,
+    ]
+  }
+>
+  <ActivityIndicator
+    color="#547fab"
+    size={48}
+  />
+  <Text
+    style={
+      {
+        "color": "#181b1b",
+        "fontSize": 22,
+        "fontWeight": "700",
+      }
+    }
+  >
+    Scanning for Faces
+  </Text>
+  <Text
+    style={
+      {
+        "color": "#778588",
+        "fontSize": 14,
+      }
+    }
+  >
+    Analyzing your photo...
+  </Text>
+</View>
+`;
