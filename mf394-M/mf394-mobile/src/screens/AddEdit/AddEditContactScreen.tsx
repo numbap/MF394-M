@@ -34,10 +34,10 @@ import {
   TouchableOpacity,
   ScrollView,
   TextInput,
-  Alert,
   ActivityIndicator,
   Platform,
 } from 'react-native';
+import { showAlert } from '../../utils/showAlert';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesome } from '@expo/vector-icons';
@@ -46,11 +46,12 @@ import { Contact } from '../../store/api/contacts.api';
 import { RootState } from '../../store';
 import { colors, spacing, radii, typography } from '../../theme/theme';
 import { ImageSelector } from '../../components/ImageSelector';
-import { CategorySelector } from '../../components/CategorySelector';
-import { TagSelector } from '../../components/TagSelector';
+import { CategoryTagSelector } from '../../components/CategoryTagSelector';
 import { FaceSelector, Face } from '../../components/FaceSelector';
 import { Cropper } from '../../components/Cropper';
 import { FormButtons } from '../../components/FormButtons';
+import { FormGroup } from '../../components/FormGroup';
+import { LoadingState } from '../../components/LoadingState';
 import { Toast } from '../../components/Toast';
 import { FullScreenSpinner } from '../../components/FullScreenSpinner';
 import { useFaceDetection } from '../../hooks/useFaceDetection';
@@ -150,7 +151,7 @@ export default function AddEditContactScreen() {
         setStep('crop');
       }
     } catch (error) {
-      Alert.alert('Error', 'Failed to process image. Please try again.');
+      showAlert('Error', 'Failed to process image. Please try again.');
       setStep('details');
       setUploadedImageUri(null);
     }
@@ -174,7 +175,7 @@ export default function AddEditContactScreen() {
       setStep('details');
     } catch (error: any) {
       console.error('Image processing failed:', error);
-      Alert.alert(
+      showAlert(
         'Error',
         error?.message || 'Failed to process image. Please try again.'
       );
@@ -199,7 +200,7 @@ export default function AddEditContactScreen() {
       setStep('details');
     } catch (error: any) {
       console.error('Crop failed:', error);
-      Alert.alert(
+      showAlert(
         'Error',
         error?.message || 'Failed to process image. Please try again.'
       );
@@ -221,9 +222,9 @@ export default function AddEditContactScreen() {
     // Validate form before saving
     if (!isFormValid()) {
       if (!name.trim()) {
-        Alert.alert('Error', 'Please enter a name');
+        showAlert('Error', 'Please enter a name');
       } else {
-        Alert.alert('Error', 'Please provide either a photo or a hint');
+        showAlert('Error', 'Please provide either a photo or a hint');
       }
       return;
     }
@@ -306,8 +307,8 @@ export default function AddEditContactScreen() {
   const handleDelete = () => {
     if (!isEditing || !contactId) return;
 
-    Alert.alert('Delete Contact', 'Are you sure you want to delete this contact?', [
-      { text: 'Cancel', onPress: () => {} },
+    showAlert('Delete Contact', 'Are you sure you want to delete this contact?', [
+      { text: 'Cancel', style: 'cancel' },
       {
         text: 'Delete',
         onPress: async () => {
@@ -340,7 +341,7 @@ export default function AddEditContactScreen() {
 
   const handleEditTags = () => {
     // TODO: Navigate to tag management interface
-    Alert.alert('Tag Management', 'Tag editing interface coming soon');
+    showAlert('Tag Management', 'Tag editing interface coming soon');
   };
 
   // Form validation: button should be disabled if form is not ready
@@ -371,16 +372,16 @@ export default function AddEditContactScreen() {
           <Text style={styles.stepTitle}>{isEditing ? 'Edit' : 'Add'} Contact</Text>
 
           {/* Image Selector */}
-          <View style={styles.formGroup}>
+          <FormGroup>
             <ImageSelector
               imageUri={photoUri}
               onImageSelected={handleImageSelected}
               onImageDeleted={handleImageDeleted}
             />
-          </View>
+          </FormGroup>
 
           {/* Name Input */}
-          <View style={styles.formGroup}>
+          <FormGroup>
             <Text style={styles.label}>
               Name <Text style={styles.required}>*</Text>
             </Text>
@@ -391,10 +392,10 @@ export default function AddEditContactScreen() {
               onChangeText={setName}
               placeholderTextColor={colors.semantic.textTertiary}
             />
-          </View>
+          </FormGroup>
 
           {/* Hint Input */}
-          <View style={styles.formGroup}>
+          <FormGroup>
             <Text style={styles.label}>Hint</Text>
             <TextInput
               style={styles.input}
@@ -403,10 +404,10 @@ export default function AddEditContactScreen() {
               onChangeText={setHint}
               placeholderTextColor={colors.semantic.textTertiary}
             />
-          </View>
+          </FormGroup>
 
           {/* Summary Input */}
-          <View style={styles.formGroup}>
+          <FormGroup>
             <Text style={styles.label}>Summary</Text>
             <TextInput
               style={[styles.input, styles.multilineInput]}
@@ -417,28 +418,20 @@ export default function AddEditContactScreen() {
               numberOfLines={3}
               placeholderTextColor={colors.semantic.textTertiary}
             />
-          </View>
+          </FormGroup>
 
-          {/* Category Selection */}
-          <View style={styles.formGroup}>
-            <CategorySelector
+          {/* Category and Tags Selection */}
+          <FormGroup>
+            <CategoryTagSelector
               categories={CATEGORIES}
-              selectedValue={category}
-              onSelect={setCategory}
-              label="Category"
-              required
-            />
-          </View>
-
-          {/* Tags */}
-          <View style={styles.formGroup}>
-            <TagSelector
+              selectedCategory={category}
+              onCategoryChange={setCategory}
               availableTags={AVAILABLE_TAGS}
               selectedTags={tags}
               onTagsChange={setTags}
               onEditTags={handleEditTags}
             />
-          </View>
+          </FormGroup>
 
           {/* Form Action Buttons */}
           <FormButtons
@@ -469,13 +462,10 @@ export default function AddEditContactScreen() {
       {/* Face Detection Step */}
       {step === 'faceDetection' && (
         <View style={styles.stepContainer}>
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size={48} color={colors.primary[500]} />
-            <Text style={styles.loadingLabel}>Scanning for Faces</Text>
-            <Text style={styles.loadingSubtext}>
-              Analyzing your photo...
-            </Text>
-          </View>
+          <LoadingState
+            title="Scanning for Faces"
+            subtitle="Analyzing your photo..."
+          />
         </View>
       )}
 
@@ -540,9 +530,6 @@ const styles = StyleSheet.create({
     color: colors.semantic.text,
     marginBottom: spacing.lg,
   },
-  formGroup: {
-    marginBottom: spacing.lg,
-  },
   label: {
     fontSize: typography.body.medium.fontSize,
     fontWeight: '600',
@@ -580,21 +567,6 @@ const styles = StyleSheet.create({
     color: colors.semantic.text,
     fontWeight: '600',
     fontSize: typography.body.large.fontSize,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: spacing.lg,
-  },
-  loadingLabel: {
-    fontSize: typography.title.large.fontSize,
-    fontWeight: '700',
-    color: colors.semantic.text,
-  },
-  loadingSubtext: {
-    fontSize: typography.body.medium.fontSize,
-    color: colors.semantic.textSecondary,
   },
   placeholderContainer: {
     flex: 1,

@@ -11,13 +11,13 @@
 
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
-import { Alert } from 'react-native';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import PartyModeScreen from './PartyModeScreen';
 import { imageService } from '../../services/imageService';
 import contactsReducer from '../../store/slices/contacts.slice';
 import syncReducer from '../../store/slices/sync.slice';
+import { showAlert } from '../../utils/showAlert';
 
 // Create a mock store for testing
 const createMockStore = () => {
@@ -77,6 +77,11 @@ jest.mock('../../utils/imageCropping', () => ({
   cropFaceWithBounds: jest.fn((imageUri, bounds) =>
     Promise.resolve(`cropped-${imageUri}`)
   ),
+}));
+
+// Mock showAlert utility
+jest.mock('../../utils/showAlert', () => ({
+  showAlert: jest.fn(),
 }));
 
 // Mock components
@@ -215,7 +220,6 @@ const renderWithProvider = (component: React.ReactElement) => {
 describe('PartyModeScreen', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    jest.spyOn(Alert, 'alert').mockImplementation(() => {});
     mockCreateContact.mockReturnValue({
       unwrap: jest.fn().mockResolvedValue({ id: '123' }),
     });
@@ -653,7 +657,7 @@ describe('PartyModeScreen', () => {
       fireEvent.press(getByTestId('image-selector'));
 
       await waitFor(() => {
-        expect(Alert.alert).toHaveBeenCalledWith(
+        expect(showAlert).toHaveBeenCalledWith(
           'Error',
           'Failed to detect faces. Please try again.'
         );

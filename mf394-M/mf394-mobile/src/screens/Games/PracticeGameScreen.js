@@ -6,8 +6,8 @@ import {
   StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
-  Alert,
 } from "react-native";
+import { showAlert } from "../../utils/showAlert";
 import { gameService } from "../../services/gameService";
 import { useContacts } from "../../hooks/useContacts";
 import shuffle from "../../utils/shuffle";
@@ -58,7 +58,7 @@ export default function PracticeGameScreen() {
       setSelectedImage(null);
 
       if (matched.length + 1 === contacts.length) {
-        Alert.alert("Congratulations!", "You matched all contacts!");
+        showAlert("Congratulations!", "You matched all contacts!");
       }
     } else {
       setSelectedImage(null);

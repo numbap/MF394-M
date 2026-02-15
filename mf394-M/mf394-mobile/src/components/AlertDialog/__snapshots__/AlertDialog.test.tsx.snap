@@ -1,0 +1,714 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AlertDialog snapshot test - confirm dialog 1`] = `
+<Modal
+  animationType="none"
+  onRequestClose={[Function]}
+  transparent={true}
+  visible={true}
+>
+  <View
+    accessibilityState={
+      {
+        "busy": undefined,
+        "checked": undefined,
+        "disabled": undefined,
+        "expanded": undefined,
+        "selected": undefined,
+      }
+    }
+    accessibilityValue={
+      {
+        "max": undefined,
+        "min": undefined,
+        "now": undefined,
+        "text": undefined,
+      }
+    }
+    accessible={true}
+    collapsable={false}
+    focusable={true}
+    onBlur={[Function]}
+    onClick={[Function]}
+    onFocus={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      {
+        "alignItems": "center",
+        "backgroundColor": "rgba(0, 0, 0, 0.5)",
+        "flex": 1,
+        "justifyContent": "center",
+        "padding": 16,
+      }
+    }
+  >
+    <View
+      accessibilityState={
+        {
+          "busy": undefined,
+          "checked": undefined,
+          "disabled": undefined,
+          "expanded": undefined,
+          "selected": undefined,
+        }
+      }
+      accessibilityValue={
+        {
+          "max": undefined,
+          "min": undefined,
+          "now": undefined,
+          "text": undefined,
+        }
+      }
+      accessible={true}
+      collapsable={false}
+      focusable={true}
+      onBlur={[Function]}
+      onClick={[Function]}
+      onFocus={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={
+        {
+          "backgroundColor": "#ece7df",
+          "borderRadius": 12,
+          "elevation": 12,
+          "maxWidth": 340,
+          "padding": 20,
+          "shadowColor": "#000",
+          "shadowOffset": {
+            "height": 12,
+            "width": 0,
+          },
+          "shadowOpacity": 0.2,
+          "shadowRadius": 24,
+          "width": "100%",
+        }
+      }
+    >
+      <Text
+        style={
+          {
+            "color": "#181b1b",
+            "fontSize": 20,
+            "fontWeight": "600",
+            "marginBottom": 12,
+            "textAlign": "center",
+          }
+        }
+      >
+        Confirm
+      </Text>
+      <Text
+        style={
+          {
+            "color": "#778588",
+            "fontSize": 16,
+            "fontWeight": "400",
+            "lineHeight": 24,
+            "marginBottom": 20,
+            "textAlign": "center",
+          }
+        }
+      >
+        Are you sure?
+      </Text>
+      <View
+        style={
+          {
+            "flexDirection": "column",
+            "gap": 12,
+            "width": "100%",
+          }
+        }
+      >
+        <View
+          accessibilityState={
+            {
+              "busy": undefined,
+              "checked": undefined,
+              "disabled": undefined,
+              "expanded": undefined,
+              "selected": undefined,
+            }
+          }
+          accessibilityValue={
+            {
+              "max": undefined,
+              "min": undefined,
+              "now": undefined,
+              "text": undefined,
+            }
+          }
+          accessible={true}
+          collapsable={false}
+          focusable={true}
+          onClick={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          style={
+            {
+              "alignItems": "center",
+              "backgroundColor": "#ece7df",
+              "borderColor": "#c8ced0",
+              "borderRadius": 8,
+              "borderWidth": 1,
+              "justifyContent": "center",
+              "minHeight": 48,
+              "opacity": 1,
+              "paddingHorizontal": 16,
+              "paddingVertical": 16,
+            }
+          }
+          testID="alert-button-0"
+        >
+          <Text
+            style={
+              [
+                {
+                  "color": "#fff",
+                  "fontSize": 16,
+                  "fontWeight": "700",
+                },
+                false,
+                {
+                  "color": "#181b1b",
+                  "fontWeight": "600",
+                },
+              ]
+            }
+          >
+            Cancel
+          </Text>
+        </View>
+        <View
+          accessibilityState={
+            {
+              "busy": undefined,
+              "checked": undefined,
+              "disabled": undefined,
+              "expanded": undefined,
+              "selected": undefined,
+            }
+          }
+          accessibilityValue={
+            {
+              "max": undefined,
+              "min": undefined,
+              "now": undefined,
+              "text": undefined,
+            }
+          }
+          accessible={true}
+          collapsable={false}
+          focusable={true}
+          onClick={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          style={
+            {
+              "alignItems": "center",
+              "backgroundColor": "#547fab",
+              "borderRadius": 8,
+              "justifyContent": "center",
+              "minHeight": 48,
+              "opacity": 1,
+              "paddingHorizontal": 16,
+              "paddingVertical": 16,
+            }
+          }
+          testID="alert-button-1"
+        >
+          <Text
+            style={
+              [
+                {
+                  "color": "#fff",
+                  "fontSize": 16,
+                  "fontWeight": "700",
+                },
+                false,
+                false,
+              ]
+            }
+          >
+            OK
+          </Text>
+        </View>
+      </View>
+    </View>
+  </View>
+</Modal>
+`;
+
+exports[`AlertDialog snapshot test - destructive dialog 1`] = `
+<Modal
+  animationType="none"
+  onRequestClose={[Function]}
+  transparent={true}
+  visible={true}
+>
+  <View
+    accessibilityState={
+      {
+        "busy": undefined,
+        "checked": undefined,
+        "disabled": undefined,
+        "expanded": undefined,
+        "selected": undefined,
+      }
+    }
+    accessibilityValue={
+      {
+        "max": undefined,
+        "min": undefined,
+        "now": undefined,
+        "text": undefined,
+      }
+    }
+    accessible={true}
+    collapsable={false}
+    focusable={true}
+    onBlur={[Function]}
+    onClick={[Function]}
+    onFocus={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      {
+        "alignItems": "center",
+        "backgroundColor": "rgba(0, 0, 0, 0.5)",
+        "flex": 1,
+        "justifyContent": "center",
+        "padding": 16,
+      }
+    }
+  >
+    <View
+      accessibilityState={
+        {
+          "busy": undefined,
+          "checked": undefined,
+          "disabled": undefined,
+          "expanded": undefined,
+          "selected": undefined,
+        }
+      }
+      accessibilityValue={
+        {
+          "max": undefined,
+          "min": undefined,
+          "now": undefined,
+          "text": undefined,
+        }
+      }
+      accessible={true}
+      collapsable={false}
+      focusable={true}
+      onBlur={[Function]}
+      onClick={[Function]}
+      onFocus={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={
+        {
+          "backgroundColor": "#ece7df",
+          "borderRadius": 12,
+          "elevation": 12,
+          "maxWidth": 340,
+          "padding": 20,
+          "shadowColor": "#000",
+          "shadowOffset": {
+            "height": 12,
+            "width": 0,
+          },
+          "shadowOpacity": 0.2,
+          "shadowRadius": 24,
+          "width": "100%",
+        }
+      }
+    >
+      <Text
+        style={
+          {
+            "color": "#181b1b",
+            "fontSize": 20,
+            "fontWeight": "600",
+            "marginBottom": 12,
+            "textAlign": "center",
+          }
+        }
+      >
+        Delete Contact
+      </Text>
+      <Text
+        style={
+          {
+            "color": "#778588",
+            "fontSize": 16,
+            "fontWeight": "400",
+            "lineHeight": 24,
+            "marginBottom": 20,
+            "textAlign": "center",
+          }
+        }
+      >
+        Are you sure you want to delete this contact?
+      </Text>
+      <View
+        style={
+          {
+            "flexDirection": "column",
+            "gap": 12,
+            "width": "100%",
+          }
+        }
+      >
+        <View
+          accessibilityState={
+            {
+              "busy": undefined,
+              "checked": undefined,
+              "disabled": undefined,
+              "expanded": undefined,
+              "selected": undefined,
+            }
+          }
+          accessibilityValue={
+            {
+              "max": undefined,
+              "min": undefined,
+              "now": undefined,
+              "text": undefined,
+            }
+          }
+          accessible={true}
+          collapsable={false}
+          focusable={true}
+          onClick={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          style={
+            {
+              "alignItems": "center",
+              "backgroundColor": "#ece7df",
+              "borderColor": "#c8ced0",
+              "borderRadius": 8,
+              "borderWidth": 1,
+              "justifyContent": "center",
+              "minHeight": 48,
+              "opacity": 1,
+              "paddingHorizontal": 16,
+              "paddingVertical": 16,
+            }
+          }
+          testID="alert-button-0"
+        >
+          <Text
+            style={
+              [
+                {
+                  "color": "#fff",
+                  "fontSize": 16,
+                  "fontWeight": "700",
+                },
+                false,
+                {
+                  "color": "#181b1b",
+                  "fontWeight": "600",
+                },
+              ]
+            }
+          >
+            Cancel
+          </Text>
+        </View>
+        <View
+          accessibilityState={
+            {
+              "busy": undefined,
+              "checked": undefined,
+              "disabled": undefined,
+              "expanded": undefined,
+              "selected": undefined,
+            }
+          }
+          accessibilityValue={
+            {
+              "max": undefined,
+              "min": undefined,
+              "now": undefined,
+              "text": undefined,
+            }
+          }
+          accessible={true}
+          collapsable={false}
+          focusable={true}
+          onClick={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          style={
+            {
+              "alignItems": "center",
+              "backgroundColor": "#dc2626",
+              "borderRadius": 8,
+              "justifyContent": "center",
+              "minHeight": 48,
+              "opacity": 1,
+              "paddingHorizontal": 16,
+              "paddingVertical": 16,
+            }
+          }
+          testID="alert-button-1"
+        >
+          <Text
+            style={
+              [
+                {
+                  "color": "#fff",
+                  "fontSize": 16,
+                  "fontWeight": "700",
+                },
+                {
+                  "color": "#fff",
+                },
+                false,
+              ]
+            }
+          >
+            Delete
+          </Text>
+        </View>
+      </View>
+    </View>
+  </View>
+</Modal>
+`;
+
+exports[`AlertDialog snapshot test - single button 1`] = `
+<Modal
+  animationType="none"
+  onRequestClose={[Function]}
+  transparent={true}
+  visible={true}
+>
+  <View
+    accessibilityState={
+      {
+        "busy": undefined,
+        "checked": undefined,
+        "disabled": undefined,
+        "expanded": undefined,
+        "selected": undefined,
+      }
+    }
+    accessibilityValue={
+      {
+        "max": undefined,
+        "min": undefined,
+        "now": undefined,
+        "text": undefined,
+      }
+    }
+    accessible={true}
+    collapsable={false}
+    focusable={true}
+    onBlur={[Function]}
+    onClick={[Function]}
+    onFocus={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      {
+        "alignItems": "center",
+        "backgroundColor": "rgba(0, 0, 0, 0.5)",
+        "flex": 1,
+        "justifyContent": "center",
+        "padding": 16,
+      }
+    }
+  >
+    <View
+      accessibilityState={
+        {
+          "busy": undefined,
+          "checked": undefined,
+          "disabled": undefined,
+          "expanded": undefined,
+          "selected": undefined,
+        }
+      }
+      accessibilityValue={
+        {
+          "max": undefined,
+          "min": undefined,
+          "now": undefined,
+          "text": undefined,
+        }
+      }
+      accessible={true}
+      collapsable={false}
+      focusable={true}
+      onBlur={[Function]}
+      onClick={[Function]}
+      onFocus={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={
+        {
+          "backgroundColor": "#ece7df",
+          "borderRadius": 12,
+          "elevation": 12,
+          "maxWidth": 340,
+          "padding": 20,
+          "shadowColor": "#000",
+          "shadowOffset": {
+            "height": 12,
+            "width": 0,
+          },
+          "shadowOpacity": 0.2,
+          "shadowRadius": 24,
+          "width": "100%",
+        }
+      }
+    >
+      <Text
+        style={
+          {
+            "color": "#181b1b",
+            "fontSize": 20,
+            "fontWeight": "600",
+            "marginBottom": 12,
+            "textAlign": "center",
+          }
+        }
+      >
+        Info
+      </Text>
+      <Text
+        style={
+          {
+            "color": "#778588",
+            "fontSize": 16,
+            "fontWeight": "400",
+            "lineHeight": 24,
+            "marginBottom": 20,
+            "textAlign": "center",
+          }
+        }
+      >
+        Information message
+      </Text>
+      <View
+        style={
+          {
+            "flexDirection": "column",
+            "gap": 12,
+            "width": "100%",
+          }
+        }
+      >
+        <View
+          accessibilityState={
+            {
+              "busy": undefined,
+              "checked": undefined,
+              "disabled": undefined,
+              "expanded": undefined,
+              "selected": undefined,
+            }
+          }
+          accessibilityValue={
+            {
+              "max": undefined,
+              "min": undefined,
+              "now": undefined,
+              "text": undefined,
+            }
+          }
+          accessible={true}
+          collapsable={false}
+          focusable={true}
+          onClick={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          style={
+            {
+              "alignItems": "center",
+              "backgroundColor": "#547fab",
+              "borderRadius": 8,
+              "justifyContent": "center",
+              "minHeight": 48,
+              "opacity": 1,
+              "paddingHorizontal": 16,
+              "paddingVertical": 16,
+            }
+          }
+          testID="alert-button-0"
+        >
+          <Text
+            style={
+              [
+                {
+                  "color": "#fff",
+                  "fontSize": 16,
+                  "fontWeight": "700",
+                },
+                false,
+                false,
+              ]
+            }
+          >
+            OK
+          </Text>
+        </View>
+      </View>
+    </View>
+  </View>
+</Modal>
+`;
