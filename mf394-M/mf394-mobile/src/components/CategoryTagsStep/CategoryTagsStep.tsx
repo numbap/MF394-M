@@ -29,7 +29,6 @@ interface CategoryTagsStepProps {
   category: string;
   tags: string[];
   categories: Category[];
-  availableTags: string[];
   contacts: ContactPreview[];
   onCategoryChange: (category: string) => void;
   onTagsChange: (tags: string[]) => void;
@@ -44,7 +43,6 @@ export function CategoryTagsStep({
   category,
   tags,
   categories,
-  availableTags,
   contacts,
   onCategoryChange,
   onTagsChange,
@@ -68,7 +66,6 @@ export function CategoryTagsStep({
           categories={categories}
           selectedCategory={category}
           onCategoryChange={onCategoryChange}
-          availableTags={availableTags}
           selectedTags={tags}
           onTagsChange={onTagsChange}
           onEditTags={onEditTags}

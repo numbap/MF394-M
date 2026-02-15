@@ -15,10 +15,11 @@ import {
   ViewStyle,
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
+import { useSelector } from 'react-redux';
 import { colors, spacing, radii, typography } from '../../theme/theme';
+import { selectAllTags } from '../../store/slices/tags.slice';
 
 export interface TagSelectorProps {
-  availableTags: string[];
   selectedTags: string[];
   onTagsChange: (tags: string[]) => void;
   onEditTags?: () => void;
@@ -26,12 +27,13 @@ export interface TagSelectorProps {
 }
 
 export function TagSelector({
-  availableTags,
   selectedTags,
   onTagsChange,
   onEditTags,
   style,
 }: TagSelectorProps) {
+  // Get available tags from Redux store
+  const availableTags = useSelector(selectAllTags);
   const handleToggleTag = (tag: string) => {
     if (selectedTags.includes(tag)) {
       onTagsChange(selectedTags.filter((t) => t !== tag));

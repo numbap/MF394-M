@@ -18,8 +18,6 @@ export interface CategoryTagSelectorProps {
   selectedCategory: string;
   /** Callback when category changes */
   onCategoryChange: (category: string) => void;
-  /** Available tags */
-  availableTags: string[];
   /** Currently selected tags */
   selectedTags: string[];
   /** Callback when tags change */
@@ -36,7 +34,6 @@ export function CategoryTagSelector({
   categories,
   selectedCategory,
   onCategoryChange,
-  availableTags,
   selectedTags,
   onTagsChange,
   onEditTags,
@@ -57,7 +54,6 @@ export function CategoryTagSelector({
       {/* Tags Selector */}
       <View style={styles.tagsContainer}>
         <TagSelector
-          availableTags={availableTags}
           selectedTags={selectedTags}
           onTagsChange={onTagsChange}
           onEditTags={onEditTags}

@@ -4,8 +4,8 @@
  */
 
 /**
- * Available tags for contact organization
- * TODO: Load from API/global state in future
+ * Default tags - actual tags managed by Redux tags slice
+ * These tags are used to initialize the tags slice on app load
  */
 export const AVAILABLE_TAGS: readonly string[] = Object.freeze([
   'friend',

@@ -56,9 +56,10 @@ import { Toast } from '../../components/Toast';
 import { FullScreenSpinner } from '../../components/FullScreenSpinner';
 import { useFaceDetection } from '../../hooks/useFaceDetection';
 import { imageService } from '../../services/imageService';
-import { CATEGORIES, DEFAULT_CATEGORY, AVAILABLE_TAGS } from '../../constants';
+import { CATEGORIES, DEFAULT_CATEGORY } from '../../constants';
 import { AUTH_MOCK } from '../../utils/constants';
 import { cropFaceWithBounds } from '../../utils/imageCropping';
+import { TagManagementModal } from '../../components/TagManagementModal';
 
 type Step = 'details' | 'faceDetection' | 'faceSelection' | 'crop';
 
@@ -99,6 +100,9 @@ export default function AddEditContactScreen() {
 
   // Save state
   const [saveError, setSaveError] = useState<string | null>(null);
+
+  // Tag management modal state
+  const [tagModalVisible, setTagModalVisible] = useState(false);
 
   const { detectFaces, cropFace, faces: detectionFaces } = useFaceDetection();
 
@@ -340,8 +344,7 @@ export default function AddEditContactScreen() {
   };
 
   const handleEditTags = () => {
-    // TODO: Navigate to tag management interface
-    showAlert('Tag Management', 'Tag editing interface coming soon');
+    setTagModalVisible(true);
   };
 
   // Form validation: button should be disabled if form is not ready
@@ -426,7 +429,6 @@ export default function AddEditContactScreen() {
               categories={CATEGORIES}
               selectedCategory={category}
               onCategoryChange={setCategory}
-              availableTags={AVAILABLE_TAGS}
               selectedTags={tags}
               onTagsChange={setTags}
               onEditTags={handleEditTags}
@@ -510,6 +512,12 @@ export default function AddEditContactScreen() {
         variant="error"
         errorMessage={saveError || ''}
         onBack={handleErrorBack}
+      />
+
+      {/* Tag Management Modal */}
+      <TagManagementModal
+        visible={tagModalVisible}
+        onClose={() => setTagModalVisible(false)}
       />
     </View>
   );

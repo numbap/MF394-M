@@ -48,6 +48,13 @@ export const contactsSlice = createSlice({
     deleteContact: (state, action: PayloadAction<string>) => {
       state.data = state.data.filter((c) => c._id !== action.payload);
     },
+    removeTagFromAllContacts: (state, action: PayloadAction<string>) => {
+      const tagToRemove = action.payload;
+      state.data = state.data.map(contact => ({
+        ...contact,
+        groups: contact.groups.filter(tag => tag !== tagToRemove),
+      }));
+    },
   },
 });
 
@@ -58,6 +65,7 @@ export const {
   addContact,
   updateContact,
   deleteContact,
+  removeTagFromAllContacts,
 } = contactsSlice.actions;
 
 export default contactsSlice.reducer;

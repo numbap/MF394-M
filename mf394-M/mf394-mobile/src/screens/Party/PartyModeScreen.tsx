@@ -38,9 +38,10 @@ import { imageService } from '../../services/imageService';
 import { Contact, useCreateContactMutation } from '../../store/api/contacts.api';
 import { addContact } from '../../store/slices/contacts.slice';
 import { addToQueue } from '../../store/slices/sync.slice';
-import { CATEGORIES, DEFAULT_CATEGORY, AVAILABLE_TAGS } from '../../constants';
+import { CATEGORIES, DEFAULT_CATEGORY } from '../../constants';
 import { AUTH_MOCK } from '../../utils/constants';
 import { cropFaceWithBounds } from '../../utils/imageCropping';
+import { TagManagementModal } from '../../components/TagManagementModal';
 
 type Step = 'upload' | 'detecting' | 'naming' | 'category' | 'crop';
 
@@ -55,6 +56,9 @@ export default function PartyModeScreen() {
   const [tags, setTags] = useState<string[]>([]);
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+
+  // Tag management modal state
+  const [tagModalVisible, setTagModalVisible] = useState(false);
 
   const { detectFaces } = useFaceDetection();
   const [createContact] = useCreateContactMutation();
@@ -246,7 +250,7 @@ export default function PartyModeScreen() {
   };
 
   const handleEditTags = () => {
-    showAlert('Tag Management', 'Tag editing interface coming soon');
+    setTagModalVisible(true);
   };
 
   const canSave = namedFaces.length > 0 && !isSaving;
@@ -335,7 +339,6 @@ export default function PartyModeScreen() {
           category={category}
           tags={tags}
           categories={CATEGORIES}
-          availableTags={AVAILABLE_TAGS}
           contacts={namedFaces.map((face) => ({
             id: face.id,
             name: face.name,
@@ -372,6 +375,12 @@ export default function PartyModeScreen() {
         variant="error"
         errorMessage={saveError || ''}
         onBack={handleErrorBack}
+      />
+
+      {/* Tag Management Modal */}
+      <TagManagementModal
+        visible={tagModalVisible}
+        onClose={() => setTagModalVisible(false)}
       />
     </View>
   );
