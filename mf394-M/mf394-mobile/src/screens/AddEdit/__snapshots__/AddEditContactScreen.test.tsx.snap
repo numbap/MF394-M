@@ -99,7 +99,7 @@ exports[`AddEditContactScreen Snapshot matches snapshot for initial render 1`] =
           <Text
             style={
               {
-                "color": "#dd4b22",
+                "color": "#dc2626",
               }
             }
           >
@@ -112,6 +112,7 @@ exports[`AddEditContactScreen Snapshot matches snapshot for initial render 1`] =
           placeholderTextColor="#adb6b8"
           style={
             {
+              "backgroundColor": "#ffffff",
               "borderColor": "#c8ced0",
               "borderRadius": 8,
               "borderWidth": 1,
@@ -149,6 +150,7 @@ exports[`AddEditContactScreen Snapshot matches snapshot for initial render 1`] =
           placeholderTextColor="#adb6b8"
           style={
             {
+              "backgroundColor": "#ffffff",
               "borderColor": "#c8ced0",
               "borderRadius": 8,
               "borderWidth": 1,
@@ -189,6 +191,7 @@ exports[`AddEditContactScreen Snapshot matches snapshot for initial render 1`] =
           style={
             [
               {
+                "backgroundColor": "#ffffff",
                 "borderColor": "#c8ced0",
                 "borderRadius": 8,
                 "borderWidth": 1,

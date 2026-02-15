@@ -2,35 +2,6 @@
 
 exports[`ContactCard Snapshot matches snapshot for all categories: Category: community 1`] = `
 <View
-  accessibilityState={
-    {
-      "busy": undefined,
-      "checked": undefined,
-      "disabled": undefined,
-      "expanded": undefined,
-      "selected": undefined,
-    }
-  }
-  accessibilityValue={
-    {
-      "max": undefined,
-      "min": undefined,
-      "now": undefined,
-      "text": undefined,
-    }
-  }
-  accessible={true}
-  collapsable={false}
-  focusable={true}
-  onBlur={[Function]}
-  onClick={[Function]}
-  onFocus={[Function]}
-  onResponderGrant={[Function]}
-  onResponderMove={[Function]}
-  onResponderRelease={[Function]}
-  onResponderTerminate={[Function]}
-  onResponderTerminationRequest={[Function]}
-  onStartShouldSetResponder={[Function]}
   style={
     [
       {
@@ -45,8 +16,8 @@ exports[`ContactCard Snapshot matches snapshot for all categories: Category: com
         },
         "shadowOpacity": 0.12,
         "shadowRadius": 8,
+        "width": 360,
       },
-      false,
       undefined,
     ]
   }
@@ -154,35 +125,6 @@ exports[`ContactCard Snapshot matches snapshot for all categories: Category: com
 
 exports[`ContactCard Snapshot matches snapshot for all categories: Category: friends-family 1`] = `
 <View
-  accessibilityState={
-    {
-      "busy": undefined,
-      "checked": undefined,
-      "disabled": undefined,
-      "expanded": undefined,
-      "selected": undefined,
-    }
-  }
-  accessibilityValue={
-    {
-      "max": undefined,
-      "min": undefined,
-      "now": undefined,
-      "text": undefined,
-    }
-  }
-  accessible={true}
-  collapsable={false}
-  focusable={true}
-  onBlur={[Function]}
-  onClick={[Function]}
-  onFocus={[Function]}
-  onResponderGrant={[Function]}
-  onResponderMove={[Function]}
-  onResponderRelease={[Function]}
-  onResponderTerminate={[Function]}
-  onResponderTerminationRequest={[Function]}
-  onStartShouldSetResponder={[Function]}
   style={
     [
       {
@@ -197,8 +139,8 @@ exports[`ContactCard Snapshot matches snapshot for all categories: Category: fri
         },
         "shadowOpacity": 0.12,
         "shadowRadius": 8,
+        "width": 360,
       },
-      false,
       undefined,
     ]
   }
@@ -306,35 +248,6 @@ exports[`ContactCard Snapshot matches snapshot for all categories: Category: fri
 
 exports[`ContactCard Snapshot matches snapshot for all categories: Category: goals-hobbies 1`] = `
 <View
-  accessibilityState={
-    {
-      "busy": undefined,
-      "checked": undefined,
-      "disabled": undefined,
-      "expanded": undefined,
-      "selected": undefined,
-    }
-  }
-  accessibilityValue={
-    {
-      "max": undefined,
-      "min": undefined,
-      "now": undefined,
-      "text": undefined,
-    }
-  }
-  accessible={true}
-  collapsable={false}
-  focusable={true}
-  onBlur={[Function]}
-  onClick={[Function]}
-  onFocus={[Function]}
-  onResponderGrant={[Function]}
-  onResponderMove={[Function]}
-  onResponderRelease={[Function]}
-  onResponderTerminate={[Function]}
-  onResponderTerminationRequest={[Function]}
-  onStartShouldSetResponder={[Function]}
   style={
     [
       {
@@ -349,8 +262,8 @@ exports[`ContactCard Snapshot matches snapshot for all categories: Category: goa
         },
         "shadowOpacity": 0.12,
         "shadowRadius": 8,
+        "width": 360,
       },
-      false,
       undefined,
     ]
   }
@@ -458,35 +371,6 @@ exports[`ContactCard Snapshot matches snapshot for all categories: Category: goa
 
 exports[`ContactCard Snapshot matches snapshot for all categories: Category: miscellaneous 1`] = `
 <View
-  accessibilityState={
-    {
-      "busy": undefined,
-      "checked": undefined,
-      "disabled": undefined,
-      "expanded": undefined,
-      "selected": undefined,
-    }
-  }
-  accessibilityValue={
-    {
-      "max": undefined,
-      "min": undefined,
-      "now": undefined,
-      "text": undefined,
-    }
-  }
-  accessible={true}
-  collapsable={false}
-  focusable={true}
-  onBlur={[Function]}
-  onClick={[Function]}
-  onFocus={[Function]}
-  onResponderGrant={[Function]}
-  onResponderMove={[Function]}
-  onResponderRelease={[Function]}
-  onResponderTerminate={[Function]}
-  onResponderTerminationRequest={[Function]}
-  onStartShouldSetResponder={[Function]}
   style={
     [
       {
@@ -501,8 +385,8 @@ exports[`ContactCard Snapshot matches snapshot for all categories: Category: mis
         },
         "shadowOpacity": 0.12,
         "shadowRadius": 8,
+        "width": 360,
       },
-      false,
       undefined,
     ]
   }
@@ -610,35 +494,6 @@ exports[`ContactCard Snapshot matches snapshot for all categories: Category: mis
 
 exports[`ContactCard Snapshot matches snapshot for all categories: Category: work 1`] = `
 <View
-  accessibilityState={
-    {
-      "busy": undefined,
-      "checked": undefined,
-      "disabled": undefined,
-      "expanded": undefined,
-      "selected": undefined,
-    }
-  }
-  accessibilityValue={
-    {
-      "max": undefined,
-      "min": undefined,
-      "now": undefined,
-      "text": undefined,
-    }
-  }
-  accessible={true}
-  collapsable={false}
-  focusable={true}
-  onBlur={[Function]}
-  onClick={[Function]}
-  onFocus={[Function]}
-  onResponderGrant={[Function]}
-  onResponderMove={[Function]}
-  onResponderRelease={[Function]}
-  onResponderTerminate={[Function]}
-  onResponderTerminationRequest={[Function]}
-  onStartShouldSetResponder={[Function]}
   style={
     [
       {
@@ -653,8 +508,8 @@ exports[`ContactCard Snapshot matches snapshot for all categories: Category: wor
         },
         "shadowOpacity": 0.12,
         "shadowRadius": 8,
+        "width": 360,
       },
-      false,
       undefined,
     ]
   }
@@ -762,35 +617,6 @@ exports[`ContactCard Snapshot matches snapshot for all categories: Category: wor
 
 exports[`ContactCard Snapshot matches snapshot for contact with summary 1`] = `
 <View
-  accessibilityState={
-    {
-      "busy": undefined,
-      "checked": undefined,
-      "disabled": undefined,
-      "expanded": undefined,
-      "selected": undefined,
-    }
-  }
-  accessibilityValue={
-    {
-      "max": undefined,
-      "min": undefined,
-      "now": undefined,
-      "text": undefined,
-    }
-  }
-  accessible={true}
-  collapsable={false}
-  focusable={true}
-  onBlur={[Function]}
-  onClick={[Function]}
-  onFocus={[Function]}
-  onResponderGrant={[Function]}
-  onResponderMove={[Function]}
-  onResponderRelease={[Function]}
-  onResponderTerminate={[Function]}
-  onResponderTerminationRequest={[Function]}
-  onStartShouldSetResponder={[Function]}
   style={
     [
       {
@@ -805,8 +631,8 @@ exports[`ContactCard Snapshot matches snapshot for contact with summary 1`] = `
         },
         "shadowOpacity": 0.12,
         "shadowRadius": 8,
+        "width": 360,
       },
-      false,
       undefined,
     ]
   }
@@ -961,35 +787,6 @@ exports[`ContactCard Snapshot matches snapshot for contact with summary 1`] = `
 
 exports[`ContactCard Snapshot matches snapshot for contact without photo 1`] = `
 <View
-  accessibilityState={
-    {
-      "busy": undefined,
-      "checked": undefined,
-      "disabled": undefined,
-      "expanded": undefined,
-      "selected": undefined,
-    }
-  }
-  accessibilityValue={
-    {
-      "max": undefined,
-      "min": undefined,
-      "now": undefined,
-      "text": undefined,
-    }
-  }
-  accessible={true}
-  collapsable={false}
-  focusable={true}
-  onBlur={[Function]}
-  onClick={[Function]}
-  onFocus={[Function]}
-  onResponderGrant={[Function]}
-  onResponderMove={[Function]}
-  onResponderRelease={[Function]}
-  onResponderTerminate={[Function]}
-  onResponderTerminationRequest={[Function]}
-  onStartShouldSetResponder={[Function]}
   style={
     [
       {
@@ -1004,8 +801,8 @@ exports[`ContactCard Snapshot matches snapshot for contact without photo 1`] = `
         },
         "shadowOpacity": 0.12,
         "shadowRadius": 8,
+        "width": 360,
       },
-      false,
       undefined,
     ]
   }
@@ -1118,35 +915,6 @@ exports[`ContactCard Snapshot matches snapshot for contact without photo 1`] = `
 
 exports[`ContactCard Snapshot matches snapshot for contact without summary 1`] = `
 <View
-  accessibilityState={
-    {
-      "busy": undefined,
-      "checked": undefined,
-      "disabled": undefined,
-      "expanded": undefined,
-      "selected": undefined,
-    }
-  }
-  accessibilityValue={
-    {
-      "max": undefined,
-      "min": undefined,
-      "now": undefined,
-      "text": undefined,
-    }
-  }
-  accessible={true}
-  collapsable={false}
-  focusable={true}
-  onBlur={[Function]}
-  onClick={[Function]}
-  onFocus={[Function]}
-  onResponderGrant={[Function]}
-  onResponderMove={[Function]}
-  onResponderRelease={[Function]}
-  onResponderTerminate={[Function]}
-  onResponderTerminationRequest={[Function]}
-  onStartShouldSetResponder={[Function]}
   style={
     [
       {
@@ -1161,8 +929,8 @@ exports[`ContactCard Snapshot matches snapshot for contact without summary 1`] =
         },
         "shadowOpacity": 0.12,
         "shadowRadius": 8,
+        "width": 360,
       },
-      false,
       undefined,
     ]
   }

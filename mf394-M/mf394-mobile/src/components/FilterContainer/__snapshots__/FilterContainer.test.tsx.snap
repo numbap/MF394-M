@@ -1,0 +1,73 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FilterContainer Snapshots matches snapshot with basic content 1`] = `
+<View
+  style={
+    [
+      {
+        "alignSelf": "center",
+        "maxWidth": 360,
+        "width": "100%",
+      },
+      undefined,
+    ]
+  }
+>
+  <Text>
+    Test Content
+  </Text>
+</View>
+`;
+
+exports[`FilterContainer Snapshots matches snapshot with custom styles 1`] = `
+<View
+  style={
+    [
+      {
+        "alignSelf": "center",
+        "maxWidth": 360,
+        "width": "100%",
+      },
+      {
+        "backgroundColor": "#f0f0f0",
+        "padding": 16,
+      },
+    ]
+  }
+>
+  <Text>
+    Styled Content
+  </Text>
+</View>
+`;
+
+exports[`FilterContainer Snapshots matches snapshot with multiple children 1`] = `
+<View
+  style={
+    [
+      {
+        "alignSelf": "center",
+        "maxWidth": 360,
+        "width": "100%",
+      },
+      undefined,
+    ]
+  }
+>
+  <View>
+    <Text>
+      Header
+    </Text>
+  </View>
+  <View>
+    <Text>
+      Body
+    </Text>
+  </View>
+  <View>
+    <Text>
+      Footer
+    </Text>
+  </View>
+</View>
+`;

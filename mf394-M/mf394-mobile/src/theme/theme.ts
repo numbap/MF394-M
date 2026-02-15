@@ -162,6 +162,10 @@ export const radii = {
   full: 999,
 };
 
+export const layout = {
+  maxFilterWidth: 360, // Max width for filter interfaces
+};
+
 export const typography = {
   // Display sizes (for large headings)
   display: {
@@ -325,6 +329,7 @@ export const theme = {
   radii,
   typography,
   shadows,
+  layout,
 };
 
 export type Theme = typeof theme;

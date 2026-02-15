@@ -2,10 +2,10 @@
  * SummaryThumbnail Component
  *
  * Compact thumbnail view of a contact for grid/list display.
- * Shows photo with name overlay on tap.
+ * Shows photo that flips to reveal name with 3D animation.
  */
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -13,6 +13,7 @@ import {
   Image,
   Pressable,
   ViewStyle,
+  Animated,
 } from 'react-native';
 import { colors, spacing, radii, shadows } from '../../theme/theme';
 
@@ -31,55 +32,109 @@ export function SummaryThumbnail({
   onPress,
   style,
 }: SummaryThumbnailProps) {
-  const [showName, setShowName] = useState(false);
+  const [isFlipped, setIsFlipped] = useState(false);
+  const flipAnimation = useRef(new Animated.Value(0)).current;
 
   const handlePress = () => {
-    setShowName(!showName);
+    const toValue = isFlipped ? 0 : 1;
+
+    Animated.timing(flipAnimation, {
+      toValue,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+
+    setIsFlipped(!isFlipped);
     onPress?.();
   };
+
+  const frontInterpolate = flipAnimation.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '180deg'],
+  });
+
+  const backInterpolate = flipAnimation.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['180deg', '360deg'],
+  });
+
+  const frontOpacity = flipAnimation.interpolate({
+    inputRange: [0, 0.5, 1],
+    outputRange: [1, 0, 0],
+  });
+
+  const backOpacity = flipAnimation.interpolate({
+    inputRange: [0, 0.5, 1],
+    outputRange: [0, 0, 1],
+  });
 
   return (
     <Pressable
       onPress={handlePress}
-      style={({ pressed }) => [
-        styles.container,
-        pressed && styles.pressed,
-        style,
-      ]}
+      style={[styles.container, style]}
     >
-      {photo ? (
-        <Image
-          source={{ uri: photo }}
-          style={styles.photo}
-          resizeMode="cover"
-        />
-      ) : (
-        <View style={[styles.photoPlaceholder, { backgroundColor: colors.neutral.iron[100] }]}>
-          <Text style={styles.placeholderText}>👤</Text>
-        </View>
-      )}
+      {/* Front side - Photo */}
+      <Animated.View
+        style={[
+          styles.card,
+          {
+            transform: [{ rotateY: frontInterpolate }],
+            opacity: frontOpacity,
+          },
+        ]}
+      >
+        {photo ? (
+          <Image
+            source={{ uri: photo }}
+            style={styles.photo}
+            resizeMode="cover"
+          />
+        ) : (
+          <View style={[styles.photoPlaceholder, { backgroundColor: colors.neutral.iron[100] }]}>
+            <Text style={styles.placeholderText}>👤</Text>
+          </View>
+        )}
+      </Animated.View>
 
-      {showName && (
-        <View style={styles.nameOverlay}>
-          <Text style={styles.nameText} numberOfLines={2}>
+      {/* Back side - Name */}
+      <Animated.View
+        style={[
+          styles.card,
+          styles.cardBack,
+          {
+            transform: [{ rotateY: backInterpolate }],
+            opacity: backOpacity,
+          },
+        ]}
+      >
+        <View style={styles.nameContainer}>
+          <Text style={styles.nameText} numberOfLines={3}>
             {name}
           </Text>
         </View>
-      )}
+      </Animated.View>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: colors.semantic.surface,
+    width: 100,
+    aspectRatio: 1,
+    position: 'relative',
+  },
+  card: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
     borderRadius: radii.md,
     overflow: 'hidden',
-    aspectRatio: 1,
+    backgroundColor: colors.semantic.surface,
+    backfaceVisibility: 'hidden',
     ...shadows.sm,
   },
-  pressed: {
-    opacity: 0.8,
+  cardBack: {
+    backgroundColor: colors.primary[500],
   },
   photo: {
     width: '100%',
@@ -94,16 +149,12 @@ const styles = StyleSheet.create({
   placeholderText: {
     fontSize: 32,
   },
-  nameOverlay: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    padding: spacing.sm,
+  nameContainer: {
+    width: '100%',
+    height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
-    minHeight: 40,
+    padding: spacing.sm,
   },
   nameText: {
     color: '#fff',

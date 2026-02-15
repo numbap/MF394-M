@@ -4,6 +4,8 @@ exports[`ImageSelector Rendering should match snapshot with image 1`] = `
 <View
   style={
     {
+      "alignSelf": "center",
+      "maxWidth": 360,
       "width": "100%",
     }
   }
@@ -75,6 +77,8 @@ exports[`ImageSelector Rendering should match snapshot with no image 1`] = `
 <View
   style={
     {
+      "alignSelf": "center",
+      "maxWidth": 360,
       "width": "100%",
     }
   }

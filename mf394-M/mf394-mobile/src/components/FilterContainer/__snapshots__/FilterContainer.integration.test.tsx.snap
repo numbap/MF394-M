@@ -1,0 +1,1004 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FilterContainer Integration Full Filter Interface matches snapshot of full filter interface 1`] = `
+<View
+  style={
+    [
+      {
+        "alignSelf": "center",
+        "maxWidth": 360,
+        "width": "100%",
+      },
+      undefined,
+    ]
+  }
+  testID="mock-filter"
+>
+  <View
+    style={
+      {
+        "width": "100%",
+      }
+    }
+  >
+    <Text
+      style={
+        {
+          "color": "#181b1b",
+          "fontSize": 22,
+          "fontWeight": "700",
+          "marginBottom": 16,
+        }
+      }
+    >
+      Select a Category
+    </Text>
+    <View
+      style={
+        {
+          "flexDirection": "row",
+          "justifyContent": "space-between",
+        }
+      }
+    >
+      <View
+        accessibilityLabel="Friends & Family category"
+        accessibilityRole="button"
+        accessibilityState={
+          {
+            "busy": undefined,
+            "checked": undefined,
+            "disabled": undefined,
+            "expanded": undefined,
+            "selected": false,
+          }
+        }
+        accessibilityValue={
+          {
+            "max": undefined,
+            "min": undefined,
+            "now": undefined,
+            "text": undefined,
+          }
+        }
+        accessible={true}
+        collapsable={false}
+        focusable={true}
+        onBlur={[Function]}
+        onClick={[Function]}
+        onFocus={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={
+          [
+            {
+              "alignItems": "center",
+              "aspectRatio": 1,
+              "backgroundColor": "#ece7df",
+              "borderColor": "#c8ced0",
+              "borderRadius": 8,
+              "borderWidth": 2,
+              "justifyContent": "center",
+              "width": "18%",
+            },
+            false,
+          ]
+        }
+        testID="category-button-friends-family"
+      >
+        <Text>
+          heart
+        </Text>
+      </View>
+      <View
+        accessibilityLabel="Community category"
+        accessibilityRole="button"
+        accessibilityState={
+          {
+            "busy": undefined,
+            "checked": undefined,
+            "disabled": undefined,
+            "expanded": undefined,
+            "selected": false,
+          }
+        }
+        accessibilityValue={
+          {
+            "max": undefined,
+            "min": undefined,
+            "now": undefined,
+            "text": undefined,
+          }
+        }
+        accessible={true}
+        collapsable={false}
+        focusable={true}
+        onBlur={[Function]}
+        onClick={[Function]}
+        onFocus={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={
+          [
+            {
+              "alignItems": "center",
+              "aspectRatio": 1,
+              "backgroundColor": "#ece7df",
+              "borderColor": "#c8ced0",
+              "borderRadius": 8,
+              "borderWidth": 2,
+              "justifyContent": "center",
+              "width": "18%",
+            },
+            false,
+          ]
+        }
+        testID="category-button-community"
+      >
+        <Text>
+          globe
+        </Text>
+      </View>
+      <View
+        accessibilityLabel="Work category"
+        accessibilityRole="button"
+        accessibilityState={
+          {
+            "busy": undefined,
+            "checked": undefined,
+            "disabled": undefined,
+            "expanded": undefined,
+            "selected": false,
+          }
+        }
+        accessibilityValue={
+          {
+            "max": undefined,
+            "min": undefined,
+            "now": undefined,
+            "text": undefined,
+          }
+        }
+        accessible={true}
+        collapsable={false}
+        focusable={true}
+        onBlur={[Function]}
+        onClick={[Function]}
+        onFocus={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={
+          [
+            {
+              "alignItems": "center",
+              "aspectRatio": 1,
+              "backgroundColor": "#ece7df",
+              "borderColor": "#c8ced0",
+              "borderRadius": 8,
+              "borderWidth": 2,
+              "justifyContent": "center",
+              "width": "18%",
+            },
+            false,
+          ]
+        }
+        testID="category-button-work"
+      >
+        <Text>
+          briefcase
+        </Text>
+      </View>
+      <View
+        accessibilityLabel="Goals & Hobbies category"
+        accessibilityRole="button"
+        accessibilityState={
+          {
+            "busy": undefined,
+            "checked": undefined,
+            "disabled": undefined,
+            "expanded": undefined,
+            "selected": false,
+          }
+        }
+        accessibilityValue={
+          {
+            "max": undefined,
+            "min": undefined,
+            "now": undefined,
+            "text": undefined,
+          }
+        }
+        accessible={true}
+        collapsable={false}
+        focusable={true}
+        onBlur={[Function]}
+        onClick={[Function]}
+        onFocus={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={
+          [
+            {
+              "alignItems": "center",
+              "aspectRatio": 1,
+              "backgroundColor": "#ece7df",
+              "borderColor": "#c8ced0",
+              "borderRadius": 8,
+              "borderWidth": 2,
+              "justifyContent": "center",
+              "width": "18%",
+            },
+            false,
+          ]
+        }
+        testID="category-button-goals-hobbies"
+      >
+        <Text>
+          trophy
+        </Text>
+      </View>
+      <View
+        accessibilityLabel="Miscellaneous category"
+        accessibilityRole="button"
+        accessibilityState={
+          {
+            "busy": undefined,
+            "checked": undefined,
+            "disabled": undefined,
+            "expanded": undefined,
+            "selected": false,
+          }
+        }
+        accessibilityValue={
+          {
+            "max": undefined,
+            "min": undefined,
+            "now": undefined,
+            "text": undefined,
+          }
+        }
+        accessible={true}
+        collapsable={false}
+        focusable={true}
+        onBlur={[Function]}
+        onClick={[Function]}
+        onFocus={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={
+          [
+            {
+              "alignItems": "center",
+              "aspectRatio": 1,
+              "backgroundColor": "#ece7df",
+              "borderColor": "#c8ced0",
+              "borderRadius": 8,
+              "borderWidth": 2,
+              "justifyContent": "center",
+              "width": "18%",
+            },
+            false,
+          ]
+        }
+        testID="category-button-miscellaneous"
+      >
+        <Text>
+          star
+        </Text>
+      </View>
+    </View>
+  </View>
+  <View
+    style={
+      {
+        "flexDirection": "row",
+        "gap": 12,
+      }
+    }
+  >
+    <View
+      accessibilityState={
+        {
+          "busy": undefined,
+          "checked": undefined,
+          "disabled": undefined,
+          "expanded": undefined,
+          "selected": undefined,
+        }
+      }
+      accessibilityValue={
+        {
+          "max": undefined,
+          "min": undefined,
+          "now": undefined,
+          "text": undefined,
+        }
+      }
+      accessible={true}
+      collapsable={false}
+      focusable={true}
+      onBlur={[Function]}
+      onClick={[Function]}
+      onFocus={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={
+        {
+          "alignItems": "center",
+          "backgroundColor": "#547fab",
+          "borderRadius": 8,
+          "flex": 1,
+          "padding": 12,
+        }
+      }
+      testID="add-button"
+    >
+      <Text>
+        Add
+      </Text>
+    </View>
+    <View
+      accessibilityState={
+        {
+          "busy": undefined,
+          "checked": undefined,
+          "disabled": undefined,
+          "expanded": undefined,
+          "selected": undefined,
+        }
+      }
+      accessibilityValue={
+        {
+          "max": undefined,
+          "min": undefined,
+          "now": undefined,
+          "text": undefined,
+        }
+      }
+      accessible={true}
+      collapsable={false}
+      focusable={true}
+      onBlur={[Function]}
+      onClick={[Function]}
+      onFocus={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={
+        {
+          "alignItems": "center",
+          "backgroundColor": "#547fab",
+          "borderRadius": 8,
+          "flex": 1,
+          "padding": 12,
+        }
+      }
+      testID="party-button"
+    >
+      <Text>
+        Party
+      </Text>
+    </View>
+  </View>
+</View>
+`;
+
+exports[`FilterContainer Integration Full Filter Interface matches snapshot with categories selected 1`] = `
+<View
+  style={
+    [
+      {
+        "alignSelf": "center",
+        "maxWidth": 360,
+        "width": "100%",
+      },
+      undefined,
+    ]
+  }
+  testID="mock-filter"
+>
+  <View
+    style={
+      {
+        "width": "100%",
+      }
+    }
+  >
+    <Text
+      style={
+        {
+          "color": "#181b1b",
+          "fontSize": 22,
+          "fontWeight": "700",
+          "marginBottom": 16,
+        }
+      }
+    >
+      Friends & Family + Work
+    </Text>
+    <View
+      style={
+        {
+          "flexDirection": "row",
+          "justifyContent": "space-between",
+        }
+      }
+    >
+      <View
+        accessibilityLabel="Friends & Family category"
+        accessibilityRole="button"
+        accessibilityState={
+          {
+            "busy": undefined,
+            "checked": undefined,
+            "disabled": undefined,
+            "expanded": undefined,
+            "selected": true,
+          }
+        }
+        accessibilityValue={
+          {
+            "max": undefined,
+            "min": undefined,
+            "now": undefined,
+            "text": undefined,
+          }
+        }
+        accessible={true}
+        collapsable={false}
+        focusable={true}
+        onBlur={[Function]}
+        onClick={[Function]}
+        onFocus={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={
+          [
+            {
+              "alignItems": "center",
+              "aspectRatio": 1,
+              "backgroundColor": "#ece7df",
+              "borderColor": "#c8ced0",
+              "borderRadius": 8,
+              "borderWidth": 2,
+              "justifyContent": "center",
+              "width": "18%",
+            },
+            {
+              "backgroundColor": "#fbf8ea",
+              "borderColor": "#d4b82b",
+            },
+          ]
+        }
+        testID="category-button-friends-family"
+      >
+        <Text>
+          heart
+        </Text>
+      </View>
+      <View
+        accessibilityLabel="Community category"
+        accessibilityRole="button"
+        accessibilityState={
+          {
+            "busy": undefined,
+            "checked": undefined,
+            "disabled": undefined,
+            "expanded": undefined,
+            "selected": false,
+          }
+        }
+        accessibilityValue={
+          {
+            "max": undefined,
+            "min": undefined,
+            "now": undefined,
+            "text": undefined,
+          }
+        }
+        accessible={true}
+        collapsable={false}
+        focusable={true}
+        onBlur={[Function]}
+        onClick={[Function]}
+        onFocus={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={
+          [
+            {
+              "alignItems": "center",
+              "aspectRatio": 1,
+              "backgroundColor": "#ece7df",
+              "borderColor": "#c8ced0",
+              "borderRadius": 8,
+              "borderWidth": 2,
+              "justifyContent": "center",
+              "width": "18%",
+            },
+            false,
+          ]
+        }
+        testID="category-button-community"
+      >
+        <Text>
+          globe
+        </Text>
+      </View>
+      <View
+        accessibilityLabel="Work category"
+        accessibilityRole="button"
+        accessibilityState={
+          {
+            "busy": undefined,
+            "checked": undefined,
+            "disabled": undefined,
+            "expanded": undefined,
+            "selected": true,
+          }
+        }
+        accessibilityValue={
+          {
+            "max": undefined,
+            "min": undefined,
+            "now": undefined,
+            "text": undefined,
+          }
+        }
+        accessible={true}
+        collapsable={false}
+        focusable={true}
+        onBlur={[Function]}
+        onClick={[Function]}
+        onFocus={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={
+          [
+            {
+              "alignItems": "center",
+              "aspectRatio": 1,
+              "backgroundColor": "#ece7df",
+              "borderColor": "#c8ced0",
+              "borderRadius": 8,
+              "borderWidth": 2,
+              "justifyContent": "center",
+              "width": "18%",
+            },
+            {
+              "backgroundColor": "#fbf8ea",
+              "borderColor": "#d4b82b",
+            },
+          ]
+        }
+        testID="category-button-work"
+      >
+        <Text>
+          briefcase
+        </Text>
+      </View>
+      <View
+        accessibilityLabel="Goals & Hobbies category"
+        accessibilityRole="button"
+        accessibilityState={
+          {
+            "busy": undefined,
+            "checked": undefined,
+            "disabled": undefined,
+            "expanded": undefined,
+            "selected": false,
+          }
+        }
+        accessibilityValue={
+          {
+            "max": undefined,
+            "min": undefined,
+            "now": undefined,
+            "text": undefined,
+          }
+        }
+        accessible={true}
+        collapsable={false}
+        focusable={true}
+        onBlur={[Function]}
+        onClick={[Function]}
+        onFocus={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={
+          [
+            {
+              "alignItems": "center",
+              "aspectRatio": 1,
+              "backgroundColor": "#ece7df",
+              "borderColor": "#c8ced0",
+              "borderRadius": 8,
+              "borderWidth": 2,
+              "justifyContent": "center",
+              "width": "18%",
+            },
+            false,
+          ]
+        }
+        testID="category-button-goals-hobbies"
+      >
+        <Text>
+          trophy
+        </Text>
+      </View>
+      <View
+        accessibilityLabel="Miscellaneous category"
+        accessibilityRole="button"
+        accessibilityState={
+          {
+            "busy": undefined,
+            "checked": undefined,
+            "disabled": undefined,
+            "expanded": undefined,
+            "selected": false,
+          }
+        }
+        accessibilityValue={
+          {
+            "max": undefined,
+            "min": undefined,
+            "now": undefined,
+            "text": undefined,
+          }
+        }
+        accessible={true}
+        collapsable={false}
+        focusable={true}
+        onBlur={[Function]}
+        onClick={[Function]}
+        onFocus={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={
+          [
+            {
+              "alignItems": "center",
+              "aspectRatio": 1,
+              "backgroundColor": "#ece7df",
+              "borderColor": "#c8ced0",
+              "borderRadius": 8,
+              "borderWidth": 2,
+              "justifyContent": "center",
+              "width": "18%",
+            },
+            false,
+          ]
+        }
+        testID="category-button-miscellaneous"
+      >
+        <Text>
+          star
+        </Text>
+      </View>
+    </View>
+  </View>
+  <View
+    style={
+      {
+        "marginBottom": 16,
+      }
+    }
+  >
+    <Text
+      style={
+        {
+          "color": "#181b1b",
+          "fontSize": 14,
+          "fontWeight": "600",
+          "marginBottom": 12,
+        }
+      }
+    >
+      Tags
+    </Text>
+    <View
+      style={
+        {
+          "flexDirection": "row",
+          "flexWrap": "wrap",
+          "gap": 8,
+        }
+      }
+    >
+      <View
+        accessibilityState={
+          {
+            "busy": undefined,
+            "checked": undefined,
+            "disabled": undefined,
+            "expanded": undefined,
+            "selected": undefined,
+          }
+        }
+        accessibilityValue={
+          {
+            "max": undefined,
+            "min": undefined,
+            "now": undefined,
+            "text": undefined,
+          }
+        }
+        accessible={true}
+        collapsable={false}
+        focusable={true}
+        onBlur={[Function]}
+        onClick={[Function]}
+        onFocus={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={
+          [
+            {
+              "backgroundColor": "#ece7df",
+              "borderColor": "#c8ced0",
+              "borderRadius": 999,
+              "borderWidth": 1,
+              "paddingHorizontal": 12,
+              "paddingVertical": 8,
+            },
+            false,
+          ]
+        }
+        testID="tag-Tag1"
+      >
+        <Text>
+          Tag1
+        </Text>
+      </View>
+      <View
+        accessibilityState={
+          {
+            "busy": undefined,
+            "checked": undefined,
+            "disabled": undefined,
+            "expanded": undefined,
+            "selected": undefined,
+          }
+        }
+        accessibilityValue={
+          {
+            "max": undefined,
+            "min": undefined,
+            "now": undefined,
+            "text": undefined,
+          }
+        }
+        accessible={true}
+        collapsable={false}
+        focusable={true}
+        onBlur={[Function]}
+        onClick={[Function]}
+        onFocus={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={
+          [
+            {
+              "backgroundColor": "#ece7df",
+              "borderColor": "#c8ced0",
+              "borderRadius": 999,
+              "borderWidth": 1,
+              "paddingHorizontal": 12,
+              "paddingVertical": 8,
+            },
+            false,
+          ]
+        }
+        testID="tag-Tag2"
+      >
+        <Text>
+          Tag2
+        </Text>
+      </View>
+      <View
+        accessibilityState={
+          {
+            "busy": undefined,
+            "checked": undefined,
+            "disabled": undefined,
+            "expanded": undefined,
+            "selected": undefined,
+          }
+        }
+        accessibilityValue={
+          {
+            "max": undefined,
+            "min": undefined,
+            "now": undefined,
+            "text": undefined,
+          }
+        }
+        accessible={true}
+        collapsable={false}
+        focusable={true}
+        onBlur={[Function]}
+        onClick={[Function]}
+        onFocus={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={
+          [
+            {
+              "backgroundColor": "#ece7df",
+              "borderColor": "#c8ced0",
+              "borderRadius": 999,
+              "borderWidth": 1,
+              "paddingHorizontal": 12,
+              "paddingVertical": 8,
+            },
+            false,
+          ]
+        }
+        testID="tag-Tag3"
+      >
+        <Text>
+          Tag3
+        </Text>
+      </View>
+    </View>
+  </View>
+  <View
+    style={
+      {
+        "flexDirection": "row",
+        "gap": 12,
+      }
+    }
+  >
+    <View
+      accessibilityState={
+        {
+          "busy": undefined,
+          "checked": undefined,
+          "disabled": undefined,
+          "expanded": undefined,
+          "selected": undefined,
+        }
+      }
+      accessibilityValue={
+        {
+          "max": undefined,
+          "min": undefined,
+          "now": undefined,
+          "text": undefined,
+        }
+      }
+      accessible={true}
+      collapsable={false}
+      focusable={true}
+      onBlur={[Function]}
+      onClick={[Function]}
+      onFocus={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={
+        {
+          "alignItems": "center",
+          "backgroundColor": "#547fab",
+          "borderRadius": 8,
+          "flex": 1,
+          "padding": 12,
+        }
+      }
+      testID="add-button"
+    >
+      <Text>
+        Add
+      </Text>
+    </View>
+    <View
+      accessibilityState={
+        {
+          "busy": undefined,
+          "checked": undefined,
+          "disabled": undefined,
+          "expanded": undefined,
+          "selected": undefined,
+        }
+      }
+      accessibilityValue={
+        {
+          "max": undefined,
+          "min": undefined,
+          "now": undefined,
+          "text": undefined,
+        }
+      }
+      accessible={true}
+      collapsable={false}
+      focusable={true}
+      onBlur={[Function]}
+      onClick={[Function]}
+      onFocus={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={
+        {
+          "alignItems": "center",
+          "backgroundColor": "#547fab",
+          "borderRadius": 8,
+          "flex": 1,
+          "padding": 12,
+        }
+      }
+      testID="party-button"
+    >
+      <Text>
+        Party
+      </Text>
+    </View>
+  </View>
+</View>
+`;

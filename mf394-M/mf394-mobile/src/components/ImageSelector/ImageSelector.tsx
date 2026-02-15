@@ -80,6 +80,8 @@ export function ImageSelector({
 const styles = StyleSheet.create({
   container: {
     width: '100%',
+    maxWidth: 360,
+    alignSelf: 'center',
   },
   imageContainer: {
     width: '100%',

@@ -46,169 +46,20 @@ import { Contact } from '../../store/api/contacts.api';
 import { RootState } from '../../store';
 import { colors, spacing, radii, typography } from '../../theme/theme';
 import { ImageSelector } from '../../components/ImageSelector';
-import { CategorySelector, Category } from '../../components/CategorySelector';
+import { CategorySelector } from '../../components/CategorySelector';
 import { TagSelector } from '../../components/TagSelector';
 import { FaceSelector, Face } from '../../components/FaceSelector';
 import { Cropper } from '../../components/Cropper';
 import { FormButtons } from '../../components/FormButtons';
 import { Toast } from '../../components/Toast';
+import { FullScreenSpinner } from '../../components/FullScreenSpinner';
 import { useFaceDetection } from '../../hooks/useFaceDetection';
 import { imageService } from '../../services/imageService';
+import { CATEGORIES, DEFAULT_CATEGORY, AVAILABLE_TAGS } from '../../constants';
+import { AUTH_MOCK } from '../../utils/constants';
+import { cropFaceWithBounds } from '../../utils/imageCropping';
 
-// Helper function to crop a face using bounds directly (for display)
-// This avoids relying on hook state which may not be updated yet
-async function cropFaceWithBounds(
-  imageUri: string,
-  bounds: { origin: { x: number; y: number }; size: { width: number; height: number } },
-  padding: number = 20
-): Promise<string> {
-  if (Platform.OS === 'web') {
-    return await cropFaceWebWithBounds(imageUri, bounds, padding);
-  } else {
-    // For native, use ImageManipulator
-    try {
-      const { ImageManipulator } = require('expo-image-manipulator');
-      const cropRegion = {
-        originX: Math.max(0, bounds.origin.x - padding),
-        originY: Math.max(0, bounds.origin.y - padding),
-        width: Math.min(bounds.size.width + padding * 2, 800),
-        height: Math.min(bounds.size.height + padding * 2, 800),
-      };
-      const result = await ImageManipulator.manipulateAsync(
-        imageUri,
-        [{ crop: cropRegion }],
-        { compress: 0.9, format: 'jpeg' }
-      );
-      return result.uri;
-    } catch (err) {
-      console.error('Native crop failed:', err);
-      return await cropFaceWebWithBounds(imageUri, bounds, padding);
-    }
-  }
-}
-
-// Web-specific face cropping using canvas
-async function cropFaceWebWithBounds(
-  imageUri: string,
-  bounds: { origin: { x: number; y: number }; size: { width: number; height: number } },
-  padding: number
-): Promise<string> {
-  return new Promise((resolve, reject) => {
-    try {
-      let uriToLoad = imageUri;
-
-      if (imageUri.startsWith('file://')) {
-        fetch(imageUri)
-          .then((response) => response.blob())
-          .then((blob) => {
-            const blobUrl = URL.createObjectURL(blob);
-            loadAndCropImageWithBounds(blobUrl, bounds, padding, resolve, reject);
-          })
-          .catch((err) => {
-            console.error('Failed to fetch file:', err);
-            reject(err);
-          });
-      } else {
-        loadAndCropImageWithBounds(uriToLoad, bounds, padding, resolve, reject);
-      }
-    } catch (error) {
-      reject(error);
-    }
-  });
-}
-
-// Helper to load and crop using DOM Image constructor
-function loadAndCropImageWithBounds(
-  imageUri: string,
-  bounds: { origin: { x: number; y: number }; size: { width: number; height: number } },
-  padding: number,
-  resolve: (value: string) => void,
-  reject: (reason?: any) => void
-) {
-  // Use DOM Image constructor, not React Native Image
-  const img = new (window as any).Image();
-  img.crossOrigin = 'anonymous';
-
-  img.onload = () => {
-    try {
-      const originX = Math.max(0, bounds.origin.x - padding);
-      const originY = Math.max(0, bounds.origin.y - padding);
-      const cropWidth = Math.min(
-        bounds.size.width + padding * 2,
-        img.width - originX
-      );
-      const cropHeight = Math.min(
-        bounds.size.height + padding * 2,
-        img.height - originY
-      );
-
-      if (cropWidth <= 0 || cropHeight <= 0) {
-        throw new Error(`Invalid crop dimensions: ${cropWidth}x${cropHeight}`);
-      }
-
-      const canvas = document.createElement('canvas');
-      canvas.width = cropWidth;
-      canvas.height = cropHeight;
-
-      const ctx = canvas.getContext('2d');
-      if (!ctx) {
-        throw new Error('Could not get canvas context');
-      }
-
-      ctx.drawImage(
-        img,
-        originX,
-        originY,
-        cropWidth,
-        cropHeight,
-        0,
-        0,
-        cropWidth,
-        cropHeight
-      );
-
-      const croppedImageUrl = canvas.toDataURL('image/jpeg', 0.9);
-
-      if (imageUri.startsWith('blob:')) {
-        URL.revokeObjectURL(imageUri);
-      }
-
-      resolve(croppedImageUrl);
-    } catch (error) {
-      console.error('Crop failed:', error);
-      reject(error);
-    }
-  };
-
-  img.onerror = (err) => {
-    console.error('Image load failed:', err);
-    reject(new Error(`Failed to load image: ${imageUri}`));
-  };
-
-  img.src = imageUri;
-}
-
-type Step = 'details' | 'faceDetection' | 'faceSelection' | 'crop' | 'save';
-
-const CATEGORIES: Category[] = [
-  { label: 'Friends & Family', value: 'friends-family', icon: 'heart' },
-  { label: 'Community', value: 'community', icon: 'users' },
-  { label: 'Work', value: 'work', icon: 'briefcase' },
-  { label: 'Goals & Hobbies', value: 'goals-hobbies', icon: 'star' },
-  { label: 'Miscellaneous', value: 'miscellaneous', icon: 'folder' },
-];
-
-// Prepopulated tags - TODO: Load from API/global state
-const AVAILABLE_TAGS = [
-  'friend',
-  'family',
-  'work-colleague',
-  'mentor',
-  'student',
-  'neighbor',
-  'volunteer',
-  'teammate',
-];
+type Step = 'details' | 'faceDetection' | 'faceSelection' | 'crop';
 
 export default function AddEditContactScreen() {
   const route = useRoute();
@@ -231,7 +82,7 @@ export default function AddEditContactScreen() {
   const [name, setName] = useState('');
   const [hint, setHint] = useState('');
   const [summary, setSummary] = useState('');
-  const [category, setCategory] = useState<string>('friends-family');
+  const [category, setCategory] = useState<string>(DEFAULT_CATEGORY);
   const [tags, setTags] = useState<string[]>([]);
   const [photoUri, setPhotoUri] = useState<string | null>(null);
 
@@ -244,6 +95,9 @@ export default function AddEditContactScreen() {
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [toastVariant, setToastVariant] = useState<'success' | 'error' | 'info'>('success');
+
+  // Save state
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   const { detectFaces, cropFace, faces: detectionFaces } = useFaceDetection();
 
@@ -376,18 +230,29 @@ export default function AddEditContactScreen() {
 
     try {
       setIsLoading(true);
+      setSaveError(null);
 
-      // For now, we're in local-only mode, so just use the photoUri directly
-      // When we connect to the live API, we'll upload to S3 here
-      const uploadedPhotoUrl = photoUri;
+      // Upload image if present and not in mock mode
+      let uploadedPhotoUrl: string | null | undefined = photoUri;
+
+      console.log('[AddEditContactScreen] AUTH_MOCK:', AUTH_MOCK, 'photoUri:', photoUri?.substring(0, 50));
+
+      if (photoUri && !photoUri.startsWith('http') && !AUTH_MOCK) {
+        console.log('[AddEditContactScreen] Uploading to S3...');
+        // Local image in production mode - upload to S3
+        uploadedPhotoUrl = await imageService.uploadImage(photoUri, {
+          type: 'contact-photo',
+          source: isEditing ? 'edit-contact' : 'add-contact',
+        });
+      } else {
+        console.log('[AddEditContactScreen] Skipping upload (mock mode or already uploaded)');
+      }
+      // In mock mode, use local URI directly
 
       await saveContactData(uploadedPhotoUrl);
     } catch (error: any) {
-      setToastMessage(error?.message || 'Failed to save contact');
-      setToastVariant('error');
-      setShowToast(true);
-    } finally {
-      setIsLoading(false);
+      console.error('Save failed:', error);
+      setSaveError(error?.message || 'Failed to save contact');
     }
   };
 
@@ -408,16 +273,6 @@ export default function AddEditContactScreen() {
       };
 
       dispatch(updateContact(updatedContact));
-
-      // Show success toast
-      setToastMessage('Contact updated successfully');
-      setToastVariant('success');
-      setShowToast(true);
-
-      // Navigate back after short delay for toast visibility
-      setTimeout(() => {
-        navigation.goBack();
-      }, 500);
     } else {
       // Create new contact
       const newContact: Contact = {
@@ -433,17 +288,19 @@ export default function AddEditContactScreen() {
       };
 
       dispatch(addContact(newContact));
-
-      // Show success toast
-      setToastMessage('Contact added successfully');
-      setToastVariant('success');
-      setShowToast(true);
-
-      // Navigate back after short delay for toast visibility
-      setTimeout(() => {
-        navigation.goBack();
-      }, 500);
     }
+
+    // Success! Navigate to listing with filters applied
+    setIsLoading(false);
+    navigation.navigate('Listing', {
+      category,
+      tags,
+    });
+  };
+
+  const handleErrorBack = () => {
+    setSaveError(null);
+    setIsLoading(false);
   };
 
   const handleDelete = () => {
@@ -649,6 +506,21 @@ export default function AddEditContactScreen() {
           style={styles.stepContainer}
         />
       )}
+
+      {/* Full-Screen Spinner */}
+      <FullScreenSpinner
+        visible={isLoading && !saveError}
+        variant="loading"
+        message={isEditing ? 'Updating contact...' : 'Adding contact...'}
+      />
+
+      {/* Error State */}
+      <FullScreenSpinner
+        visible={!!saveError}
+        variant="error"
+        errorMessage={saveError || ''}
+        onBack={handleErrorBack}
+      />
     </View>
   );
 }

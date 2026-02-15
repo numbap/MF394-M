@@ -161,27 +161,101 @@ describe("ContactCard", () => {
     });
   });
 
-  describe("Callbacks", () => {
-    it("accepts onPress prop", () => {
-      const onPress = jest.fn();
-      render(<ContactCard contact={baseContact} onPress={onPress} />);
-      // Component renders with onPress callback
-      expect(true).toBe(true);
-    });
-
-    it("accepts onLongPress prop", () => {
-      const onLongPress = jest.fn();
-      render(<ContactCard contact={baseContact} onLongPress={onLongPress} />);
-      // Component renders with onLongPress callback
-      expect(true).toBe(true);
-    });
-  });
-
   describe("Styling", () => {
     it("applies custom style prop", () => {
       const customStyle = { marginTop: 10 };
       render(<ContactCard contact={baseContact} style={customStyle} />);
       expect(true).toBe(true); // Component should render with custom style
+    });
+
+    it("renders as View component (not Pressable)", () => {
+      const { UNSAFE_root } = render(<ContactCard contact={baseContact} />);
+      const rootElement = UNSAFE_root.children[0];
+
+      // Root should be a View (type name should be "View", not "Pressable")
+      const typeName = rootElement.type.displayName || rootElement.type.name || rootElement.type;
+      expect(typeName).toBe("View");
+    });
+
+    it("does not have Pressable event handlers", () => {
+      const { UNSAFE_root } = render(<ContactCard contact={baseContact} />);
+      const rootElement = UNSAFE_root.children[0];
+
+      // Should not have Pressable props
+      expect(rootElement.props.onPress).toBeUndefined();
+      expect(rootElement.props.onLongPress).toBeUndefined();
+      expect(rootElement.props.accessible).toBeUndefined();
+    });
+
+    it("has fixed width of 360px", () => {
+      const { UNSAFE_root } = render(<ContactCard contact={baseContact} />);
+      const rootElement = UNSAFE_root.children[0];
+
+      // Check if style includes width: 360
+      const style = Array.isArray(rootElement.props.style)
+        ? rootElement.props.style.flat()
+        : [rootElement.props.style];
+
+      const hasFixedWidth = style.some((s: any) => s && s.width === 360);
+      expect(hasFixedWidth).toBe(true);
+    });
+  });
+
+  describe("Tags Display", () => {
+    it("displays tags when contact has groups", () => {
+      const contactWithTags: Contact = {
+        ...baseContact,
+        groups: ["Tag1", "Tag2", "Tag3"],
+      };
+      const { getByText } = render(<ContactCard contact={contactWithTags} />);
+
+      // Should show first 2 tags
+      expect(getByText("Tag1")).toBeTruthy();
+      expect(getByText("Tag2")).toBeTruthy();
+
+      // Should show +1 for the extra tag
+      expect(getByText("+1")).toBeTruthy();
+    });
+
+    it("displays all tags when there are 2 or fewer", () => {
+      const contactWithTwoTags: Contact = {
+        ...baseContact,
+        groups: ["Tag1", "Tag2"],
+      };
+      const { getByText, queryByText } = render(<ContactCard contact={contactWithTwoTags} />);
+
+      expect(getByText("Tag1")).toBeTruthy();
+      expect(getByText("Tag2")).toBeTruthy();
+
+      // Should not show +N indicator
+      expect(queryByText(/^\+\d+$/)).toBeNull();
+    });
+
+    it("does not display tags section when no groups", () => {
+      const contactNoTags: Contact = {
+        ...baseContact,
+        groups: [],
+      };
+      const { queryByText } = render(<ContactCard contact={contactNoTags} />);
+
+      // Should not render any tag elements
+      const allText = queryByText(/Tag/);
+      expect(allText).toBeNull();
+    });
+
+    it("displays correct count for many tags", () => {
+      const contactManyTags: Contact = {
+        ...baseContact,
+        groups: ["Tag1", "Tag2", "Tag3", "Tag4", "Tag5"],
+      };
+      const { getByText } = render(<ContactCard contact={contactManyTags} />);
+
+      // Should show first 2 tags
+      expect(getByText("Tag1")).toBeTruthy();
+      expect(getByText("Tag2")).toBeTruthy();
+
+      // Should show +3 for remaining tags
+      expect(getByText("+3")).toBeTruthy();
     });
   });
 

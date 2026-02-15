@@ -5,4 +5,5 @@ module.exports = {
   API_BASE_URL: "https://ummyou.com/api",
   API_TIMEOUT: "30000",
   FACE_DETECTION_MIN_CONFIDENCE: "0.5",
+  AUTH_MOCK: "true",
 };

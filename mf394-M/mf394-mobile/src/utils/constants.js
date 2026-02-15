@@ -1,14 +1,27 @@
+import {
+  API_BASE_URL as ENV_API_BASE_URL,
+  API_TIMEOUT as ENV_API_TIMEOUT,
+  GOOGLE_OAUTH_CLIENT_ID_iOS as ENV_GOOGLE_OAUTH_CLIENT_ID_iOS,
+  GOOGLE_OAUTH_CLIENT_ID_Android as ENV_GOOGLE_OAUTH_CLIENT_ID_Android,
+  GOOGLE_OAUTH_WEB_CLIENT_ID as ENV_GOOGLE_OAUTH_WEB_CLIENT_ID,
+  FACE_DETECTION_MIN_CONFIDENCE as ENV_FACE_DETECTION_MIN_CONFIDENCE,
+  AUTH_MOCK as ENV_AUTH_MOCK,
+} from "@env";
+
 // API Configuration
-export const API_BASE_URL = process.env.REACT_APP_API_URL || "https://ummyou.com/api";
-export const API_TIMEOUT = parseInt(process.env.API_TIMEOUT || "30000", 10);
+export const API_BASE_URL = ENV_API_BASE_URL || "https://ummyou.com/api";
+export const API_TIMEOUT = parseInt(ENV_API_TIMEOUT || "30000", 10);
 
 // Google OAuth Configuration
-export const GOOGLE_OAUTH_CLIENT_ID_iOS = process.env.GOOGLE_OAUTH_CLIENT_ID_iOS;
-export const GOOGLE_OAUTH_CLIENT_ID_Android = process.env.GOOGLE_OAUTH_CLIENT_ID_Android;
-export const GOOGLE_OAUTH_WEB_CLIENT_ID = process.env.GOOGLE_OAUTH_WEB_CLIENT_ID;
+export const GOOGLE_OAUTH_CLIENT_ID_iOS = ENV_GOOGLE_OAUTH_CLIENT_ID_iOS;
+export const GOOGLE_OAUTH_CLIENT_ID_Android = ENV_GOOGLE_OAUTH_CLIENT_ID_Android;
+export const GOOGLE_OAUTH_WEB_CLIENT_ID = ENV_GOOGLE_OAUTH_WEB_CLIENT_ID;
 
 // Face Detection Configuration
-export const FACE_DETECTION_MIN_CONFIDENCE = parseFloat(process.env.FACE_DETECTION_MIN_CONFIDENCE || "0.5");
+export const FACE_DETECTION_MIN_CONFIDENCE = parseFloat(ENV_FACE_DETECTION_MIN_CONFIDENCE || "0.5");
+
+// Auth Configuration
+export const AUTH_MOCK = ENV_AUTH_MOCK === "true";
 
 // API Endpoints
 export const API_ENDPOINTS = {

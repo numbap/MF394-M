@@ -107,7 +107,7 @@ exports[`FormButtons Snapshots matches snapshot with all three buttons 1`] = `
     style={
       {
         "alignItems": "center",
-        "backgroundColor": "#dd4b22",
+        "backgroundColor": "#dc2626",
         "borderRadius": 8,
         "flexDirection": "row",
         "gap": 8,
@@ -325,7 +325,7 @@ exports[`FormButtons Snapshots matches snapshot with delete button icon only 1`]
     style={
       {
         "alignItems": "center",
-        "backgroundColor": "#dd4b22",
+        "backgroundColor": "#dc2626",
         "borderRadius": 8,
         "flexDirection": "row",
         "gap": 8,
@@ -645,7 +645,7 @@ exports[`FormButtons Snapshots matches snapshot with loading state 1`] = `
     style={
       {
         "alignItems": "center",
-        "backgroundColor": "#dd4b22",
+        "backgroundColor": "#dc2626",
         "borderRadius": 8,
         "flexDirection": "row",
         "gap": 8,

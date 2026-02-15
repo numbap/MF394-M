@@ -26,32 +26,17 @@ import { colors, spacing, radii, typography } from '../../theme/theme';
 import { ImageSelector } from '../../components/ImageSelector';
 import { BulkNamer, NamedFace } from '../../components/BulkNamer';
 import { CategoryTagsStep } from '../../components/CategoryTagsStep';
-import { type Category } from '../../components/CategorySelector';
 import { FormButtons } from '../../components/FormButtons';
+import { Cropper } from '../../components/Cropper';
+import { FullScreenSpinner } from '../../components/FullScreenSpinner';
 import { useFaceDetection } from '../../hooks/useFaceDetection';
-import * as imageService from '../../services/imageService';
+import { imageService } from '../../services/imageService';
 import { useCreateContactMutation } from '../../store/api/contacts.api';
+import { CATEGORIES, DEFAULT_CATEGORY, AVAILABLE_TAGS } from '../../constants';
+import { AUTH_MOCK } from '../../utils/constants';
+import { cropFaceWithBounds } from '../../utils/imageCropping';
 
-type Step = 'upload' | 'detecting' | 'naming' | 'category' | 'saving';
-
-const CATEGORIES: Category[] = [
-  { label: 'Friends & Family', value: 'friends-family', icon: 'heart' },
-  { label: 'Community', value: 'community', icon: 'users' },
-  { label: 'Work', value: 'work', icon: 'briefcase' },
-  { label: 'Goals & Hobbies', value: 'goals-hobbies', icon: 'star' },
-  { label: 'Miscellaneous', value: 'miscellaneous', icon: 'folder' },
-];
-
-const AVAILABLE_TAGS = [
-  'friend',
-  'family',
-  'work-colleague',
-  'mentor',
-  'student',
-  'neighbor',
-  'volunteer',
-  'teammate',
-];
+type Step = 'upload' | 'detecting' | 'naming' | 'category' | 'crop';
 
 export default function PartyModeScreen() {
   const navigation = useNavigation();
@@ -59,11 +44,12 @@ export default function PartyModeScreen() {
   const [uploadedImageUri, setUploadedImageUri] = useState<string | null>(null);
   const [detectedFaces, setDetectedFaces] = useState<Array<{ id: string; uri: string }>>([]);
   const [namedFaces, setNamedFaces] = useState<NamedFace[]>([]);
-  const [category, setCategory] = useState<string>('friends-family');
+  const [category, setCategory] = useState<string>(DEFAULT_CATEGORY);
   const [tags, setTags] = useState<string[]>([]);
   const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
-  const { detectFaces, cropFace } = useFaceDetection();
+  const { detectFaces } = useFaceDetection();
   const [createContact] = useCreateContactMutation();
 
   const handleImageSelected = async (uri: string) => {
@@ -76,18 +62,18 @@ export default function PartyModeScreen() {
       console.log('[PartyMode] Face detection complete:', faces.length, 'faces');
 
       if (!faces || faces.length === 0) {
-        Alert.alert('No Faces Found', 'Could not detect any faces in this image. Try another photo.');
-        setStep('upload');
-        setUploadedImageUri(null);
+        console.log('[PartyMode] No faces detected, forwarding to manual crop');
+        setStep('crop');
         return;
       }
 
       // Process each detected face: crop and create face thumbnails
+      // Use cropFaceWithBounds to avoid relying on hook state
       console.log('[PartyMode] Processing', faces.length, 'faces for cropping...');
       const processedFaces = await Promise.all(
         faces.map(async (face, index) => {
           try {
-            const croppedUri = await cropFace(uri, index);
+            const croppedUri = await cropFaceWithBounds(uri, face.bounds);
             console.log(`[PartyMode] Successfully cropped face ${index}`);
             return {
               id: `face-${index}`,
@@ -122,6 +108,23 @@ export default function PartyModeScreen() {
     setNamedFaces([]);
   };
 
+  const handleCropConfirm = async (croppedImageUri: string) => {
+    console.log('[PartyMode] Manual crop confirmed, proceeding to naming with one face');
+    // Create a single face from the manually cropped image
+    const singleFace = {
+      id: 'face-0',
+      uri: croppedImageUri,
+    };
+    setDetectedFaces([singleFace]);
+    setStep('naming');
+  };
+
+  const handleCropCancel = () => {
+    console.log('[PartyMode] Manual crop cancelled, returning to upload');
+    setStep('upload');
+    setUploadedImageUri(null);
+  };
+
   const handleSave = async () => {
     if (namedFaces.length === 0) {
       Alert.alert('No Names', 'Please add at least one name before saving.');
@@ -129,23 +132,27 @@ export default function PartyModeScreen() {
     }
 
     setIsSaving(true);
+    setSaveError(null);
 
     try {
       // Create all contacts in parallel
       const createPromises = namedFaces.map(async (namedFace) => {
         try {
-          // Compress and upload each face photo
-          const s3Url = await imageService.uploadImage(namedFace.faceUri, {
-            type: 'contact-photo',
-            source: 'party-mode',
-          });
+          // Upload photo (or use local URI in mock mode)
+          let photoUrl = namedFace.faceUri;
+          if (!AUTH_MOCK) {
+            photoUrl = await imageService.uploadImage(namedFace.faceUri, {
+              type: 'contact-photo',
+              source: 'party-mode',
+            });
+          }
 
           // Create contact
           const contactData = {
             name: namedFace.name.trim(),
             category,
             groups: tags,
-            photo: s3Url,
+            photo: photoUrl,
           };
 
           return await createContact(contactData).unwrap();
@@ -155,35 +162,23 @@ export default function PartyModeScreen() {
         }
       });
 
-      const results = await Promise.all(createPromises);
+      await Promise.all(createPromises);
 
-      // Success!
-      Alert.alert(
-        'Success!',
-        `Created ${results.length} contact${results.length !== 1 ? 's' : ''} from party mode`,
-        [
-          {
-            text: 'OK',
-            onPress: () => {
-              // Reset and return to home
-              setUploadedImageUri(null);
-              setDetectedFaces([]);
-              setNamedFaces([]);
-              setStep('upload');
-              navigation.goBack();
-            },
-          },
-        ]
-      );
+      // Success! Navigate to listing with filters applied
+      setIsSaving(false);
+      navigation.navigate('Listing', {
+        category,
+        tags,
+      });
     } catch (error: any) {
       console.error('Bulk save failed:', error);
-      Alert.alert(
-        'Error',
-        error?.message || 'Failed to create some contacts. Please try again.'
-      );
-    } finally {
-      setIsSaving(false);
+      setSaveError(error?.message || 'Failed to create contacts. Please try again.');
     }
+  };
+
+  const handleErrorBack = () => {
+    setSaveError(null);
+    setIsSaving(false);
   };
 
   const handleEditTags = () => {
@@ -293,6 +288,31 @@ export default function PartyModeScreen() {
           isSaving={isSaving}
         />
       )}
+
+      {/* Manual Crop Step */}
+      {step === 'crop' && uploadedImageUri && (
+        <Cropper
+          imageUri={uploadedImageUri}
+          onCropConfirm={handleCropConfirm}
+          onCancel={handleCropCancel}
+          style={styles.stepContainer}
+        />
+      )}
+
+      {/* Full-Screen Spinner */}
+      <FullScreenSpinner
+        visible={isSaving && !saveError}
+        variant="loading"
+        message={`Saving ${namedFaces.length} contact${namedFaces.length !== 1 ? 's' : ''}...`}
+      />
+
+      {/* Error State */}
+      <FullScreenSpinner
+        visible={!!saveError}
+        variant="error"
+        errorMessage={saveError || ''}
+        onBack={handleErrorBack}
+      />
     </View>
   );
 }

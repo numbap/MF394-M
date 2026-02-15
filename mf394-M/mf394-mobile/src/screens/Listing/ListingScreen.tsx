@@ -4,11 +4,11 @@
  * Displays a filtered list of contacts with:
  * - Category and tag filtering
  * - Card/Thumbnail view toggle
- * - Long-press to edit
+ * - Long-press or double-tap to edit
  * - Status bar showing visible count
  */
 
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useRef } from "react";
 import {
   View,
   Text,
@@ -17,8 +17,10 @@ import {
   Pressable,
   ScrollView,
   SafeAreaView,
+  useWindowDimensions,
 } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
+import { useRoute } from "@react-navigation/native";
 import { FontAwesome } from "@expo/vector-icons";
 import { colors, spacing, radii, typography } from "../../theme/theme";
 import { RootState, AppDispatch } from "../../store";
@@ -28,46 +30,32 @@ import { transformMockContacts } from "../../utils/contactDataTransform";
 import { ContactCard } from "../../components/ContactCard";
 import { SummaryThumbnail } from "../../components/SummaryThumbnail";
 import { CategoryTagFilter } from "../../components/CategoryTagFilter";
+import { FilterContainer } from "../../components/FilterContainer";
 import { StorageService } from "../../services/storage.service";
-
-// Category definitions with icons
-const CATEGORIES = [
-  {
-    label: "Friends & Family",
-    value: "friends-family",
-    icon: "heart",
-  },
-  {
-    label: "Community",
-    value: "community",
-    icon: "globe",
-  },
-  {
-    label: "Work",
-    value: "work",
-    icon: "briefcase",
-  },
-  {
-    label: "Goals & Hobbies",
-    value: "goals-hobbies",
-    icon: "trophy",
-  },
-  {
-    label: "Miscellaneous",
-    value: "miscellaneous",
-    icon: "star",
-  },
-];
+import { CATEGORIES } from "../../constants";
 
 export default function ListingScreen({ navigation }: any) {
   const dispatch = useDispatch<AppDispatch>();
+  const route = useRoute();
   const contacts = useSelector((state: RootState) => state.contacts.data);
   const loading = useSelector((state: RootState) => state.contacts.loading);
+  const { width } = useWindowDimensions();
+
+  // Get filter params from navigation (if navigated from save)
+  const routeParams = route.params as { category?: string; tags?: string[] } | undefined;
 
   // Local filter state
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [isGalleryView, setIsGalleryView] = useState(false);
+
+  // Double-tap detection
+  const lastTapTime = useRef<{ [key: string]: number }>({});
+  const DOUBLE_TAP_DELAY = 300; // milliseconds
+
+  // Responsive breakpoint for tablet layout
+  const TABLET_BREAKPOINT = 768;
+  const isTablet = width >= TABLET_BREAKPOINT;
 
   // Load contacts from storage or mock data on mount
   useEffect(() => {
@@ -112,6 +100,18 @@ export default function ListingScreen({ navigation }: any) {
     }
   }, [contacts]);
 
+  // Apply filters from route params (when navigating from Add/Edit/Party)
+  useEffect(() => {
+    if (routeParams?.category) {
+      setSelectedCategories([routeParams.category]);
+      if (routeParams.tags && routeParams.tags.length > 0) {
+        setSelectedTags(routeParams.tags);
+      } else {
+        setSelectedTags([]);
+      }
+    }
+  }, [routeParams?.category, routeParams?.tags]);
+
   // Get available tags from category-filtered contacts
   const availableTags = useMemo(() => {
     if (selectedCategories.length === 0) {
@@ -139,6 +139,13 @@ export default function ListingScreen({ navigation }: any) {
       const tagSet = new Set(selectedTags);
       result = result.filter((c) => c.groups?.some((tag) => tagSet.has(tag)));
     }
+
+    // Sort by edited timestamp (descending), fallback to created
+    result.sort((a, b) => {
+      const aTime = a.edited || a.created || 0;
+      const bTime = b.edited || b.created || 0;
+      return bTime - aTime; // Descending order (newest first)
+    });
 
     return result;
   }, [contacts, selectedCategories, selectedTags]);
@@ -195,77 +202,96 @@ export default function ListingScreen({ navigation }: any) {
     navigation.navigate("EditContact", { contactId });
   };
 
+  // Handle contact press (detect double-tap for edit)
+  const handleContactPress = (contactId: string) => {
+    const now = Date.now();
+    const lastTap = lastTapTime.current[contactId] || 0;
+
+    if (now - lastTap < DOUBLE_TAP_DELAY) {
+      // Double-tap detected, navigate to edit
+      handleContactLongPress(contactId);
+      lastTapTime.current[contactId] = 0; // Reset to prevent triple-tap
+    } else {
+      // Single tap, just update last tap time
+      lastTapTime.current[contactId] = now;
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         {/* Category Filter Header */}
         <View style={styles.section}>
-          <CategoryTagFilter
-            categories={CATEGORIES}
-            selectedCategories={selectedCategories}
-            onCategoryPress={handleCategoryPress}
-            onCategoryLongPress={handleCategoryLongPress}
-          />
+          <FilterContainer>
+            <CategoryTagFilter
+              categories={CATEGORIES}
+              selectedCategories={selectedCategories}
+              onCategoryPress={handleCategoryPress}
+              onCategoryLongPress={handleCategoryLongPress}
+            />
 
-          {/* Tag Filter */}
-          {selectedCategories.length > 0 && availableTags.length > 0 && (
-            <View style={styles.tagsSection}>
-              <Text style={styles.tagsLabel}>Tags</Text>
-              <View style={styles.tagsContainer}>
-                {availableTags.map((tag) => (
-                  <Pressable
-                    key={tag}
-                    onPress={() => handleTagPress(tag)}
-                    onLongPress={handleTagLongPress}
-                    delayLongPress={500}
-                    style={[
-                      styles.tagButton,
-                      selectedTags.includes(tag) && styles.tagButtonSelected,
-                    ]}
-                  >
-                    <Text
-                      style={[styles.tagText, selectedTags.includes(tag) && styles.tagTextSelected]}
+            {/* Tag Filter */}
+            {selectedCategories.length > 0 && availableTags.length > 0 && (
+              <View style={styles.tagsSection}>
+                <View style={styles.tagsContainer}>
+                  {availableTags.map((tag) => (
+                    <Pressable
+                      key={tag}
+                      onPress={() => handleTagPress(tag)}
+                      onLongPress={handleTagLongPress}
+                      delayLongPress={500}
+                      style={[
+                        styles.tagButton,
+                        selectedTags.includes(tag) && styles.tagButtonSelected,
+                      ]}
                     >
-                      {tag}
-                    </Text>
-                  </Pressable>
-                ))}
+                      <Text
+                        style={[
+                          styles.tagText,
+                          selectedTags.includes(tag) && styles.tagTextSelected,
+                        ]}
+                      >
+                        {tag}
+                      </Text>
+                    </Pressable>
+                  ))}
+                </View>
               </View>
-            </View>
-          )}
+            )}
 
-          {/* Action Buttons */}
-          <View style={styles.actionRow}>
-            <View style={styles.buttonGroup}>
+            {/* Action Buttons */}
+            <View style={styles.actionRow}>
+              <View style={styles.buttonGroup}>
+                <TouchableOpacity
+                  style={styles.actionButton}
+                  onPress={() => navigation.navigate("AddContact")}
+                >
+                  <FontAwesome name="user-plus" size={18} color="#fff" />
+                  <Text style={styles.actionButtonText}>Add</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.actionButton}
+                  onPress={() => navigation.navigate("PartyMode")}
+                >
+                  <FontAwesome name="users" size={18} color="#fff" />
+                  <Text style={styles.actionButtonText}>Party</Text>
+                </TouchableOpacity>
+              </View>
+
+              {/* View Toggle */}
               <TouchableOpacity
-                style={styles.actionButton}
-                onPress={() => navigation.navigate("AddContact")}
+                style={styles.viewToggle}
+                onPress={() => setIsGalleryView(!isGalleryView)}
               >
-                <FontAwesome name="user-plus" size={18} color="#fff" />
-                <Text style={styles.actionButtonText}>Add</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={styles.actionButton}
-                onPress={() => navigation.navigate("PartyMode")}
-              >
-                <FontAwesome name="users" size={18} color="#fff" />
-                <Text style={styles.actionButtonText}>Party</Text>
+                <FontAwesome
+                  name={isGalleryView ? "th-list" : "th"}
+                  size={18}
+                  color={colors.semantic.text}
+                />
               </TouchableOpacity>
             </View>
-
-            {/* View Toggle */}
-            <TouchableOpacity
-              style={styles.viewToggle}
-              onPress={() => setIsGalleryView(!isGalleryView)}
-            >
-              <FontAwesome
-                name={isGalleryView ? "th-list" : "th"}
-                size={18}
-                color={colors.semantic.text}
-              />
-            </TouchableOpacity>
-          </View>
+          </FilterContainer>
         </View>
 
         {/* Contacts List */}
@@ -277,12 +303,19 @@ export default function ListingScreen({ navigation }: any) {
               </View>
             ) : isGalleryView ? (
               // Thumbnail view
-              <View style={styles.thumbnailGrid}>
+              <View
+                style={[
+                  styles.thumbnailGrid,
+                  { justifyContent: isTablet ? "flex-start" : "center" },
+                ]}
+              >
                 {filteredContacts.map((contact) => (
                   <Pressable
                     key={contact._id}
+                    onPress={() => handleContactPress(contact._id)}
                     onLongPress={() => handleContactLongPress(contact._id)}
                     delayLongPress={500}
+                    style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }]}
                   >
                     <SummaryThumbnail id={contact._id} name={contact.name} photo={contact.photo} />
                   </Pressable>
@@ -290,12 +323,19 @@ export default function ListingScreen({ navigation }: any) {
               </View>
             ) : (
               // Card view
-              <View style={styles.cardsList}>
+              <View
+                style={[
+                  styles.cardsList,
+                  { justifyContent: isTablet ? "flex-start" : "center" },
+                ]}
+              >
                 {filteredContacts.map((contact) => (
                   <Pressable
                     key={contact._id}
+                    onPress={() => handleContactPress(contact._id)}
                     onLongPress={() => handleContactLongPress(contact._id)}
                     delayLongPress={500}
+                    style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }]}
                   >
                     <ContactCard contact={contact} />
                   </Pressable>
@@ -333,6 +373,7 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.semantic.border,
   },
   tagsSection: {
+    marginTop: spacing.lg,
     marginBottom: spacing.lg,
   },
   tagsLabel: {
@@ -418,10 +459,11 @@ const styles = StyleSheet.create({
   thumbnailGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
-    justifyContent: "space-between",
     gap: spacing.md,
   },
   cardsList: {
+    flexDirection: "row",
+    flexWrap: "wrap",
     gap: spacing.lg,
   },
   statusBar: {

@@ -391,3 +391,8 @@ Claude may autonomously (without asking):
 ## More
 
 - This should be an optimistic app. Wehre changes get applied locally online and offline, and then get sync'd to the live platform when connected.
+- Web and mobile experiences should match as much as possible
+
+## Very important!!!
+
+- When I start a conversation with you, don't do the work right away. First ask me questions to make sure you understand what I want you to do. And then lay out a plan and ask me to confirm that this is what I want you to do.

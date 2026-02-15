@@ -2,12 +2,10 @@ import React, { useState } from "react";
 import { View, Text, TouchableOpacity, Modal, ScrollView, StyleSheet } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import { colors, spacing, radii, typography } from "../../theme/theme";
+import { type Category } from "../../constants";
 
-export interface Category {
-  label: string;
-  value: string;
-  icon: string;
-}
+// Re-export Category type for backward compatibility
+export type { Category };
 
 interface CategorySelectorProps {
   categories: Category[];
@@ -79,7 +77,7 @@ export function CategorySelector({
                     name={category.icon as any}
                     size={20}
                     color={
-                      selectedValue === category.value ? colors.primary[500] : colors.semantic.text
+                      selectedValue === category.value ? colors.secondary[500] : colors.semantic.text
                     }
                   />
                   <View style={styles.optionTextContainer}>
@@ -93,7 +91,7 @@ export function CategorySelector({
                     </Text>
                   </View>
                   {selectedValue === category.value && (
-                    <FontAwesome name="check" size={18} color={colors.primary[500]} />
+                    <FontAwesome name="check" size={18} color={colors.secondary[500]} />
                   )}
                 </TouchableOpacity>
               ))}
@@ -172,7 +170,7 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.semantic.border,
   },
   optionSelected: {
-    backgroundColor: colors.primary[50],
+    backgroundColor: colors.secondary[50],
   },
   optionTextContainer: {
     flex: 1,
@@ -183,7 +181,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   optionLabelSelected: {
-    color: colors.primary[500],
+    color: colors.secondary[500],
     fontWeight: "600",
   },
 });
