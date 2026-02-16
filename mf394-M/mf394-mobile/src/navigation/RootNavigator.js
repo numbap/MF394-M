@@ -4,6 +4,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { useSelector, useDispatch } from "react-redux";
+import { FontAwesome } from "@expo/vector-icons";
 import { RootState } from "../store";
 import { restoreSession } from "../store/slices/auth.slice";
 import { tokenStorage } from "../utils/secureStore";
@@ -13,9 +14,10 @@ import LoginScreen from "../screens/Auth/LoginScreen";
 import { ListingScreen } from "../screens/Listing";
 import QuizGameScreen from "../screens/Games/QuizGameScreen";
 import PracticeGameScreen from "../screens/Games/PracticeGameScreen";
-import StatsScreen from "../screens/Stats/StatsScreen";
+// import StatsScreen from "../screens/Stats/StatsScreen";
 import AddEditContactScreen from "../screens/AddEdit/AddEditContactScreen";
 import PartyModeScreen from "../screens/Party/PartyModeScreen";
+import SettingsScreen from "../screens/Settings/SettingsScreen";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -48,11 +50,19 @@ function UnauthenticatedStack() {
 function AuthenticatedStack() {
   return (
     <Tab.Navigator
-      screenOptions={{
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ focused, color, size }) => {
+          let iconName;
+          if (route.name === 'HomeTab') iconName = 'address-card';
+          else if (route.name === 'QuizTab') iconName = 'trophy';
+          else if (route.name === 'SettingsTab') iconName = 'cog';
+
+          return <FontAwesome name={iconName} size={24} color={color} />;
+        },
         tabBarActiveTintColor: colors.primary[500],
         tabBarInactiveTintColor: colors.semantic.textTertiary,
         headerShown: false,
-      }}
+      })}
     >
       <Tab.Screen
         name="HomeTab"
@@ -63,19 +73,19 @@ function AuthenticatedStack() {
         }}
       />
       <Tab.Screen
-        name="GamesTab"
+        name="QuizTab"
         component={GamesStack}
         options={{
-          title: "Games",
-          tabBarLabel: "Games",
+          title: "Quiz",
+          tabBarLabel: "Quiz",
         }}
       />
       <Tab.Screen
-        name="StatsTab"
-        component={StatsScreen}
+        name="SettingsTab"
+        component={SettingsStack}
         options={{
-          title: "Stats",
-          tabBarLabel: "Stats",
+          title: "Settings",
+          tabBarLabel: "Settings",
         }}
       />
     </Tab.Navigator>
@@ -139,10 +149,28 @@ function GamesStack() {
         component={QuizGameScreen}
         options={{ title: "Quiz Game" }}
       />
+    </Stack.Navigator>
+  );
+}
+
+function SettingsStack() {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: true,
+        headerStyle: {
+          backgroundColor: colors.semantic.background,
+        },
+        headerTintColor: colors.semantic.text,
+        headerTitleStyle: {
+          fontWeight: "600",
+        },
+      }}
+    >
       <Stack.Screen
-        name="Practice"
-        component={PracticeGameScreen}
-        options={{ title: "Practice Game" }}
+        name="Settings"
+        component={SettingsScreen}
+        options={{ title: "Settings" }}
       />
     </Stack.Navigator>
   );

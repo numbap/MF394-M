@@ -13,10 +13,10 @@ describe('tags.slice', () => {
       expect(state.tags).toEqual([...AVAILABLE_TAGS]);
     });
 
-    it('should add a new tag', () => {
+    it('should add a new tag (prepended to beginning)', () => {
       const initialState = { tags: ['friend', 'family'] };
       const state = tagsReducer(initialState, addTag('mentor'));
-      expect(state.tags).toEqual(['friend', 'family', 'mentor']);
+      expect(state.tags).toEqual(['mentor', 'friend', 'family']);
     });
 
     it('should normalize tag to lowercase', () => {

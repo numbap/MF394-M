@@ -26,7 +26,7 @@ const tagsSlice = createSlice({
       state.tags = action.payload || [...AVAILABLE_TAGS];
     },
 
-    // Add a new tag
+    // Add a new tag (prepend to beginning of list)
     addTag: (state, action: PayloadAction<string>) => {
       const normalized = action.payload
         .toLowerCase()
@@ -36,7 +36,7 @@ const tagsSlice = createSlice({
       // Prevent duplicates (case-insensitive)
       const exists = state.tags.some(tag => tag.toLowerCase() === normalized);
       if (!exists && normalized.length > 0) {
-        state.tags.push(normalized);
+        state.tags.unshift(normalized); // Prepend to beginning instead of append
       }
     },
 

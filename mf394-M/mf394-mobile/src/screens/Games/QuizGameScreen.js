@@ -1,237 +1,685 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useMemo } from "react";
 import {
   View,
   TouchableOpacity,
   Text,
   StyleSheet,
   ActivityIndicator,
+  Image,
+  ScrollView,
+  SafeAreaView,
+  Pressable,
 } from "react-native";
-import { gameService } from "../../services/gameService";
-import { useContacts } from "../../hooks/useContacts";
+import { useSelector, useDispatch } from "react-redux";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  withSequence,
+  withTiming,
+} from "react-native-reanimated";
+import { Audio } from "expo-av";
 import shuffle from "../../utils/shuffle";
-import { COLORS, SPACING } from "../../utils/constants";
+import { colors, spacing, radii, typography } from "../../theme/theme";
+import {
+  toggleCategory,
+  toggleTag,
+  setCategories,
+  setTags,
+  restoreFilters,
+  selectSelectedCategories,
+  selectSelectedTags,
+  selectFiltersLoaded,
+} from "../../store/slices/filters.slice";
+import { CategoryTagFilter } from "../../components/CategoryTagFilter";
+import { FilterContainer } from "../../components/FilterContainer";
+import { StorageService } from "../../services/storage.service";
+import { CATEGORIES } from "../../constants";
 
 export default function QuizGameScreen() {
-  const { tags } = useContacts();
-  const [contacts, setContacts] = useState([]);
+  const dispatch = useDispatch();
+
+  // Redux state
+  const allContacts = useSelector((state) => state.contacts.data);
+  const selectedCategories = useSelector(selectSelectedCategories);
+  const selectedTags = useSelector(selectSelectedTags);
+  const filtersLoaded = useSelector(selectFiltersLoaded);
+
+  // Local state
+  const [quizContacts, setQuizContacts] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [score, setScore] = useState(0);
+  const [currentOptions, setCurrentOptions] = useState([]); // Store options for current question
   const [isLoading, setIsLoading] = useState(true);
-  const [gameOver, setGameOver] = useState(false);
-  const [selectedTags, setSelectedTags] = useState([]);
+  const [feedback, setFeedback] = useState(null); // null | 'correct' | 'incorrect'
+  const [selectedOption, setSelectedOption] = useState(null);
+
+  // Animation values
+  const scale = useSharedValue(1);
+  const shakeX = useSharedValue(0);
+
+  // Sound refs
+  const correctSoundRef = useRef(null);
+  const incorrectSoundRef = useRef(null);
+
+  // Load filters from storage on mount
+  useEffect(() => {
+    const loadFilters = async () => {
+      if (!filtersLoaded) {
+        try {
+          const storedFilters = await StorageService.loadFilters();
+          dispatch(restoreFilters(storedFilters));
+        } catch (error) {
+          console.error("Failed to load filters:", error);
+        }
+      }
+    };
+    loadFilters();
+  }, [dispatch, filtersLoaded]);
 
   useEffect(() => {
-    loadGameContacts();
+    loadSounds();
+
+    return () => {
+      // Cleanup sounds
+      if (correctSoundRef.current) {
+        correctSoundRef.current.unloadAsync();
+      }
+      if (incorrectSoundRef.current) {
+        incorrectSoundRef.current.unloadAsync();
+      }
+    };
   }, []);
 
-  const loadGameContacts = async () => {
+  const loadSounds = async () => {
     try {
-      setIsLoading(true);
-      const gameContacts = await gameService.getGameContacts(selectedTags);
-      if (gameContacts.length > 0) {
-        setContacts(shuffle(gameContacts));
-        setCurrentIndex(0);
-        setScore(0);
-        setGameOver(false);
+      await Audio.setAudioModeAsync({
+        playsInSilentModeIOS: true,
+        staysActiveInBackground: false,
+      });
+    } catch (error) {
+      console.error("Error setting audio mode:", error);
+    }
+  };
+
+  const playSound = async (isCorrect) => {
+    try {
+      // Using Web Audio API for simple beep sounds
+      if (typeof window !== 'undefined' && window.AudioContext) {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+
+        if (isCorrect) {
+          // Success sound: Rising tone
+          oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // C5
+          oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.1); // E5
+          oscillator.type = 'sine';
+          gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+          gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+          oscillator.start(audioContext.currentTime);
+          oscillator.stop(audioContext.currentTime + 0.2);
+        } else {
+          // Error sound: Descending buzz
+          oscillator.frequency.setValueAtTime(300, audioContext.currentTime);
+          oscillator.frequency.setValueAtTime(150, audioContext.currentTime + 0.1);
+          oscillator.type = 'sawtooth';
+          gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+          gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
+          oscillator.start(audioContext.currentTime);
+          oscillator.stop(audioContext.currentTime + 0.15);
+        }
       }
     } catch (error) {
-      console.error("Error loading game contacts:", error);
+      console.log("Could not play sound:", error);
+    }
+  };
+
+  // Get available tags from category-filtered contacts
+  const availableTags = useMemo(() => {
+    if (selectedCategories.length === 0) {
+      return [];
+    }
+    const categorySet = new Set(selectedCategories);
+    const filtered = allContacts.filter((c) => categorySet.has(c.category));
+    const tagsSet = new Set();
+    filtered.forEach((c) => {
+      c.groups?.forEach((tag) => tagsSet.add(tag));
+    });
+    return Array.from(tagsSet).sort();
+  }, [allContacts, selectedCategories]);
+
+  // Filter contacts by selected categories and tags
+  const filteredContacts = useMemo(() => {
+    if (selectedCategories.length === 0) {
+      return [];
+    }
+
+    const categorySet = new Set(selectedCategories);
+    let result = allContacts.filter((c) => categorySet.has(c.category));
+
+    if (selectedTags.length > 0) {
+      const tagSet = new Set(selectedTags);
+      result = result.filter((c) => c.groups?.some((tag) => tagSet.has(tag)));
+    }
+
+    // Filter to only contacts with photos
+    result = result.filter(c => c.photo && c.photo.trim().length > 0);
+
+    return result;
+  }, [allContacts, selectedCategories, selectedTags]);
+
+  // Reload quiz contacts when filters change
+  useEffect(() => {
+    if (filtersLoaded) {
+      loadQuizContacts();
+    }
+  }, [filteredContacts, filtersLoaded]);
+
+  // Generate options when question changes (but NOT when clicking answers)
+  useEffect(() => {
+    if (quizContacts.length > 0 && currentIndex < quizContacts.length) {
+      const current = quizContacts[currentIndex];
+      const options = [current.name];
+
+      // Add 4 random wrong answers
+      while (options.length < 5) {
+        const randomContact =
+          quizContacts[Math.floor(Math.random() * quizContacts.length)];
+        if (!options.includes(randomContact.name)) {
+          options.push(randomContact.name);
+        }
+      }
+
+      // Shuffle and store (only happens when question changes!)
+      setCurrentOptions(shuffle(options));
+    }
+  }, [currentIndex, quizContacts]);
+
+  const loadQuizContacts = () => {
+    try {
+      setIsLoading(true);
+
+      if (filteredContacts.length >= 5) {
+        setQuizContacts(shuffle(filteredContacts));
+        setCurrentIndex(0);
+      } else {
+        setQuizContacts([]);
+      }
+    } catch (error) {
+      console.error("Error loading quiz contacts:", error);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const getCurrentContact = () => contacts[currentIndex];
-
-  const getMultipleChoice = () => {
-    const current = getCurrentContact();
-    const options = [current.name];
-
-    while (options.length < 4) {
-      const randomContact =
-        contacts[Math.floor(Math.random() * contacts.length)];
-      if (!options.includes(randomContact.name)) {
-        options.push(randomContact.name);
-      }
-    }
-
-    return shuffle(options);
-  };
+  const getCurrentContact = () => quizContacts[currentIndex];
 
   const handleAnswer = (answer) => {
+    if (feedback === "correct") return; // Ignore clicks after correct answer
+
     const isCorrect = answer === getCurrentContact().name;
+    setSelectedOption(answer);
+    setFeedback(isCorrect ? "correct" : "incorrect");
+
+    // Play sound
+    playSound(isCorrect);
 
     if (isCorrect) {
-      setScore((prev) => prev + 1);
-    }
-
-    if (currentIndex + 1 >= contacts.length) {
-      setGameOver(true);
-      gameService.recordQuizScore(
-        score + (isCorrect ? 1 : 0),
-        contacts.length,
-        selectedTags
+      // Correct answer: quick bounce and advance
+      scale.value = withSequence(
+        withTiming(1.15, { duration: 100 }),
+        withTiming(1, { duration: 150 })
       );
+
+      // Auto-advance after 600ms (animation + small pause)
+      setTimeout(() => {
+        setFeedback(null);
+        setSelectedOption(null);
+
+        if (currentIndex + 1 >= quizContacts.length) {
+          // Reshuffle and restart
+          setQuizContacts(shuffle(quizContacts));
+          setCurrentIndex(0);
+        } else {
+          setCurrentIndex((prev) => prev + 1);
+        }
+      }, 600);
     } else {
-      setCurrentIndex((prev) => prev + 1);
+      // Wrong answer: quick shake and let user try again
+      shakeX.value = withSequence(
+        withTiming(-12, { duration: 50 }),
+        withTiming(12, { duration: 50 }),
+        withTiming(-8, { duration: 40 }),
+        withTiming(8, { duration: 40 }),
+        withTiming(0, { duration: 40 })
+      );
+
+      // Clear the red highlight after 300ms so user can try again quickly
+      setTimeout(() => {
+        setFeedback(null);
+        setSelectedOption(null);
+      }, 300);
     }
   };
 
-  const handleReset = () => {
-    loadGameContacts();
+  const animatedImageStyle = useAnimatedStyle(() => {
+    return {
+      transform: [
+        { scale: scale.value },
+        { translateX: shakeX.value },
+      ],
+    };
+  });
+
+  const getOptionStyle = (option) => {
+    const isCorrectAnswer = option === getCurrentContact().name;
+    const isSelected = option === selectedOption;
+
+    // Show green for correct answer when feedback is "correct"
+    if (isCorrectAnswer && feedback === "correct") {
+      return [styles.optionButton, styles.optionCorrect];
+    }
+
+    // Show red for selected wrong answer
+    if (isSelected && feedback === "incorrect") {
+      return [styles.optionButton, styles.optionIncorrect];
+    }
+
+    return styles.optionButton;
+  };
+
+  // Handle category selection
+  const handleCategoryPress = (category) => {
+    dispatch(toggleCategory(category));
+  };
+
+  // Handle category long-press (select/deselect all)
+  const handleCategoryLongPress = () => {
+    if (selectedCategories.length >= CATEGORIES.length / 2) {
+      dispatch(setCategories([]));
+    } else {
+      dispatch(setCategories(CATEGORIES.map((c) => c.value)));
+    }
+  };
+
+  // Handle tag selection
+  const handleTagPress = (tag) => {
+    dispatch(toggleTag(tag));
+  };
+
+  // Handle tag long-press (select/deselect all)
+  const handleTagLongPress = () => {
+    if (selectedTags.length >= availableTags.length / 2) {
+      dispatch(setTags([]));
+    } else {
+      dispatch(setTags([...availableTags]));
+    }
   };
 
   if (isLoading) {
     return (
-      <View style={styles.container}>
-        <ActivityIndicator size="large" color={COLORS.PRIMARY} />
-      </View>
-    );
-  }
-
-  if (contacts.length === 0) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.emptyText}>No contacts available for quiz</Text>
-      </View>
-    );
-  }
-
-  if (gameOver) {
-    return (
-      <View style={styles.container}>
-        <View style={styles.resultBox}>
-          <Text style={styles.resultTitle}>Quiz Complete!</Text>
-          <Text style={styles.resultScore}>
-            {score} / {contacts.length}
-          </Text>
-          <TouchableOpacity
-            style={styles.resetButton}
-            onPress={handleReset}
-          >
-            <Text style={styles.resetButtonText}>Play Again</Text>
-          </TouchableOpacity>
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.container}>
+          <ActivityIndicator size="large" color={colors.primary[500]} />
         </View>
-      </View>
+      </SafeAreaView>
+    );
+  }
+
+  // Show filter UI if no categories selected
+  if (selectedCategories.length === 0) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <ScrollView style={styles.scrollView}>
+          <View style={styles.filterPrompt}>
+            <Text style={styles.filterPromptTitle}>Select Categories to Start Quiz</Text>
+            <Text style={styles.filterPromptText}>
+              Choose one or more categories to practice with.
+            </Text>
+          </View>
+          <FilterContainer>
+            <CategoryTagFilter
+              categories={CATEGORIES}
+              selectedCategories={selectedCategories}
+              onCategoryPress={handleCategoryPress}
+              onCategoryLongPress={handleCategoryLongPress}
+            />
+
+            {/* Tag Filter */}
+            {selectedCategories.length > 0 && availableTags.length > 0 && (
+              <View style={styles.tagsSection}>
+                <View style={styles.tagsContainer}>
+                  {availableTags.map((tag) => (
+                    <Pressable
+                      key={tag}
+                      onPress={() => handleTagPress(tag)}
+                      onLongPress={handleTagLongPress}
+                      delayLongPress={500}
+                      style={[
+                        styles.tagButton,
+                        selectedTags.includes(tag) && styles.tagButtonSelected,
+                      ]}
+                    >
+                      <Text
+                        style={[
+                          styles.tagText,
+                          selectedTags.includes(tag) && styles.tagTextSelected,
+                        ]}
+                      >
+                        {tag}
+                      </Text>
+                    </Pressable>
+                  ))}
+                </View>
+              </View>
+            )}
+          </FilterContainer>
+        </ScrollView>
+      </SafeAreaView>
+    );
+  }
+
+  // Show empty state if not enough contacts with photos
+  if (quizContacts.length === 0) {
+    const categoryNames = selectedCategories
+      .map(cat => CATEGORIES.find(c => c.value === cat)?.label || cat)
+      .join(', ');
+
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <ScrollView style={styles.scrollView}>
+          <FilterContainer>
+            <CategoryTagFilter
+              categories={CATEGORIES}
+              selectedCategories={selectedCategories}
+              onCategoryPress={handleCategoryPress}
+              onCategoryLongPress={handleCategoryLongPress}
+            />
+
+            {/* Tag Filter */}
+            {selectedCategories.length > 0 && availableTags.length > 0 && (
+              <View style={styles.tagsSection}>
+                <View style={styles.tagsContainer}>
+                  {availableTags.map((tag) => (
+                    <Pressable
+                      key={tag}
+                      onPress={() => handleTagPress(tag)}
+                      onLongPress={handleTagLongPress}
+                      delayLongPress={500}
+                      style={[
+                        styles.tagButton,
+                        selectedTags.includes(tag) && styles.tagButtonSelected,
+                      ]}
+                    >
+                      <Text
+                        style={[
+                          styles.tagText,
+                          selectedTags.includes(tag) && styles.tagTextSelected,
+                        ]}
+                      >
+                        {tag}
+                      </Text>
+                    </Pressable>
+                  ))}
+                </View>
+              </View>
+            )}
+          </FilterContainer>
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyText}>
+              Not enough contacts with photos in "{categoryNames}".
+            </Text>
+            <Text style={styles.emptySubtext}>
+              You need at least 5 contacts with photos to play the quiz.
+              Try selecting more categories or tags.
+            </Text>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
     );
   }
 
   const current = getCurrentContact();
-  const options = getMultipleChoice();
+
+  // Don't render quiz until options are generated
+  if (currentOptions.length === 0) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.container}>
+          <ActivityIndicator size="large" color={colors.primary[500]} />
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.scoreText}>
-          {currentIndex + 1} / {contacts.length}
-        </Text>
-        <Text style={styles.scoreText}>Score: {score}</Text>
-      </View>
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+        <FilterContainer>
+          <CategoryTagFilter
+            categories={CATEGORIES}
+            selectedCategories={selectedCategories}
+            onCategoryPress={handleCategoryPress}
+            onCategoryLongPress={handleCategoryLongPress}
+          />
 
-      <View style={styles.imageBox}>
-        <Text style={styles.imageText}>[Face Image]</Text>
-      </View>
+          {/* Tag Filter */}
+          {selectedCategories.length > 0 && availableTags.length > 0 && (
+            <View style={styles.tagsSection}>
+              <View style={styles.tagsContainer}>
+                {availableTags.map((tag) => (
+                  <Pressable
+                    key={tag}
+                    onPress={() => handleTagPress(tag)}
+                    onLongPress={handleTagLongPress}
+                    delayLongPress={500}
+                    style={[
+                      styles.tagButton,
+                      selectedTags.includes(tag) && styles.tagButtonSelected,
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        styles.tagText,
+                        selectedTags.includes(tag) && styles.tagTextSelected,
+                      ]}
+                    >
+                      {tag}
+                    </Text>
+                  </Pressable>
+                ))}
+              </View>
+            </View>
+          )}
+        </FilterContainer>
 
-      <Text style={styles.question}>Who is this?</Text>
+        <View style={styles.quizContainer}>
+          <View style={styles.header}>
+            <Text style={styles.progressText}>
+              Question {currentIndex + 1} of {quizContacts.length}
+            </Text>
+          </View>
 
-      <View style={styles.optionsContainer}>
-        {options.map((option, index) => (
-          <TouchableOpacity
-            key={index}
-            style={styles.optionButton}
-            onPress={() => handleAnswer(option)}
-          >
-            <Text style={styles.optionText}>{option}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-    </View>
+          <Animated.View style={[styles.imageBox, animatedImageStyle]}>
+            {current.photo ? (
+              <Image
+                source={{ uri: current.photo }}
+                style={styles.contactImage}
+                resizeMode="cover"
+              />
+            ) : (
+              <Text style={styles.noImageText}>No Photo</Text>
+            )}
+          </Animated.View>
+
+          <Text style={styles.question}>Who is this?</Text>
+
+          <View style={styles.optionsContainer}>
+            {currentOptions.map((option, index) => (
+              <TouchableOpacity
+                key={index}
+                style={getOptionStyle(option)}
+                onPress={() => handleAnswer(option)}
+                disabled={feedback === "correct"}
+              >
+                <Text style={styles.optionText}>{option}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: colors.semantic.background,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+  },
   container: {
     flex: 1,
-    backgroundColor: COLORS.BACKGROUND,
+    backgroundColor: colors.semantic.background,
     justifyContent: "center",
     alignItems: "center",
-    paddingHorizontal: SPACING.LG,
+    paddingHorizontal: spacing.lg,
+  },
+  quizContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.xl,
+  },
+  filterPrompt: {
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.xxxl,
+    alignItems: "center",
+  },
+  filterPromptTitle: {
+    ...typography.title.large,
+    color: colors.semantic.text,
+    marginBottom: spacing.sm,
+    textAlign: "center",
+  },
+  filterPromptText: {
+    ...typography.body.medium,
+    color: colors.semantic.textSecondary,
+    textAlign: "center",
   },
   header: {
-    position: "absolute",
-    top: SPACING.LG,
     width: "100%",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingHorizontal: SPACING.LG,
+    marginBottom: spacing.lg,
   },
-  scoreText: {
-    fontSize: 16,
+  progressText: {
+    ...typography.body.large,
     fontWeight: "600",
-    color: COLORS.TEXT,
+    color: colors.semantic.text,
+    textAlign: "center",
   },
   imageBox: {
     width: 250,
     height: 250,
-    borderRadius: 12,
-    backgroundColor: COLORS.SURFACE,
-    marginBottom: SPACING.XL,
+    borderRadius: radii.lg,
+    backgroundColor: colors.semantic.surface,
+    marginBottom: spacing.xl,
+    overflow: "hidden",
     justifyContent: "center",
     alignItems: "center",
   },
-  imageText: {
-    color: COLORS.TEXT_SECONDARY,
+  contactImage: {
+    width: "100%",
+    height: "100%",
+  },
+  noImageText: {
+    ...typography.body.medium,
+    color: colors.semantic.textSecondary,
   },
   question: {
-    fontSize: 18,
-    fontWeight: "600",
-    marginBottom: SPACING.LG,
-    color: COLORS.TEXT,
+    ...typography.title.small,
+    marginBottom: spacing.lg,
+    color: colors.semantic.text,
   },
   optionsContainer: {
     width: "100%",
-    gap: SPACING.MD,
+    gap: spacing.md,
   },
   optionButton: {
-    paddingVertical: SPACING.MD,
-    paddingHorizontal: SPACING.LG,
-    backgroundColor: COLORS.SURFACE,
-    borderRadius: 8,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.lg,
+    backgroundColor: colors.semantic.surface,
+    borderRadius: radii.md,
     alignItems: "center",
+    borderWidth: 2,
+    borderColor: colors.semantic.surface,
   },
   optionText: {
-    fontSize: 16,
+    ...typography.body.large,
     fontWeight: "500",
-    color: COLORS.TEXT,
+    color: colors.semantic.text,
+  },
+  optionCorrect: {
+    backgroundColor: colors.semantic.success,
+    borderColor: colors.semantic.success,
+  },
+  optionIncorrect: {
+    backgroundColor: colors.semantic.error,
+    borderColor: colors.semantic.error,
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.xxxl,
   },
   emptyText: {
-    fontSize: 16,
-    color: COLORS.TEXT_SECONDARY,
+    ...typography.body.large,
+    color: colors.semantic.text,
+    textAlign: "center",
+    marginBottom: spacing.sm,
   },
-  resultBox: {
-    alignItems: "center",
-    paddingVertical: 40,
+  emptySubtext: {
+    ...typography.body.small,
+    color: colors.semantic.textSecondary,
+    textAlign: "center",
   },
-  resultTitle: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: SPACING.LG,
-    color: COLORS.TEXT,
+  tagsSection: {
+    marginTop: spacing.lg,
+    marginBottom: spacing.lg,
   },
-  resultScore: {
-    fontSize: 32,
-    fontWeight: "700",
-    color: COLORS.PRIMARY,
-    marginBottom: SPACING.XL,
+  tagsContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: spacing.sm,
   },
-  resetButton: {
-    backgroundColor: COLORS.SECONDARY,
-    paddingVertical: SPACING.MD,
-    paddingHorizontal: SPACING.LG,
-    borderRadius: 8,
+  tagButton: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: radii.full,
+    borderWidth: 1,
+    borderColor: colors.semantic.border,
+    backgroundColor: colors.semantic.surface,
   },
-  resetButtonText: {
+  tagButtonSelected: {
+    borderColor: colors.primary[500],
+    backgroundColor: colors.primary[500],
+  },
+  tagText: {
+    ...typography.body.small,
+    color: colors.semantic.text,
+    fontWeight: "500",
+  },
+  tagTextSelected: {
     color: "#fff",
-    fontWeight: "600",
   },
 });

@@ -392,6 +392,7 @@ Claude may autonomously (without asking):
 
 - This should be an optimistic app. Wehre changes get applied locally online and offline, and then get sync'd to the live platform when connected.
 - Web and mobile experiences should match as much as possible
+- The contents of the /old folder are for reference only. Do not modify. It's just there to give you an idea of how the live API will work.
 
 ## Very important!!!
 

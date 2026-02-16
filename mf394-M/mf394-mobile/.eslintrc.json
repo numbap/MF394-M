@@ -22,5 +22,13 @@
     "no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
     "no-console": ["warn", { "allow": ["warn", "error"] }],
     "react-native/no-unused-styles": "warn"
-  }
+  },
+  "overrides": [
+    {
+      "files": ["**/*.test.js", "**/*.test.ts", "**/*.test.tsx", "__tests__/**"],
+      "env": {
+        "jest": true
+      }
+    }
+  ]
 }

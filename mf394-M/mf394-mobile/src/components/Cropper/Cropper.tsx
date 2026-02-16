@@ -11,7 +11,7 @@
  * - Returns base64 string for cropped image
  */
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef } from "react";
 import {
   View,
   Text,
@@ -22,9 +22,11 @@ import {
   PanResponder,
   GestureResponderEvent,
   Dimensions,
-} from 'react-native';
-import { FormButtons } from '../FormButtons';
-import { colors, spacing, radii, typography, shadows } from '../../theme/theme';
+  useWindowDimensions,
+  ScrollView,
+} from "react-native";
+import { FormButtons } from "../FormButtons";
+import { colors, spacing, radii, typography, shadows } from "../../theme/theme";
 
 export interface CropperProps {
   imageUri: string;
@@ -33,8 +35,8 @@ export interface CropperProps {
   style?: ViewStyle;
 }
 
-const DEVICE_WIDTH = Dimensions.get('window').width;
-const CANVAS_SIZE = DEVICE_WIDTH - spacing.lg * 2; // Device width minus padding
+const DEVICE_WIDTH = Dimensions.get("window").width;
+const CANVAS_SIZE = DEVICE_WIDTH - spacing.lg * 2; // Device width minus padding (used by mobile only)
 
 // Clean Slider Component
 interface SliderComponentProps {
@@ -43,6 +45,7 @@ interface SliderComponentProps {
   minimumValue: number;
   maximumValue: number;
   step: number;
+  containerWidth: number;
 }
 
 function SliderComponent({
@@ -51,8 +54,9 @@ function SliderComponent({
   minimumValue,
   maximumValue,
   step,
+  containerWidth,
 }: SliderComponentProps) {
-  const sliderWidth = DEVICE_WIDTH - spacing.lg * 2 - spacing.md * 2;
+  const sliderWidth = containerWidth - spacing.md * 2;
   const sliderRef = useRef<View>(null);
   const [sliderX, setSliderX] = useState(0);
 
@@ -112,6 +116,23 @@ function WebCropper({ imageUri, onCropConfirm, onCancel }: CropperProps) {
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
 
+  // Responsive canvas sizing for web
+  const { width: viewportWidth, height: viewportHeight } = useWindowDimensions();
+
+  // UI chrome height (measured from actual components)
+  const UI_CHROME_HEIGHT =
+    spacing.lg + // top padding
+    typography.headline.large.lineHeight +
+    spacing.lg + // title + margin
+    spacing.lg + // margin below canvas
+    76 + // slider container (padding + thumb + margin)
+    148; // form buttons (marginTop + buttons + gaps)
+
+  const availableWidth = viewportWidth - spacing.lg * 2;
+  const availableHeight = viewportHeight - UI_CHROME_HEIGHT;
+  const calculatedSize = Math.min(availableWidth, availableHeight);
+  const CANVAS_SIZE = Math.max(300, calculatedSize);
+
   const handleConfirm = async () => {
     if (!croppedAreaPixels) return;
     setIsLoading(true);
@@ -120,21 +141,18 @@ function WebCropper({ imageUri, onCropConfirm, onCancel }: CropperProps) {
       const croppedImage = await cropImageUsingCanvas(imageUri, croppedAreaPixels);
       onCropConfirm(croppedImage);
     } catch (error) {
-      console.error('Crop failed:', error);
+      console.error("Crop failed:", error);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const cropImageUsingCanvas = (
-    imageUri: string,
-    croppedAreaPixels: any
-  ): Promise<string> => {
+  const cropImageUsingCanvas = (imageUri: string, croppedAreaPixels: any): Promise<string> => {
     return new Promise((resolve, reject) => {
       try {
         let uriToLoad = imageUri;
 
-        if (imageUri.startsWith('file://')) {
+        if (imageUri.startsWith("file://")) {
           fetch(imageUri)
             .then((response) => response.blob())
             .then((blob) => {
@@ -158,20 +176,18 @@ function WebCropper({ imageUri, onCropConfirm, onCancel }: CropperProps) {
     reject: (reason?: any) => void
   ) => {
     const img = new (window as any).Image();
-    img.crossOrigin = 'anonymous';
+    img.crossOrigin = "anonymous";
 
     img.onload = () => {
       try {
-        const canvas = document.createElement('canvas');
-        const size = Math.round(
-          Math.min(croppedAreaPixels.width, croppedAreaPixels.height)
-        );
+        const canvas = document.createElement("canvas");
+        const size = Math.round(Math.min(croppedAreaPixels.width, croppedAreaPixels.height));
         canvas.width = size;
         canvas.height = size;
 
-        const ctx = canvas.getContext('2d');
+        const ctx = canvas.getContext("2d");
         if (!ctx) {
-          throw new Error('Could not get canvas context');
+          throw new Error("Could not get canvas context");
         }
 
         ctx.drawImage(
@@ -186,9 +202,9 @@ function WebCropper({ imageUri, onCropConfirm, onCancel }: CropperProps) {
           size
         );
 
-        const croppedImageUrl = canvas.toDataURL('image/jpeg', 0.9);
+        const croppedImageUrl = canvas.toDataURL("image/jpeg", 0.9);
 
-        if (imageUri.startsWith('blob:')) {
+        if (imageUri.startsWith("blob:")) {
           URL.revokeObjectURL(imageUri);
         }
 
@@ -206,12 +222,10 @@ function WebCropper({ imageUri, onCropConfirm, onCancel }: CropperProps) {
   };
 
   // Import EasyCrop component for web
-  const EasyCrop = require('react-easy-crop').default;
+  const EasyCrop = require("react-easy-crop").default;
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Crop Photo</Text>
-
+    <View style={[styles.container, { width: viewportWidth, alignItems: "center" }]}>
       {/* Cropper Container */}
       <div
         style={{
@@ -219,9 +233,9 @@ function WebCropper({ imageUri, onCropConfirm, onCancel }: CropperProps) {
           height: CANVAS_SIZE,
           backgroundColor: colors.neutral.iron[900],
           borderRadius: radii.lg,
-          overflow: 'hidden',
+          overflow: "hidden",
           marginBottom: spacing.lg,
-          position: 'relative',
+          position: "relative",
         }}
       >
         <EasyCrop
@@ -236,36 +250,37 @@ function WebCropper({ imageUri, onCropConfirm, onCancel }: CropperProps) {
           onZoomChange={setZoom}
           style={{
             containerStyle: {
-              width: '100%',
-              height: '100%',
-              backgroundColor: '#000',
+              width: "100%",
+              height: "100%",
+              backgroundColor: "#000",
             },
           }}
         />
       </div>
 
       {/* Zoom Slider */}
-      <View style={styles.sliderContainer}>
+      <View style={[styles.sliderContainer, { width: CANVAS_SIZE + spacing.lg * 2 }]}>
         <SliderComponent
           value={zoom}
           onValueChange={setZoom}
-          minimumValue={0.5}
-          maximumValue={3}
+          minimumValue={0.25}
+          maximumValue={5}
           step={0.05}
+          containerWidth={CANVAS_SIZE + spacing.lg * 2}
         />
       </View>
 
       {/* Action Buttons */}
       <FormButtons
         primaryButton={{
-          label: 'Crop',
-          icon: 'crop',
+          label: "Crop",
+          icon: "crop",
           onPress: handleConfirm,
           isLoading: isLoading,
         }}
         cancelButton={{
-          label: 'Cancel',
-          icon: 'times',
+          label: "Cancel",
+          icon: "times",
           onPress: onCancel,
         }}
       />
@@ -274,12 +289,7 @@ function WebCropper({ imageUri, onCropConfirm, onCancel }: CropperProps) {
 }
 
 // Mobile implementation with custom cropper
-function MobileCropper({
-  imageUri,
-  onCropConfirm,
-  onCancel,
-  style,
-}: CropperProps) {
+function MobileCropper({ imageUri, onCropConfirm, onCancel, style }: CropperProps) {
   const [zoom, setZoom] = useState(2); // Default 200%
   const [offsetX, setOffsetX] = useState(0);
   const [offsetY, setOffsetY] = useState(0);
@@ -358,7 +368,7 @@ function MobileCropper({
       const croppedUri = await cropImageNative();
       onCropConfirm(croppedUri);
     } catch (error) {
-      console.error('Cropping failed:', error);
+      console.error("Cropping failed:", error);
     } finally {
       setIsLoading(false);
     }
@@ -366,7 +376,7 @@ function MobileCropper({
 
   const cropImageNative = async (): Promise<string> => {
     try {
-      const { ImageManipulator } = require('expo-image-manipulator');
+      const { ImageManipulator } = require("expo-image-manipulator");
 
       const scaledWidth = imageDimensions.width * zoom;
       const scaledHeight = imageDimensions.height * zoom;
@@ -386,17 +396,17 @@ function MobileCropper({
             },
           },
         ],
-        { compress: 0.9, format: 'jpeg' }
+        { compress: 0.9, format: "jpeg" }
       );
 
       // Convert to base64
-      const fs = require('expo-file-system');
+      const fs = require("expo-file-system");
       const base64 = await fs.readAsStringAsync(result.uri, {
         encoding: fs.EncodingType.Base64,
       });
       return `data:image/jpeg;base64,${base64}`;
     } catch (error) {
-      console.error('Native crop failed:', error);
+      console.error("Native crop failed:", error);
       throw error;
     }
   };
@@ -415,10 +425,7 @@ function MobileCropper({
               {
                 width: imageDimensions.width * zoom,
                 height: imageDimensions.height * zoom,
-                transform: [
-                  { translateX: offsetX },
-                  { translateY: offsetY },
-                ],
+                transform: [{ translateX: offsetX }, { translateY: offsetY }],
               },
             ]}
             resizeMode="contain"
@@ -438,20 +445,21 @@ function MobileCropper({
           minimumValue={0.5}
           maximumValue={3}
           step={0.05}
+          containerWidth={DEVICE_WIDTH - spacing.lg * 2}
         />
       </View>
 
       {/* Action Buttons */}
       <FormButtons
         primaryButton={{
-          label: 'Crop',
-          icon: 'crop',
+          label: "Crop",
+          icon: "crop",
           onPress: handleConfirm,
           isLoading: isLoading,
         }}
         cancelButton={{
-          label: 'Cancel',
-          icon: 'times',
+          label: "Cancel",
+          icon: "times",
           onPress: onCancel,
         }}
       />
@@ -461,7 +469,7 @@ function MobileCropper({
 
 // Main Cropper component - routes to web or mobile implementation
 export function Cropper(props: CropperProps) {
-  if (Platform.OS === 'web') {
+  if (Platform.OS === "web") {
     return <WebCropper {...props} />;
   } else {
     return <MobileCropper {...props} />;
@@ -476,12 +484,12 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: typography.headline.large.fontSize,
-    fontWeight: '700',
+    fontWeight: "700",
     color: colors.semantic.text,
     marginBottom: spacing.lg,
   },
   canvasWrapper: {
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: spacing.lg,
   },
   canvas: {
@@ -489,23 +497,23 @@ const styles = StyleSheet.create({
     height: CANVAS_SIZE,
     backgroundColor: colors.neutral.iron[900],
     borderRadius: radii.lg,
-    overflow: 'hidden',
-    position: 'relative',
+    overflow: "hidden",
+    position: "relative",
     ...shadows.md,
   },
   image: {
-    position: 'absolute',
+    position: "absolute",
   },
   cropFrame: {
-    position: 'absolute',
+    position: "absolute",
     width: CANVAS_SIZE,
     height: CANVAS_SIZE,
     borderWidth: 2,
     borderColor: colors.primary[500],
-    pointerEvents: 'none',
+    pointerEvents: "none",
   },
   sliderContainer: {
-    width: '100%',
+    width: "100%",
     marginBottom: spacing.lg,
     paddingHorizontal: spacing.md,
   },
@@ -517,16 +525,16 @@ const styles = StyleSheet.create({
     height: 8,
     backgroundColor: colors.semantic.border,
     borderRadius: radii.full,
-    justifyContent: 'center',
-    position: 'relative',
+    justifyContent: "center",
+    position: "relative",
   },
   sliderFill: {
-    height: '100%',
+    height: "100%",
     backgroundColor: colors.primary[500],
     borderRadius: radii.full,
   },
   sliderThumb: {
-    position: 'absolute',
+    position: "absolute",
     width: 28,
     height: 28,
     borderRadius: radii.full,

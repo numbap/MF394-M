@@ -135,16 +135,35 @@ jest.mock('../../components/BulkNamer', () => {
 });
 
 jest.mock('../../components/CategoryTagsStep', () => ({
-  CategoryTagsStep: ({ onSave, onBack, contacts }: any) => {
+  CategoryTagsStep: ({ onSave, onBack, onEditTags, contacts }: any) => {
     const { View, TouchableOpacity, Text } = require('react-native');
     return (
       <View testID="category-tags-step">
         <Text>Contacts: {contacts.length}</Text>
+        {onEditTags && (
+          <TouchableOpacity testID="edit-tags-button" onPress={onEditTags}>
+            <Text>Edit Tags</Text>
+          </TouchableOpacity>
+        )}
         <TouchableOpacity testID="save-button" onPress={onSave}>
           <Text>Save All</Text>
         </TouchableOpacity>
         <TouchableOpacity testID="back-button" onPress={onBack}>
           <Text>Back</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  },
+}));
+
+jest.mock('../../components/TagManagementView', () => ({
+  TagManagementView: ({ onExit }: any) => {
+    const { View, TouchableOpacity, Text } = require('react-native');
+    return (
+      <View testID="tag-management-view">
+        <Text>Tag Management View</Text>
+        <TouchableOpacity testID="exit-tag-management" onPress={onExit}>
+          <Text>Back to Categories</Text>
         </TouchableOpacity>
       </View>
     );
@@ -1015,6 +1034,156 @@ describe('PartyModeScreen', () => {
         expect(contact.created).toBeGreaterThanOrEqual(beforeSave);
         expect(contact.created).toBeLessThanOrEqual(Date.now());
         expect(contact.edited).toBe(contact.created);
+      });
+    });
+  });
+
+  describe('Tag Management View Switching', () => {
+    it('should switch to tag management view when Edit Tags is clicked from category step', async () => {
+      mockDetectFaces.mockResolvedValue({
+        faces: [
+          {
+            id: 'face-1',
+            bounds: { origin: { x: 0, y: 0 }, size: { width: 100, height: 100 } },
+          },
+        ],
+        isRealDetection: true,
+      });
+
+      const { getByTestId, queryByTestId } = renderWithProvider(<PartyModeScreen />);
+
+      // Upload image and complete naming
+      fireEvent.press(getByTestId('image-selector'));
+
+      await waitFor(() => {
+        expect(getByTestId('bulk-namer')).toBeTruthy();
+      });
+
+      // Name the face
+      fireEvent.press(getByTestId('name-face-0'));
+
+      await waitFor(() => {
+        expect(getByTestId('primary-button')).toBeTruthy();
+      });
+
+      // Continue to category step
+      fireEvent.press(getByTestId('primary-button'));
+
+      await waitFor(() => {
+        expect(getByTestId('category-tags-step')).toBeTruthy();
+      });
+
+      // Click Edit Tags button
+      fireEvent.press(getByTestId('edit-tags-button'));
+
+      // Should switch to tag management view
+      await waitFor(() => {
+        expect(getByTestId('tag-management-view')).toBeTruthy();
+        expect(queryByTestId('category-tags-step')).toBeNull();
+      });
+    });
+
+    it('should return to category step when back is clicked from tag management', async () => {
+      mockDetectFaces.mockResolvedValue({
+        faces: [
+          {
+            id: 'face-1',
+            bounds: { origin: { x: 0, y: 0 }, size: { width: 100, height: 100 } },
+          },
+        ],
+        isRealDetection: true,
+      });
+
+      const { getByTestId, queryByTestId } = renderWithProvider(<PartyModeScreen />);
+
+      // Navigate to category step
+      fireEvent.press(getByTestId('image-selector'));
+
+      await waitFor(() => {
+        expect(getByTestId('bulk-namer')).toBeTruthy();
+      });
+
+      fireEvent.press(getByTestId('name-face-0'));
+
+      await waitFor(() => {
+        expect(getByTestId('primary-button')).toBeTruthy();
+      });
+
+      fireEvent.press(getByTestId('primary-button'));
+
+      await waitFor(() => {
+        expect(getByTestId('category-tags-step')).toBeTruthy();
+      });
+
+      // Switch to tag management
+      fireEvent.press(getByTestId('edit-tags-button'));
+
+      await waitFor(() => {
+        expect(getByTestId('tag-management-view')).toBeTruthy();
+      });
+
+      // Click back button
+      fireEvent.press(getByTestId('exit-tag-management'));
+
+      // Should return to category step
+      await waitFor(() => {
+        expect(getByTestId('category-tags-step')).toBeTruthy();
+        expect(queryByTestId('tag-management-view')).toBeNull();
+      });
+    });
+
+    it('should preserve named contacts when switching to tag management and back', async () => {
+      mockDetectFaces.mockResolvedValue({
+        faces: [
+          {
+            id: 'face-1',
+            bounds: { origin: { x: 0, y: 0 }, size: { width: 100, height: 100 } },
+          },
+          {
+            id: 'face-2',
+            bounds: { origin: { x: 100, y: 0 }, size: { width: 100, height: 100 } },
+          },
+        ],
+        isRealDetection: true,
+      });
+
+      const { getByTestId, getByText } = renderWithProvider(<PartyModeScreen />);
+
+      // Upload and name faces
+      fireEvent.press(getByTestId('image-selector'));
+
+      await waitFor(() => {
+        expect(getByTestId('bulk-namer')).toBeTruthy();
+      });
+
+      fireEvent.press(getByTestId('name-face-0'));
+      fireEvent.press(getByTestId('name-face-1'));
+
+      await waitFor(() => {
+        expect(getByTestId('primary-button')).toBeTruthy();
+      });
+
+      fireEvent.press(getByTestId('primary-button'));
+
+      await waitFor(() => {
+        expect(getByTestId('category-tags-step')).toBeTruthy();
+        expect(getByText('Contacts: 2')).toBeTruthy();
+      });
+
+      // Switch to tag management
+      fireEvent.press(getByTestId('edit-tags-button'));
+
+      await waitFor(() => {
+        expect(getByTestId('tag-management-view')).toBeTruthy();
+      });
+
+      // Return to category step
+      fireEvent.press(getByTestId('exit-tag-management'));
+
+      // Contact count should be preserved
+      await waitFor(() => {
+        expect(getByTestId('category-tags-step')).toBeTruthy();
+        expect(getByText('Contacts: 2')).toBeTruthy();
       });
     });
   });

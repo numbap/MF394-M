@@ -1,18 +1,16 @@
 /**
- * TagManagementModal Component Tests
+ * TagManagementView Component Tests
  */
 
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
-import { TagManagementModal } from './TagManagementModal';
+import { TagManagementView } from './TagManagementView';
 import tagsReducer from '../../store/slices/tags.slice';
 import contactsReducer from '../../store/slices/contacts.slice';
-import { showAlert } from '../../utils/showAlert';
 import { Contact } from '../../store/api/contacts.api';
 
-jest.mock('../../utils/showAlert');
 jest.mock('../../hooks/useConfirmTagDelete', () => ({
   useConfirmTagDelete: () => ({
     confirmDelete: jest.fn((tagName: string) => {
@@ -22,9 +20,7 @@ jest.mock('../../hooks/useConfirmTagDelete', () => ({
   }),
 }));
 
-const mockShowAlert = showAlert as jest.MockedFunction<typeof showAlert>;
-
-describe('TagManagementModal', () => {
+describe('TagManagementView', () => {
   const createMockStore = (initialTags: string[] = ['friend', 'family'], contacts: Contact[] = []) => {
     return configureStore({
       reducer: {
@@ -44,10 +40,10 @@ describe('TagManagementModal', () => {
     });
   };
 
-  const renderWithStore = (store: any, props: any = {}) => {
+  const renderWithStore = (store: any, onExit = jest.fn()) => {
     return render(
       <Provider store={store}>
-        <TagManagementModal visible={true} onClose={jest.fn()} {...props} />
+        <TagManagementView onExit={onExit} />
       </Provider>
     );
   };
@@ -57,7 +53,7 @@ describe('TagManagementModal', () => {
   });
 
   describe('rendering', () => {
-    it('should render modal when visible', () => {
+    it('should render view with title and sections', () => {
       const store = createMockStore();
       const { getByText } = renderWithStore(store);
 
@@ -66,18 +62,7 @@ describe('TagManagementModal', () => {
       expect(getByText('Existing Tags (2)')).toBeTruthy();
     });
 
-    it('should not render when not visible', () => {
-      const store = createMockStore();
-      const { queryByText } = render(
-        <Provider store={store}>
-          <TagManagementModal visible={false} onClose={jest.fn()} />
-        </Provider>
-      );
-
-      expect(queryByText('Manage Tags')).toBeNull();
-    });
-
-    it('should render all existing tags', () => {
+    it('should render all existing tags as pills', () => {
       const store = createMockStore(['friend', 'family', 'mentor']);
       const { getByText } = renderWithStore(store);
 
@@ -100,15 +85,22 @@ describe('TagManagementModal', () => {
 
       expect(getByText('Existing Tags (3)')).toBeTruthy();
     });
+
+    it('should render back button', () => {
+      const store = createMockStore();
+      const { getByText } = renderWithStore(store);
+
+      expect(getByText('Back to Form')).toBeTruthy();
+    });
   });
 
   describe('adding tags', () => {
     it('should add a new tag', async () => {
       const store = createMockStore(['friend']);
-      const { getByPlaceholderText, getByText } = renderWithStore(store);
+      const { getByTestId, getByText } = renderWithStore(store);
 
-      const input = getByPlaceholderText('e.g., mentor-advisor');
-      const addButton = getByText('Add');
+      const input = getByTestId('tag-input');
+      const addButton = getByTestId('add-tag-button');
 
       fireEvent.changeText(input, 'mentor');
       fireEvent.press(addButton);
@@ -120,11 +112,11 @@ describe('TagManagementModal', () => {
 
     it('should normalize tag to lowercase', async () => {
       const store = createMockStore();
-      const { getByPlaceholderText, getByText } = renderWithStore(store);
+      const { getByTestId, getByText } = renderWithStore(store);
 
-      const input = getByPlaceholderText('e.g., mentor-advisor');
+      const input = getByTestId('tag-input');
       fireEvent.changeText(input, 'Work-Colleague');
-      fireEvent.press(getByText('Add'));
+      fireEvent.press(getByTestId('add-tag-button'));
 
       await waitFor(() => {
         expect(getByText('work-colleague')).toBeTruthy();
@@ -133,165 +125,171 @@ describe('TagManagementModal', () => {
 
     it('should replace spaces with hyphens', async () => {
       const store = createMockStore();
-      const { getByPlaceholderText, getByText } = renderWithStore(store);
+      const { getByTestId, getByText } = renderWithStore(store);
 
-      const input = getByPlaceholderText('e.g., mentor-advisor');
+      const input = getByTestId('tag-input');
       fireEvent.changeText(input, 'work colleague');
-      fireEvent.press(getByText('Add'));
+      fireEvent.press(getByTestId('add-tag-button'));
 
       await waitFor(() => {
         expect(getByText('work-colleague')).toBeTruthy();
       });
     });
 
-    it('should not add tag when input is only whitespace', () => {
+    it('should show error for empty tag', () => {
       const store = createMockStore(['friend']);
-      const { getByPlaceholderText } = renderWithStore(store);
+      const { getByTestId } = renderWithStore(store);
 
-      const input = getByPlaceholderText('e.g., mentor-advisor');
-
-      // Set input to whitespace-only
+      const input = getByTestId('tag-input');
       fireEvent.changeText(input, '   ');
 
-      // Tags should remain unchanged (button is disabled, so pressing won't work)
+      // Tags should remain unchanged (button is disabled)
       const state = store.getState();
       expect(state.tags.tags).toEqual(['friend']);
     });
 
     it('should show error for duplicate tag', () => {
       const store = createMockStore(['friend', 'family']);
-      const { getByPlaceholderText, getByText } = renderWithStore(store);
+      const { getByTestId, getByText } = renderWithStore(store);
 
-      const input = getByPlaceholderText('e.g., mentor-advisor');
+      const input = getByTestId('tag-input');
       fireEvent.changeText(input, 'Friend'); // Case-insensitive duplicate
 
-      fireEvent.press(getByText('Add'));
+      fireEvent.press(getByTestId('add-tag-button'));
 
       expect(getByText('This tag already exists')).toBeTruthy();
     });
 
     it('should show error for tag longer than 30 characters', () => {
       const store = createMockStore();
-      const { getByPlaceholderText, getByText } = renderWithStore(store);
+      const { getByTestId, getByText } = renderWithStore(store);
 
-      const input = getByPlaceholderText('e.g., mentor-advisor');
+      const input = getByTestId('tag-input');
       fireEvent.changeText(input, 'a'.repeat(31));
-      fireEvent.press(getByText('Add'));
+      fireEvent.press(getByTestId('add-tag-button'));
 
       expect(getByText('Tag name must be 30 characters or less')).toBeTruthy();
     });
 
     it('should clear input after successful add', async () => {
       const store = createMockStore();
-      const { getByPlaceholderText, getByText } = renderWithStore(store);
+      const { getByTestId, getByText } = renderWithStore(store);
 
-      const input = getByPlaceholderText('e.g., mentor-advisor');
+      const input = getByTestId('tag-input');
       fireEvent.changeText(input, 'mentor');
-      fireEvent.press(getByText('Add'));
+      fireEvent.press(getByTestId('add-tag-button'));
 
       await waitFor(() => {
         expect(input.props.value).toBe('');
       });
     });
 
-    it('should show success message after adding tag', async () => {
+    it('should NOT show success message after adding tag', async () => {
       const store = createMockStore();
-      const { getByPlaceholderText, getByText } = renderWithStore(store);
+      const { getByTestId, queryByText } = renderWithStore(store);
 
-      const input = getByPlaceholderText('e.g., mentor-advisor');
+      const input = getByTestId('tag-input');
       fireEvent.changeText(input, 'mentor');
-      fireEvent.press(getByText('Add'));
+      fireEvent.press(getByTestId('add-tag-button'));
 
       await waitFor(() => {
-        expect(getByText("Tag 'mentor' added")).toBeTruthy();
+        expect(queryByText("Tag 'mentor' added")).toBeNull();
       });
     });
 
     it('should clear error when user starts typing', () => {
       const store = createMockStore(['friend']);
-      const { getByPlaceholderText, getByText, queryByText } = renderWithStore(store);
+      const { getByTestId, getByText, queryByText } = renderWithStore(store);
 
-      const input = getByPlaceholderText('e.g., mentor-advisor');
+      const input = getByTestId('tag-input');
 
       // Trigger error
       fireEvent.changeText(input, 'friend');
-      fireEvent.press(getByText('Add'));
+      fireEvent.press(getByTestId('add-tag-button'));
       expect(getByText('This tag already exists')).toBeTruthy();
 
       // Type again - error should clear
       fireEvent.changeText(input, 'mentor');
       expect(queryByText('This tag already exists')).toBeNull();
     });
+
+    it('should prepend new tag to beginning of list', async () => {
+      const store = createMockStore(['friend', 'family']);
+      const { getByTestId } = renderWithStore(store);
+
+      const input = getByTestId('tag-input');
+      fireEvent.changeText(input, 'mentor');
+      fireEvent.press(getByTestId('add-tag-button'));
+
+      await waitFor(() => {
+        const state = store.getState();
+        expect(state.tags.tags[0]).toBe('mentor'); // New tag at beginning
+        expect(state.tags.tags).toEqual(['mentor', 'friend', 'family']);
+      });
+    });
   });
 
   describe('deleting tags', () => {
-    it('should call confirmDelete when delete button pressed', async () => {
+    it('should have testID for each tag pill', () => {
       const store = createMockStore(['friend', 'family']);
-      const { getAllByTestId, queryByText } = render(
-        <Provider store={store}>
-          <TagManagementModal visible={true} onClose={jest.fn()} />
-        </Provider>
-      );
+      const { getByTestId } = renderWithStore(store);
 
-      // Find all trash icons (using snapshot to identify structure)
-      const tagItems = store.getState().tags.tags;
-      expect(tagItems).toContain('friend');
-
-      // After implementation, this would trigger the delete flow
+      expect(getByTestId('tag-pill-friend')).toBeTruthy();
+      expect(getByTestId('tag-pill-family')).toBeTruthy();
     });
 
-    it('should remove tag from list after deletion', async () => {
-      const store = createMockStore(['friend', 'family', 'mentor']);
-      const { getByText, queryByText } = renderWithStore(store);
+    it('should trigger delete on long press', async () => {
+      const store = createMockStore(['friend', 'family']);
+      const { getByTestId, queryByText } = renderWithStore(store);
 
-      // Verify tag exists
-      expect(getByText('mentor')).toBeTruthy();
+      const pill = getByTestId('tag-pill-friend');
+      fireEvent(pill, 'onLongPress');
 
-      // Note: Actual deletion requires clicking trash icon, which is tested via integration
-      // For unit tests, we verify the Redux action works
-      const state = store.getState();
-      expect(state.tags.tags).toContain('mentor');
+      await waitFor(() => {
+        const state = store.getState();
+        expect(state.tags.tags).not.toContain('friend');
+      });
     });
 
-    it('should show success message after deleting tag', async () => {
-      const store = createMockStore(['friend']);
-      // This would be tested via integration test with actual button press
-      expect(store.getState().tags.tags).toContain('friend');
+    it('should trigger delete on double-click', async () => {
+      const store = createMockStore(['friend', 'family']);
+      const { getByTestId } = renderWithStore(store);
+
+      const pill = getByTestId('tag-pill-friend');
+
+      // First click
+      fireEvent.press(pill);
+
+      // Second click within 300ms
+      fireEvent.press(pill);
+
+      await waitFor(() => {
+        const state = store.getState();
+        expect(state.tags.tags).not.toContain('friend');
+      });
     });
   });
 
-  describe('modal interaction', () => {
-    it('should call onClose when close button pressed', () => {
-      const onClose = jest.fn();
+  describe('back button', () => {
+    it('should call onExit when back button pressed', () => {
+      const onExit = jest.fn();
       const store = createMockStore();
-      const { UNSAFE_getAllByType } = render(
-        <Provider store={store}>
-          <TagManagementModal visible={true} onClose={onClose} />
-        </Provider>
-      );
+      const { getByText } = renderWithStore(store, onExit);
 
-      // Close button is a TouchableOpacity - find by testing props
-      // In real implementation, would use testID
-      expect(onClose).not.toHaveBeenCalled();
-    });
+      fireEvent.press(getByText('Back to Form'));
 
-    it('should initialize with empty input when opened', () => {
-      const store = createMockStore();
-      const { getByPlaceholderText } = renderWithStore(store);
-
-      const input = getByPlaceholderText('e.g., mentor-advisor');
-      expect(input.props.value).toBe('');
+      expect(onExit).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('edge cases', () => {
     it('should handle tag with special characters', async () => {
       const store = createMockStore();
-      const { getByPlaceholderText, getByText } = renderWithStore(store);
+      const { getByTestId, getByText } = renderWithStore(store);
 
-      const input = getByPlaceholderText('e.g., mentor-advisor');
+      const input = getByTestId('tag-input');
       fireEvent.changeText(input, 'tag-with_special.chars');
-      fireEvent.press(getByText('Add'));
+      fireEvent.press(getByTestId('add-tag-button'));
 
       await waitFor(() => {
         expect(getByText('tag-with_special.chars')).toBeTruthy();
@@ -300,13 +298,13 @@ describe('TagManagementModal', () => {
 
     it('should handle multiple tags being added sequentially', async () => {
       const store = createMockStore();
-      const { getByPlaceholderText, getByText } = renderWithStore(store);
+      const { getByTestId, getByText } = renderWithStore(store);
 
-      const input = getByPlaceholderText('e.g., mentor-advisor');
+      const input = getByTestId('tag-input');
 
       // Add first tag
       fireEvent.changeText(input, 'mentor');
-      fireEvent.press(getByText('Add'));
+      fireEvent.press(getByTestId('add-tag-button'));
 
       await waitFor(() => {
         expect(getByText('mentor')).toBeTruthy();
@@ -314,12 +312,20 @@ describe('TagManagementModal', () => {
 
       // Add second tag
       fireEvent.changeText(input, 'volunteer');
-      fireEvent.press(getByText('Add'));
+      fireEvent.press(getByTestId('add-tag-button'));
 
       await waitFor(() => {
         expect(getByText('volunteer')).toBeTruthy();
         expect(getByText('mentor')).toBeTruthy();
       });
+    });
+
+    it('should handle empty tag list', () => {
+      const store = createMockStore([]);
+      const { getByText } = renderWithStore(store);
+
+      expect(getByText('Existing Tags (0)')).toBeTruthy();
+      expect(getByText('No tags yet')).toBeTruthy();
     });
   });
 });

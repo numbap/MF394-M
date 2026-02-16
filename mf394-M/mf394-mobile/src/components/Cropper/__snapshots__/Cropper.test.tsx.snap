@@ -346,11 +346,17 @@ exports[`Cropper Component Snapshot matches snapshot for mobile 1`] = `
 exports[`Cropper Component Snapshot matches snapshot for web 1`] = `
 <View
   style={
-    {
-      "backgroundColor": "#f5f3ef",
-      "padding": 16,
-      "width": 750,
-    }
+    [
+      {
+        "backgroundColor": "#f5f3ef",
+        "padding": 16,
+        "width": 750,
+      },
+      {
+        "alignItems": "center",
+        "width": 2560,
+      },
+    ]
   }
 >
   <Text
@@ -370,21 +376,26 @@ exports[`Cropper Component Snapshot matches snapshot for web 1`] = `
       {
         "backgroundColor": "#181b1b",
         "borderRadius": 12,
-        "height": 718,
+        "height": 1128,
         "marginBottom": 16,
         "overflow": "hidden",
         "position": "relative",
-        "width": 718,
+        "width": 1128,
       }
     }
   />
   <View
     style={
-      {
-        "marginBottom": 16,
-        "paddingHorizontal": 12,
-        "width": "100%",
-      }
+      [
+        {
+          "marginBottom": 16,
+          "paddingHorizontal": 12,
+          "width": "100%",
+        },
+        {
+          "width": 1160,
+        },
+      ]
     }
   >
     <View
@@ -427,7 +438,7 @@ exports[`Cropper Component Snapshot matches snapshot for web 1`] = `
                 "height": "100%",
               },
               {
-                "width": 416.4,
+                "width": 418.52631578947364,
               },
             ]
           }
@@ -453,7 +464,7 @@ exports[`Cropper Component Snapshot matches snapshot for web 1`] = `
                 "width": 28,
               },
               {
-                "left": 416.4,
+                "left": 418.52631578947364,
               },
             ]
           }

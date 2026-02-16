@@ -3,20 +3,20 @@
  *
  * Displays detected faces in a grid for user to select.
  * Used after face detection to let user choose which face to use.
- * 
+ *
  * Notes
- * The face detection logic should select all of the faces in an image, crop them around each face, and then return all of the headshots as a series of images cropped arond the faces. 
- * Then the user simply presses on the image they want to chose. 
- * There is no default face selected, or a Use Face button. The images act as buttons. 
- * No need for percentage match scores. Just crop closely around individual faces. 
- * 
+ * The face detection logic should select all of the faces in an image, crop them around each face, and then return all of the headshots as a series of images cropped arond the faces.
+ * Then the user simply presses on the image they want to chose.
+ * There is no default face selected, or a Use Face button. The images act as buttons.
+ * No need for percentage match scores. Just crop closely around individual faces.
+ *
  * When an image is uploaded, the alogorithm should analyze the image and crop out all of the faces it detects, and then return those cropped images to the user to select from.
- * 
- * When the user clicks on a cropped face, it shold return the based64 string of the cropped image to the main form of the Add or Edit flow to be used as the thumbnail. 
- * If no face is detected, redirect to the cropper so that the user can select their the face themselves. 
+ *
+ * When the user clicks on a cropped face, it shold return the based64 string of the cropped image to the main form of the Add or Edit flow to be used as the thumbnail.
+ * If no face is detected, redirect to the cropper so that the user can select their the face themselves.
  */
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   View,
   Image,
@@ -25,9 +25,9 @@ import {
   TouchableOpacity,
   ScrollView,
   ViewStyle,
-} from 'react-native';
-import { FontAwesome } from '@expo/vector-icons';
-import { colors, spacing, radii, typography } from '../../theme/theme';
+} from "react-native";
+import { FontAwesome } from "@expo/vector-icons";
+import { colors, spacing, radii, typography } from "../../theme/theme";
 
 export interface Face {
   id: string;
@@ -60,9 +60,9 @@ export function FaceSelector({
 
   return (
     <ScrollView style={[styles.container, style]}>
-      <Text style={styles.title}>Select a Face</Text>
+      {/* <Text style={styles.title}>Select a Face</Text> */}
       <Text style={styles.subtitle}>
-        Found {faces.length} face{faces.length !== 1 ? 's' : ''}. Tap to select one.
+        Found {faces.length} face{faces.length !== 1 ? "s" : ""}. Tap to select one.
       </Text>
 
       {/* Face Grid */}
@@ -75,11 +75,7 @@ export function FaceSelector({
             disabled={isLoading}
             activeOpacity={isLoading ? 1 : 0.7}
           >
-            <Image
-              source={{ uri: face.uri }}
-              style={styles.faceImage}
-              resizeMode="cover"
-            />
+            <Image source={{ uri: face.uri }} style={styles.faceImage} resizeMode="cover" />
           </TouchableOpacity>
         ))}
       </View>
@@ -87,9 +83,7 @@ export function FaceSelector({
       {/* Or crop manually option */}
       {onCropInstead && (
         <View style={styles.alternativeContainer}>
-          <Text style={styles.alternativeText}>
-            Not happy with these faces?
-          </Text>
+          <Text style={styles.alternativeText}>Not happy with these faces?</Text>
           <TouchableOpacity
             style={styles.alternativeButton}
             onPress={onCropInstead}
@@ -112,7 +106,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: typography.headline.large.fontSize,
-    fontWeight: '700',
+    fontWeight: "700",
     color: colors.semantic.text,
     marginBottom: spacing.sm,
   },
@@ -122,27 +116,27 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
   },
   grid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
     gap: spacing.md,
     marginBottom: spacing.xl,
   },
   faceButton: {
-    width: '48%',
+    width: "48%",
     aspectRatio: 1,
     borderRadius: radii.lg,
-    overflow: 'hidden',
+    overflow: "hidden",
     borderWidth: 3,
     borderColor: colors.semantic.border,
     backgroundColor: colors.semantic.surface,
-    position: 'relative',
+    position: "relative",
   },
   faceImage: {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
   },
   alternativeContainer: {
-    alignItems: 'center',
+    alignItems: "center",
     gap: spacing.md,
     paddingVertical: spacing.lg,
     marginBottom: spacing.lg,
@@ -154,8 +148,8 @@ const styles = StyleSheet.create({
     color: colors.semantic.textSecondary,
   },
   alternativeButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: spacing.sm,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
@@ -165,7 +159,7 @@ const styles = StyleSheet.create({
   },
   alternativeButtonText: {
     fontSize: typography.body.medium.fontSize,
-    fontWeight: '600',
+    fontWeight: "600",
     color: colors.primary[500],
   },
 });

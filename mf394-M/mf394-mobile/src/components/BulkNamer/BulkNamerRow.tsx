@@ -6,15 +6,9 @@
  * and a text input for the contact name.
  */
 
-import React from 'react';
-import {
-  View,
-  Image,
-  Text,
-  StyleSheet,
-  TextInput,
-} from 'react-native';
-import { colors, spacing, radii, typography } from '../../theme/theme';
+import React from "react";
+import { View, Image, Text, StyleSheet, TextInput } from "react-native";
+import { colors, spacing, radii, typography } from "../../theme/theme";
 
 interface BulkNamerRowProps {
   row: Array<{ id: string; uri: string }>;
@@ -40,33 +34,22 @@ export function BulkNamerRow({
             style={[
               styles.thumbnailContainer,
               {
-                borderColor: isFaceNamed(face.id)
-                  ? colors.semantic.success
-                  : colors.semantic.error,
+                borderColor: isFaceNamed(face.id) ? colors.semantic.success : colors.semantic.error,
               },
             ]}
           >
-            <Image
-              source={{ uri: face.uri }}
-              style={styles.thumbnail}
-              resizeMode="cover"
-            />
+            <Image source={{ uri: face.uri }} style={styles.thumbnail} resizeMode="cover" />
           </View>
 
           {/* Name Input */}
           <TextInput
             style={styles.nameInput}
-            placeholder="Enter name"
+            placeholder="Name"
             placeholderTextColor={colors.semantic.textTertiary}
             value={names[face.id]}
             onChangeText={(text) => onNameChange(face.id, text)}
             maxLength={30}
           />
-
-          {/* Character counter */}
-          <Text style={styles.charCounter}>
-            {names[face.id].length}/30
-          </Text>
         </View>
       ))}
 
@@ -81,29 +64,29 @@ export function BulkNamerRow({
 
 const styles = StyleSheet.create({
   row: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: spacing.md,
     marginBottom: spacing.lg,
   },
   itemContainer: {
     flex: 1,
-    alignItems: 'center',
+    alignItems: "center",
   },
   thumbnailContainer: {
-    width: '100%',
+    width: "100%",
     aspectRatio: 1,
     borderRadius: radii.md,
-    overflow: 'hidden',
+    overflow: "hidden",
     borderWidth: 3,
     marginBottom: spacing.md,
     backgroundColor: colors.semantic.surface,
   },
   thumbnail: {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
   },
   nameInput: {
-    width: '100%',
+    width: "100%",
     borderWidth: 1,
     borderColor: colors.semantic.border,
     borderRadius: radii.md,

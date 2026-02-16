@@ -26,7 +26,7 @@
 
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -36,38 +36,40 @@ import {
   TextInput,
   ActivityIndicator,
   Platform,
-} from 'react-native';
-import { showAlert } from '../../utils/showAlert';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import { useDispatch, useSelector } from 'react-redux';
-import { FontAwesome } from '@expo/vector-icons';
-import { addContact, updateContact, deleteContact } from '../../store/slices/contacts.slice';
-import { Contact } from '../../store/api/contacts.api';
-import { RootState } from '../../store';
-import { colors, spacing, radii, typography } from '../../theme/theme';
-import { ImageSelector } from '../../components/ImageSelector';
-import { CategoryTagSelector } from '../../components/CategoryTagSelector';
-import { FaceSelector, Face } from '../../components/FaceSelector';
-import { Cropper } from '../../components/Cropper';
-import { FormButtons } from '../../components/FormButtons';
-import { FormGroup } from '../../components/FormGroup';
-import { LoadingState } from '../../components/LoadingState';
-import { Toast } from '../../components/Toast';
-import { FullScreenSpinner } from '../../components/FullScreenSpinner';
-import { useFaceDetection } from '../../hooks/useFaceDetection';
-import { imageService } from '../../services/imageService';
-import { CATEGORIES, DEFAULT_CATEGORY } from '../../constants';
-import { AUTH_MOCK } from '../../utils/constants';
-import { cropFaceWithBounds } from '../../utils/imageCropping';
-import { TagManagementModal } from '../../components/TagManagementModal';
+} from "react-native";
+import { showAlert } from "../../utils/showAlert";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import { useDispatch, useSelector } from "react-redux";
+import { FontAwesome } from "@expo/vector-icons";
+import { addContact, updateContact, deleteContact } from "../../store/slices/contacts.slice";
+import { Contact } from "../../store/api/contacts.api";
+import { RootState } from "../../store";
+import { colors, spacing, radii, typography } from "../../theme/theme";
+import { ImageSelector } from "../../components/ImageSelector";
+import { CategoryTagSelector } from "../../components/CategoryTagSelector";
+import { FaceSelector, Face } from "../../components/FaceSelector";
+import { Cropper } from "../../components/Cropper";
+import { FormButtons } from "../../components/FormButtons";
+import { FormGroup } from "../../components/FormGroup";
+import { LoadingState } from "../../components/LoadingState";
+import { Toast } from "../../components/Toast";
+import { FullScreenSpinner } from "../../components/FullScreenSpinner";
+import { useFaceDetection } from "../../hooks/useFaceDetection";
+import { imageService } from "../../services/imageService";
+import { CATEGORIES, DEFAULT_CATEGORY } from "../../constants";
+import { AUTH_MOCK } from "../../utils/constants";
+import { cropFaceWithBounds } from "../../utils/imageCropping";
+import { TagManagementView } from "../../components/TagManagementView";
 
-type Step = 'details' | 'faceDetection' | 'faceSelection' | 'crop';
+type Step = "details" | "faceDetection" | "faceSelection" | "crop";
+type ViewMode = "details" | "tagManagement";
 
 export default function AddEditContactScreen() {
   const route = useRoute();
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  const [step, setStep] = useState<Step>('details');
+  const [step, setStep] = useState<Step>("details");
+  const [viewMode, setViewMode] = useState<ViewMode>("details");
   const [isLoading, setIsLoading] = useState(false);
 
   // Get contactId from route params for edit mode
@@ -76,14 +78,12 @@ export default function AddEditContactScreen() {
 
   // Get existing contact from Redux if editing
   const contacts = useSelector((state: RootState) => state.contacts.data);
-  const existingContact = isEditing
-    ? contacts.find((c) => c._id === contactId)
-    : null;
+  const existingContact = isEditing ? contacts.find((c) => c._id === contactId) : null;
 
   // Form state
-  const [name, setName] = useState('');
-  const [hint, setHint] = useState('');
-  const [summary, setSummary] = useState('');
+  const [name, setName] = useState("");
+  const [hint, setHint] = useState("");
+  const [summary, setSummary] = useState("");
   const [category, setCategory] = useState<string>(DEFAULT_CATEGORY);
   const [tags, setTags] = useState<string[]>([]);
   const [photoUri, setPhotoUri] = useState<string | null>(null);
@@ -95,14 +95,11 @@ export default function AddEditContactScreen() {
 
   // Toast state
   const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState('');
-  const [toastVariant, setToastVariant] = useState<'success' | 'error' | 'info'>('success');
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastVariant, setToastVariant] = useState<"success" | "error" | "info">("success");
 
   // Save state
   const [saveError, setSaveError] = useState<string | null>(null);
-
-  // Tag management modal state
-  const [tagModalVisible, setTagModalVisible] = useState(false);
 
   const { detectFaces, cropFace, faces: detectionFaces } = useFaceDetection();
 
@@ -110,8 +107,8 @@ export default function AddEditContactScreen() {
   useEffect(() => {
     if (existingContact) {
       setName(existingContact.name);
-      setHint(existingContact.hint || '');
-      setSummary(existingContact.summary || '');
+      setHint(existingContact.hint || "");
+      setSummary(existingContact.summary || "");
       setCategory(existingContact.category);
       setTags(existingContact.groups || []);
       setPhotoUri(existingContact.photo || null);
@@ -120,7 +117,7 @@ export default function AddEditContactScreen() {
 
   const handleImageSelected = async (uri: string) => {
     setUploadedImageUri(uri);
-    setStep('faceDetection');
+    setStep("faceDetection");
 
     // Start face detection
     try {
@@ -149,14 +146,14 @@ export default function AddEditContactScreen() {
         );
         setDetectedFaces(croppedFaces);
         setSelectedFaceIndex(0);
-        setStep('faceSelection');
+        setStep("faceSelection");
       } else {
         // No real faces detected - go to manual cropping interface
-        setStep('crop');
+        setStep("crop");
       }
     } catch (error) {
-      showAlert('Error', 'Failed to process image. Please try again.');
-      setStep('details');
+      showAlert("Error", "Failed to process image. Please try again.");
+      setStep("details");
       setUploadedImageUri(null);
     }
   };
@@ -169,20 +166,17 @@ export default function AddEditContactScreen() {
       // Use the already-cropped image from the grid, not crop again
       const selectedFace = detectedFaces[faceIndex];
       if (!selectedFace) {
-        throw new Error('Face not found');
+        throw new Error("Face not found");
       }
 
       // Store locally - upload will happen when saving contact
       setPhotoUri(selectedFace.uri);
 
       // Return to details screen
-      setStep('details');
+      setStep("details");
     } catch (error: any) {
-      console.error('Image processing failed:', error);
-      showAlert(
-        'Error',
-        error?.message || 'Failed to process image. Please try again.'
-      );
+      console.error("Image processing failed:", error);
+      showAlert("Error", error?.message || "Failed to process image. Please try again.");
       // Keep on faceSelection screen to retry
     } finally {
       setIsLoading(false);
@@ -190,7 +184,7 @@ export default function AddEditContactScreen() {
   };
 
   const handleCropManually = () => {
-    setStep('crop');
+    setStep("crop");
   };
 
   const handleCropConfirm = async (croppedImageUri: string) => {
@@ -201,20 +195,17 @@ export default function AddEditContactScreen() {
       setPhotoUri(croppedImageUri);
 
       // Return to details screen
-      setStep('details');
+      setStep("details");
     } catch (error: any) {
-      console.error('Crop failed:', error);
-      showAlert(
-        'Error',
-        error?.message || 'Failed to process image. Please try again.'
-      );
+      console.error("Crop failed:", error);
+      showAlert("Error", error?.message || "Failed to process image. Please try again.");
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleCropCancel = () => {
-    setStep('details');
+    setStep("details");
     setUploadedImageUri(null);
   };
 
@@ -226,9 +217,9 @@ export default function AddEditContactScreen() {
     // Validate form before saving
     if (!isFormValid()) {
       if (!name.trim()) {
-        showAlert('Error', 'Please enter a name');
+        showAlert("Error", "Please enter a name");
       } else {
-        showAlert('Error', 'Please provide either a photo or a hint');
+        showAlert("Error", "Please provide either a photo or a hint");
       }
       return;
     }
@@ -240,24 +231,29 @@ export default function AddEditContactScreen() {
       // Upload image if present and not in mock mode
       let uploadedPhotoUrl: string | null | undefined = photoUri;
 
-      console.log('[AddEditContactScreen] AUTH_MOCK:', AUTH_MOCK, 'photoUri:', photoUri?.substring(0, 50));
+      console.log(
+        "[AddEditContactScreen] AUTH_MOCK:",
+        AUTH_MOCK,
+        "photoUri:",
+        photoUri?.substring(0, 50)
+      );
 
-      if (photoUri && !photoUri.startsWith('http') && !AUTH_MOCK) {
-        console.log('[AddEditContactScreen] Uploading to S3...');
+      if (photoUri && !photoUri.startsWith("http") && !AUTH_MOCK) {
+        console.log("[AddEditContactScreen] Uploading to S3...");
         // Local image in production mode - upload to S3
         uploadedPhotoUrl = await imageService.uploadImage(photoUri, {
-          type: 'contact-photo',
-          source: isEditing ? 'edit-contact' : 'add-contact',
+          type: "contact-photo",
+          source: isEditing ? "edit-contact" : "add-contact",
         });
       } else {
-        console.log('[AddEditContactScreen] Skipping upload (mock mode or already uploaded)');
+        console.log("[AddEditContactScreen] Skipping upload (mock mode or already uploaded)");
       }
       // In mock mode, use local URI directly
 
       await saveContactData(uploadedPhotoUrl);
     } catch (error: any) {
-      console.error('Save failed:', error);
-      setSaveError(error?.message || 'Failed to save contact');
+      console.error("Save failed:", error);
+      setSaveError(error?.message || "Failed to save contact");
     }
   };
 
@@ -271,7 +267,7 @@ export default function AddEditContactScreen() {
         name: name.trim(),
         hint: hint.trim() || undefined,
         summary: summary.trim() || undefined,
-        category: category as Contact['category'],
+        category: category as Contact["category"],
         groups: tags,
         photo: photoUrl || undefined,
         edited: now,
@@ -285,7 +281,7 @@ export default function AddEditContactScreen() {
         name: name.trim(),
         hint: hint.trim() || undefined,
         summary: summary.trim() || undefined,
-        category: category as Contact['category'],
+        category: category as Contact["category"],
         groups: tags,
         photo: photoUrl || undefined,
         created: now,
@@ -297,7 +293,7 @@ export default function AddEditContactScreen() {
 
     // Success! Navigate to listing with filters applied
     setIsLoading(false);
-    navigation.navigate('Listing', {
+    navigation.navigate("Listing", {
       category,
       tags,
     });
@@ -311,10 +307,10 @@ export default function AddEditContactScreen() {
   const handleDelete = () => {
     if (!isEditing || !contactId) return;
 
-    showAlert('Delete Contact', 'Are you sure you want to delete this contact?', [
-      { text: 'Cancel', style: 'cancel' },
+    showAlert("Delete Contact", "Are you sure you want to delete this contact?", [
+      { text: "Cancel", style: "cancel" },
       {
-        text: 'Delete',
+        text: "Delete",
         onPress: async () => {
           try {
             setIsLoading(true);
@@ -322,8 +318,8 @@ export default function AddEditContactScreen() {
             dispatch(deleteContact(contactId));
 
             // Show success toast
-            setToastMessage('Contact deleted successfully');
-            setToastVariant('success');
+            setToastMessage("Contact deleted successfully");
+            setToastVariant("success");
             setShowToast(true);
 
             // Navigate back after short delay
@@ -331,20 +327,26 @@ export default function AddEditContactScreen() {
               navigation.goBack();
             }, 500);
           } catch (error: any) {
-            setToastMessage(error?.message || 'Failed to delete contact');
-            setToastVariant('error');
+            setToastMessage(error?.message || "Failed to delete contact");
+            setToastVariant("error");
             setShowToast(true);
           } finally {
             setIsLoading(false);
           }
         },
-        style: 'destructive',
+        style: "destructive",
       },
     ]);
   };
 
   const handleEditTags = () => {
-    setTagModalVisible(true);
+    console.log("[AddEditContactScreen] Switching to tag management view");
+    setViewMode("tagManagement");
+  };
+
+  const handleExitTagManagement = () => {
+    console.log("[AddEditContactScreen] Returning to details view");
+    setViewMode("details");
   };
 
   // Form validation: button should be disabled if form is not ready
@@ -359,120 +361,113 @@ export default function AddEditContactScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Toast Notification */}
-      {showToast && (
-        <Toast
-          message={toastMessage}
-          variant={toastVariant}
-          visible={showToast}
-          onDismiss={() => setShowToast(false)}
-        />
-      )}
-
       {/* Details Step */}
-      {step === 'details' && (
-        <ScrollView style={styles.stepContainer}>
-          <Text style={styles.stepTitle}>{isEditing ? 'Edit' : 'Add'} Contact</Text>
+      {step === "details" && (
+        <>
+          {viewMode === "details" && (
+            <ScrollView style={styles.stepContainer}>
+              {/* <Text style={styles.stepTitle}>{isEditing ? "Edit" : "Add"} Contact</Text> */}
 
-          {/* Image Selector */}
-          <FormGroup>
-            <ImageSelector
-              imageUri={photoUri}
-              onImageSelected={handleImageSelected}
-              onImageDeleted={handleImageDeleted}
-            />
-          </FormGroup>
+              {/* Image Selector */}
+              <FormGroup>
+                <ImageSelector
+                  imageUri={photoUri}
+                  onImageSelected={handleImageSelected}
+                  onImageDeleted={handleImageDeleted}
+                />
+              </FormGroup>
 
-          {/* Name Input */}
-          <FormGroup>
-            <Text style={styles.label}>
-              Name <Text style={styles.required}>*</Text>
-            </Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Contact name"
-              value={name}
-              onChangeText={setName}
-              placeholderTextColor={colors.semantic.textTertiary}
-            />
-          </FormGroup>
+              {/* Name Input */}
+              <FormGroup>
+                <Text style={styles.label}>
+                  Name <Text style={styles.required}>*</Text>
+                </Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Contact name"
+                  value={name}
+                  onChangeText={setName}
+                  placeholderTextColor={colors.semantic.textTertiary}
+                />
+              </FormGroup>
 
-          {/* Hint Input */}
-          <FormGroup>
-            <Text style={styles.label}>Hint</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="e.g., tall, red jacket"
-              value={hint}
-              onChangeText={setHint}
-              placeholderTextColor={colors.semantic.textTertiary}
-            />
-          </FormGroup>
+              {/* Hint Input */}
+              <FormGroup>
+                <Text style={styles.label}>Hint</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="e.g., tall, red jacket"
+                  value={hint}
+                  onChangeText={setHint}
+                  placeholderTextColor={colors.semantic.textTertiary}
+                />
+              </FormGroup>
 
-          {/* Summary Input */}
-          <FormGroup>
-            <Text style={styles.label}>Summary</Text>
-            <TextInput
-              style={[styles.input, styles.multilineInput]}
-              placeholder="Notes about this person"
-              value={summary}
-              onChangeText={setSummary}
-              multiline
-              numberOfLines={3}
-              placeholderTextColor={colors.semantic.textTertiary}
-            />
-          </FormGroup>
+              {/* Summary Input */}
+              <FormGroup>
+                <Text style={styles.label}>Summary</Text>
+                <TextInput
+                  style={[styles.input, styles.multilineInput]}
+                  placeholder="Notes about this person"
+                  value={summary}
+                  onChangeText={setSummary}
+                  multiline
+                  numberOfLines={3}
+                  placeholderTextColor={colors.semantic.textTertiary}
+                />
+              </FormGroup>
 
-          {/* Category and Tags Selection */}
-          <FormGroup>
-            <CategoryTagSelector
-              categories={CATEGORIES}
-              selectedCategory={category}
-              onCategoryChange={setCategory}
-              selectedTags={tags}
-              onTagsChange={setTags}
-              onEditTags={handleEditTags}
-            />
-          </FormGroup>
+              {/* Category and Tags Selection */}
+              <FormGroup>
+                <CategoryTagSelector
+                  categories={CATEGORIES}
+                  selectedCategory={category}
+                  onCategoryChange={setCategory}
+                  selectedTags={tags}
+                  onTagsChange={setTags}
+                  onEditTags={handleEditTags}
+                />
+              </FormGroup>
 
-          {/* Form Action Buttons */}
-          <FormButtons
-            primaryButton={{
-              label: `${isEditing ? 'Save' : 'Add'} Contact`,
-              icon: 'save',
-              onPress: handleSave,
-              isLoading: isLoading,
-              disabled: !isFormValid(),
-            }}
-            deleteButton={
-              isEditing
-                ? {
-                    label: '',
-                    icon: 'trash',
-                    onPress: handleDelete,
-                  }
-                : undefined
-            }
-            cancelButton={{
-              label: 'Cancel',
-              onPress: () => navigation.goBack(),
-            }}
-          />
-        </ScrollView>
+              {/* Form Action Buttons */}
+              <FormButtons
+                primaryButton={{
+                  label: `${isEditing ? "Save" : "Add"} Contact`,
+                  icon: "save",
+                  onPress: handleSave,
+                  isLoading: isLoading,
+                  disabled: !isFormValid(),
+                }}
+                deleteButton={
+                  isEditing
+                    ? {
+                        label: "",
+                        icon: "trash",
+                        onPress: handleDelete,
+                      }
+                    : undefined
+                }
+                cancelButton={{
+                  label: "Cancel",
+                  onPress: () => navigation.goBack(),
+                }}
+              />
+            </ScrollView>
+          )}
+
+          {viewMode === "tagManagement" && <TagManagementView onExit={handleExitTagManagement} />}
+        </>
       )}
 
       {/* Face Detection Step */}
-      {step === 'faceDetection' && (
+      {step === "faceDetection" && (
         <View style={styles.stepContainer}>
-          <LoadingState
-            title="Scanning for Faces"
-            subtitle="Analyzing your photo..."
-          />
+          <LoadingState title="Scanning for Faces" subtitle="Analyzing your photo..." />
         </View>
       )}
 
       {/* Face Selection Step */}
-      {step === 'faceSelection' && detectedFaces.length > 0 && (
+      {step === "faceSelection" && detectedFaces.length > 0 && (
         <View style={styles.stepContainer}>
           <FaceSelector
             faces={detectedFaces}
@@ -480,44 +475,37 @@ export default function AddEditContactScreen() {
             onCropInstead={handleCropManually}
             isLoading={isLoading}
           />
-          <TouchableOpacity
-            style={styles.secondaryButton}
-            onPress={() => setStep('details')}
-          >
+          <TouchableOpacity style={styles.secondaryButton} onPress={() => setStep("details")}>
             <Text style={styles.secondaryButtonText}>← Back to Details</Text>
           </TouchableOpacity>
         </View>
       )}
 
       {/* Crop Step */}
-      {step === 'crop' && uploadedImageUri && (
-        <Cropper
-          imageUri={uploadedImageUri}
-          onCropConfirm={handleCropConfirm}
-          onCancel={handleCropCancel}
-          style={styles.stepContainer}
-        />
+      {step === "crop" && uploadedImageUri && (
+        <ScrollView>
+          <Cropper
+            imageUri={uploadedImageUri}
+            onCropConfirm={handleCropConfirm}
+            onCancel={handleCropCancel}
+            style={styles.stepContainer}
+          />
+        </ScrollView>
       )}
 
       {/* Full-Screen Spinner */}
       <FullScreenSpinner
         visible={isLoading && !saveError}
         variant="loading"
-        message={isEditing ? 'Updating contact...' : 'Adding contact...'}
+        message={isEditing ? "Updating contact..." : "Adding contact..."}
       />
 
       {/* Error State */}
       <FullScreenSpinner
         visible={!!saveError}
         variant="error"
-        errorMessage={saveError || ''}
+        errorMessage={saveError || ""}
         onBack={handleErrorBack}
-      />
-
-      {/* Tag Management Modal */}
-      <TagManagementModal
-        visible={tagModalVisible}
-        onClose={() => setTagModalVisible(false)}
       />
     </View>
   );
@@ -534,13 +522,13 @@ const styles = StyleSheet.create({
   },
   stepTitle: {
     fontSize: typography.headline.large.fontSize,
-    fontWeight: '700',
+    fontWeight: "700",
     color: colors.semantic.text,
     marginBottom: spacing.lg,
   },
   label: {
     fontSize: typography.body.medium.fontSize,
-    fontWeight: '600',
+    fontWeight: "600",
     color: colors.semantic.text,
     marginBottom: spacing.sm,
   },
@@ -558,7 +546,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.semantic.inputBackground,
   },
   multilineInput: {
-    textAlignVertical: 'top',
+    textAlignVertical: "top",
     minHeight: 80,
   },
   secondaryButton: {
@@ -568,23 +556,23 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.lg,
     borderRadius: radii.md,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   secondaryButtonText: {
     color: colors.semantic.text,
-    fontWeight: '600',
+    fontWeight: "600",
     fontSize: typography.body.large.fontSize,
   },
   placeholderContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     gap: spacing.md,
   },
   placeholderLabel: {
     fontSize: typography.title.medium.fontSize,
-    fontWeight: '600',
+    fontWeight: "600",
     color: colors.semantic.text,
   },
   placeholderSubtext: {

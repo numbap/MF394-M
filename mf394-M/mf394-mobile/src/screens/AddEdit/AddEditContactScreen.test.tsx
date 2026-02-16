@@ -104,6 +104,22 @@ jest.mock('../../components/CategorySelector', () => ({
   },
 }));
 
+jest.mock('../../components/CategoryTagSelector', () => ({
+  CategoryTagSelector: ({ onEditTags }: any) => {
+    const { View, TouchableOpacity, Text } = require('react-native');
+    return (
+      <View testID="category-tag-selector">
+        <Text>Category and Tags</Text>
+        {onEditTags && (
+          <TouchableOpacity testID="edit-tags-button" onPress={onEditTags}>
+            <Text>Edit Tags</Text>
+          </TouchableOpacity>
+        )}
+      </View>
+    );
+  },
+}));
+
 jest.mock('../../components/TagSelector', () => ({
   TagSelector: () => {
     const { Text } = require('react-native');
@@ -147,7 +163,7 @@ jest.mock('../../components/Cropper', () => ({
 }));
 
 jest.mock('../../components/FormButtons', () => ({
-  FormButtons: ({ primaryButton, cancelButton }: any) => {
+  FormButtons: ({ primaryButton, cancelButton, deleteButton }: any) => {
     const { View, TouchableOpacity, Text } = require('react-native');
     return (
       <View>
@@ -160,11 +176,30 @@ jest.mock('../../components/FormButtons', () => ({
             <Text>{primaryButton.label}</Text>
           </TouchableOpacity>
         )}
+        {deleteButton && (
+          <TouchableOpacity testID="delete-button" onPress={deleteButton.onPress}>
+            <Text>{deleteButton.label}</Text>
+          </TouchableOpacity>
+        )}
         {cancelButton && (
           <TouchableOpacity testID="cancel-button" onPress={cancelButton.onPress}>
             <Text>{cancelButton.label}</Text>
           </TouchableOpacity>
         )}
+      </View>
+    );
+  },
+}));
+
+jest.mock('../../components/TagManagementView', () => ({
+  TagManagementView: ({ onExit }: any) => {
+    const { View, TouchableOpacity, Text } = require('react-native');
+    return (
+      <View testID="tag-management-view">
+        <Text>Tag Management View</Text>
+        <TouchableOpacity testID="exit-tag-management" onPress={onExit}>
+          <Text>Back to Form</Text>
+        </TouchableOpacity>
       </View>
     );
   },
@@ -204,13 +239,13 @@ describe('AddEditContactScreen', () => {
     });
 
     it('shows all form fields', () => {
-      const { getByPlaceholderText, getByText } = renderWithProvider(<AddEditContactScreen />);
+      const { getByPlaceholderText, getByText, getByTestId } = renderWithProvider(<AddEditContactScreen />);
 
       expect(getByPlaceholderText('Contact name')).toBeTruthy();
       expect(getByPlaceholderText('e.g., tall, red jacket')).toBeTruthy();
       expect(getByPlaceholderText('Notes about this person')).toBeTruthy();
-      expect(getByText('Select Category')).toBeTruthy();
-      expect(getByText('Tag Selector')).toBeTruthy();
+      expect(getByTestId('category-tag-selector')).toBeTruthy();
+      expect(getByText('Category and Tags')).toBeTruthy();
     });
   });
 
@@ -662,6 +697,146 @@ describe('AddEditContactScreen', () => {
       await waitFor(() => {
         expect(getByPlaceholderText('Contact name')).toBeTruthy();
       });
+    });
+  });
+
+  describe('Tag Management View Switching', () => {
+    it('should switch to tag management view when Edit tags is clicked', async () => {
+      const store = createMockStore();
+      // Add tags reducer to store
+      const storeWithTags = configureStore({
+        reducer: {
+          contacts: contactsReducer,
+          tags: require('../../store/slices/tags.slice').default,
+        },
+        preloadedState: {
+          contacts: {
+            data: [],
+            loading: false,
+            error: null,
+          },
+          tags: {
+            tags: ['friend', 'family'],
+          },
+        },
+      });
+
+      const { getByText, getByTestId, queryByText } = render(
+        <Provider store={storeWithTags}>
+          <AddEditContactScreen />
+        </Provider>
+      );
+
+      // Verify we're on details view initially
+      expect(getByTestId('category-tag-selector')).toBeTruthy();
+
+      // Click "Edit Tags" button in CategoryTagSelector
+      const editButton = getByTestId('edit-tags-button');
+      fireEvent.press(editButton);
+
+      // Should switch to tag management view
+      await waitFor(() => {
+        expect(getByTestId('tag-management-view')).toBeTruthy();
+        expect(getByText('Tag Management View')).toBeTruthy();
+      });
+
+      // Details form should not be visible
+      expect(queryByText('Add Contact')).toBeNull();
+    });
+
+    it('should return to details view when Back to Form is clicked', async () => {
+      const store = createMockStore();
+      const storeWithTags = configureStore({
+        reducer: {
+          contacts: contactsReducer,
+          tags: require('../../store/slices/tags.slice').default,
+        },
+        preloadedState: {
+          contacts: {
+            data: [],
+            loading: false,
+            error: null,
+          },
+          tags: {
+            tags: ['friend', 'family'],
+          },
+        },
+      });
+
+      const { getByText, getByTestId, queryByTestId } = render(
+        <Provider store={storeWithTags}>
+          <AddEditContactScreen />
+        </Provider>
+      );
+
+      // Switch to tag management view
+      const editButton = getByTestId('edit-tags-button');
+      fireEvent.press(editButton);
+
+      await waitFor(() => {
+        expect(getByTestId('tag-management-view')).toBeTruthy();
+      });
+
+      // Click back button
+      const backButton = getByTestId('exit-tag-management');
+      fireEvent.press(backButton);
+
+      // Should return to details view
+      await waitFor(() => {
+        expect(getByTestId('category-tag-selector')).toBeTruthy();
+        expect(queryByTestId('tag-management-view')).toBeNull();
+      });
+    });
+
+    it('should preserve form data when switching to tag management and back', async () => {
+      const storeWithTags = configureStore({
+        reducer: {
+          contacts: contactsReducer,
+          tags: require('../../store/slices/tags.slice').default,
+        },
+        preloadedState: {
+          contacts: {
+            data: [],
+            loading: false,
+            error: null,
+          },
+          tags: {
+            tags: ['friend', 'family'],
+          },
+        },
+      });
+
+      const { getByText, getByTestId, getByPlaceholderText } = render(
+        <Provider store={storeWithTags}>
+          <AddEditContactScreen />
+        </Provider>
+      );
+
+      // Fill in form data
+      const nameInput = getByPlaceholderText('Contact name');
+      const hintInput = getByPlaceholderText('e.g., tall, red jacket');
+      fireEvent.changeText(nameInput, 'John Doe');
+      fireEvent.changeText(hintInput, 'Tall guy');
+
+      // Switch to tag management
+      fireEvent.press(getByTestId('edit-tags-button'));
+
+      await waitFor(() => {
+        expect(getByTestId('tag-management-view')).toBeTruthy();
+      });
+
+      // Return to details
+      fireEvent.press(getByTestId('exit-tag-management'));
+
+      await waitFor(() => {
+        expect(getByTestId('category-tag-selector')).toBeTruthy();
+      });
+
+      // Form data should be preserved
+      const nameInputAfter = getByPlaceholderText('Contact name');
+      const hintInputAfter = getByPlaceholderText('e.g., tall, red jacket');
+      expect(nameInputAfter.props.value).toBe('John Doe');
+      expect(hintInputAfter.props.value).toBe('Tall guy');
     });
   });
 

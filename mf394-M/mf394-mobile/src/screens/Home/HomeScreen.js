@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  View,
-  TouchableOpacity,
-  Text,
-  StyleSheet,
-  ScrollView,
-} from "react-native";
+import { View, TouchableOpacity, Text, StyleSheet, ScrollView } from "react-native";
 import { colors, spacing, typography, radii } from "../../theme/theme";
 
 export default function HomeScreen({ navigation }) {
@@ -24,10 +18,7 @@ export default function HomeScreen({ navigation }) {
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>🚀 Next Steps</Text>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate("AddContact")}
-        >
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("AddContact")}>
           <Text style={styles.buttonText}>+ Add Contact</Text>
         </TouchableOpacity>
         <TouchableOpacity

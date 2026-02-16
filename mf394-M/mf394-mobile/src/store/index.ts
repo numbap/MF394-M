@@ -17,6 +17,7 @@ import uiReducer from './slices/ui.slice';
 import syncReducer from './slices/sync.slice';
 import contactsReducer from './slices/contacts.slice';
 import tagsReducer from './slices/tags.slice';
+import filtersReducer from './slices/filters.slice';
 
 import { syncMiddleware } from './middleware/sync.middleware';
 import { errorHandlingMiddleware } from './middleware/errorHandling.middleware';
@@ -32,6 +33,7 @@ export const store = configureStore({
     sync: syncReducer,
     contacts: contactsReducer,
     tags: tagsReducer,
+    filters: filtersReducer,
 
     // RTK Query APIs
     [contactsApi.reducerPath]: contactsApi.reducer,

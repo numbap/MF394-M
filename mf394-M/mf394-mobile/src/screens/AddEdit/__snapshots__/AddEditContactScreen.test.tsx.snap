@@ -232,15 +232,11 @@ exports[`AddEditContactScreen Snapshot matches snapshot for initial render 1`] =
         }
       >
         <View
-          style={
-            [
-              {
-                "width": "100%",
-              },
-              undefined,
-            ]
-          }
+          testID="category-tag-selector"
         >
+          <Text>
+            Category and Tags
+          </Text>
           <View
             accessibilityState={
               {
@@ -274,21 +270,10 @@ exports[`AddEditContactScreen Snapshot matches snapshot for initial render 1`] =
                 "opacity": 1,
               }
             }
-            testID="category-selector"
+            testID="edit-tags-button"
           >
             <Text>
-              Select Category
-            </Text>
-          </View>
-          <View
-            style={
-              {
-                "marginTop": 16,
-              }
-            }
-          >
-            <Text>
-              Tag Selector
+              Edit Tags
             </Text>
           </View>
         </View>

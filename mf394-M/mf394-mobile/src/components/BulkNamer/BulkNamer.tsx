@@ -66,26 +66,21 @@ export function BulkNamer({ faces, onNamesChange, initialNames, style }: BulkNam
   }
 
   return (
-    <ScrollView style={[styles.container, style]}>
-      <Text style={styles.title}>Name Your Contacts</Text>
-      <Text style={styles.subtitle}>
-        Add a name to each face you want to keep. Green border = validated.
-      </Text>
-
-      {/* Face Grid */}
-      <View style={styles.gridContainer}>
-        {rows.map((row, rowIndex) => (
-          <BulkNamerRow
-            key={rowIndex}
-            row={row}
-            names={names}
-            onNameChange={handleNameChange}
-            isFaceNamed={isFaceNamed}
-            itemsPerRow={itemsPerRow}
-          />
-        ))}
-      </View>
-    </ScrollView>
+    // <ScrollView style={[styles.container, style]}>
+    // {/* Face Grid */}
+    <View style={styles.gridContainer}>
+      {rows.map((row, rowIndex) => (
+        <BulkNamerRow
+          key={rowIndex}
+          row={row}
+          names={names}
+          onNameChange={handleNameChange}
+          isFaceNamed={isFaceNamed}
+          itemsPerRow={itemsPerRow}
+        />
+      ))}
+    </View>
+    // </ScrollView>
   );
 }
 

@@ -11,76 +11,69 @@
  * 5. Bulk save (create all validated contacts)
  */
 
-import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  ActivityIndicator,
-} from 'react-native';
-import { showAlert } from '../../utils/showAlert';
-import { useNavigation } from '@react-navigation/native';
-import { useDispatch } from 'react-redux';
-import { FontAwesome } from '@expo/vector-icons';
-import { colors, spacing, radii, typography } from '../../theme/theme';
-import { ImageSelector } from '../../components/ImageSelector';
-import { BulkNamer, NamedFace } from '../../components/BulkNamer';
-import { CategoryTagsStep } from '../../components/CategoryTagsStep';
-import { FormButtons } from '../../components/FormButtons';
-import { FormGroup } from '../../components/FormGroup';
-import { LoadingState } from '../../components/LoadingState';
-import { InfoBox } from '../../components/InfoBox';
-import { Cropper } from '../../components/Cropper';
-import { FullScreenSpinner } from '../../components/FullScreenSpinner';
-import { useFaceDetection } from '../../hooks/useFaceDetection';
-import { imageService } from '../../services/imageService';
-import { Contact, useCreateContactMutation } from '../../store/api/contacts.api';
-import { addContact } from '../../store/slices/contacts.slice';
-import { addToQueue } from '../../store/slices/sync.slice';
-import { CATEGORIES, DEFAULT_CATEGORY } from '../../constants';
-import { AUTH_MOCK } from '../../utils/constants';
-import { cropFaceWithBounds } from '../../utils/imageCropping';
-import { TagManagementModal } from '../../components/TagManagementModal';
+import React, { useState } from "react";
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator } from "react-native";
+import { showAlert } from "../../utils/showAlert";
+import { useNavigation } from "@react-navigation/native";
+import { useDispatch } from "react-redux";
+import { FontAwesome } from "@expo/vector-icons";
+import { colors, spacing, radii, typography } from "../../theme/theme";
+import { ImageSelector } from "../../components/ImageSelector";
+import { BulkNamer, NamedFace } from "../../components/BulkNamer";
+import { CategoryTagsStep } from "../../components/CategoryTagsStep";
+import { FormButtons } from "../../components/FormButtons";
+import { FormGroup } from "../../components/FormGroup";
+import { LoadingState } from "../../components/LoadingState";
+import { InfoBox } from "../../components/InfoBox";
+import { Cropper } from "../../components/Cropper";
+import { FullScreenSpinner } from "../../components/FullScreenSpinner";
+import { useFaceDetection } from "../../hooks/useFaceDetection";
+import { imageService } from "../../services/imageService";
+import { Contact, useCreateContactMutation } from "../../store/api/contacts.api";
+import { addContact } from "../../store/slices/contacts.slice";
+import { addToQueue } from "../../store/slices/sync.slice";
+import { CATEGORIES, DEFAULT_CATEGORY } from "../../constants";
+import { AUTH_MOCK } from "../../utils/constants";
+import { cropFaceWithBounds } from "../../utils/imageCropping";
+import { TagManagementView } from "../../components/TagManagementView";
 
-type Step = 'upload' | 'detecting' | 'naming' | 'category' | 'crop';
+type Step = "upload" | "detecting" | "naming" | "category" | "crop";
+type ViewMode = "category" | "tagManagement";
 
 export default function PartyModeScreen() {
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  const [step, setStep] = useState<Step>('upload');
+  const [step, setStep] = useState<Step>("upload");
   const [uploadedImageUri, setUploadedImageUri] = useState<string | null>(null);
   const [detectedFaces, setDetectedFaces] = useState<Array<{ id: string; uri: string }>>([]);
   const [namedFaces, setNamedFaces] = useState<NamedFace[]>([]);
   const [category, setCategory] = useState<string>(DEFAULT_CATEGORY);
   const [tags, setTags] = useState<string[]>([]);
+  const [viewMode, setViewMode] = useState<ViewMode>("category");
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
-
-  // Tag management modal state
-  const [tagModalVisible, setTagModalVisible] = useState(false);
 
   const { detectFaces } = useFaceDetection();
   const [createContact] = useCreateContactMutation();
 
   const handleImageSelected = async (uri: string) => {
     setUploadedImageUri(uri);
-    setStep('detecting');
+    setStep("detecting");
 
     try {
       const result = await detectFaces(uri);
       const faces = result?.faces || [];
-      console.log('[PartyMode] Face detection complete:', faces.length, 'faces');
+      console.log("[PartyMode] Face detection complete:", faces.length, "faces");
 
       if (!faces || faces.length === 0) {
-        console.log('[PartyMode] No faces detected, forwarding to manual crop');
-        setStep('crop');
+        console.log("[PartyMode] No faces detected, forwarding to manual crop");
+        setStep("crop");
         return;
       }
 
       // Process each detected face: crop and create face thumbnails
       // Use cropFaceWithBounds to avoid relying on hook state
-      console.log('[PartyMode] Processing', faces.length, 'faces for cropping...');
+      console.log("[PartyMode] Processing", faces.length, "faces for cropping...");
       const processedFaces = await Promise.all(
         faces.map(async (face, index) => {
           try {
@@ -101,14 +94,14 @@ export default function PartyModeScreen() {
         })
       );
 
-      console.log('[PartyMode] All faces processed:', processedFaces.length);
+      console.log("[PartyMode] All faces processed:", processedFaces.length);
       setDetectedFaces(processedFaces);
-      console.log('[PartyMode] Setting step to naming');
-      setStep('naming');
+      console.log("[PartyMode] Setting step to naming");
+      setStep("naming");
     } catch (error: any) {
-      console.error('[PartyMode] Error during face detection:', error);
-      showAlert('Error', 'Failed to detect faces. Please try again.');
-      setStep('upload');
+      console.error("[PartyMode] Error during face detection:", error);
+      showAlert("Error", "Failed to detect faces. Please try again.");
+      setStep("upload");
       setUploadedImageUri(null);
     }
   };
@@ -120,25 +113,25 @@ export default function PartyModeScreen() {
   };
 
   const handleCropConfirm = async (croppedImageUri: string) => {
-    console.log('[PartyMode] Manual crop confirmed, proceeding to naming with one face');
+    console.log("[PartyMode] Manual crop confirmed, proceeding to naming with one face");
     // Create a single face from the manually cropped image
     const singleFace = {
-      id: 'face-0',
+      id: "face-0",
       uri: croppedImageUri,
     };
     setDetectedFaces([singleFace]);
-    setStep('naming');
+    setStep("naming");
   };
 
   const handleCropCancel = () => {
-    console.log('[PartyMode] Manual crop cancelled, returning to upload');
-    setStep('upload');
+    console.log("[PartyMode] Manual crop cancelled, returning to upload");
+    setStep("upload");
     setUploadedImageUri(null);
   };
 
   const handleSave = async () => {
     if (namedFaces.length === 0) {
-      showAlert('No Names', 'Please add at least one name before saving.');
+      showAlert("No Names", "Please add at least one name before saving.");
       return;
     }
 
@@ -155,8 +148,8 @@ export default function PartyModeScreen() {
           let photoUrl = namedFace.faceUri;
           if (!AUTH_MOCK) {
             photoUrl = await imageService.uploadImage(namedFace.faceUri, {
-              type: 'contact-photo',
-              source: 'party-mode',
+              type: "contact-photo",
+              source: "party-mode",
             });
           }
 
@@ -165,7 +158,7 @@ export default function PartyModeScreen() {
           const newContact: Contact = {
             _id: tempId,
             name: namedFace.name.trim(),
-            category: category as Contact['category'],
+            category: category as Contact["category"],
             groups: tags,
             photo: photoUrl,
             created: now,
@@ -193,9 +186,9 @@ export default function PartyModeScreen() {
                 id: `${tempId}_sync`,
                 timestamp: now,
                 action: {
-                  type: 'contactsApi/executeMutation',
+                  type: "contactsApi/executeMutation",
                   payload: {
-                    endpoint: 'createContact',
+                    endpoint: "createContact",
                     data: apiContactData,
                     tempId: tempId, // For ID reconciliation later
                   },
@@ -206,11 +199,11 @@ export default function PartyModeScreen() {
             );
 
             // Trigger immediate sync attempt (if online)
-            dispatch({ type: 'sync/processSyncQueue' });
+            dispatch({ type: "sync/processSyncQueue" });
           }
 
           console.log(
-            `[PartyMode] Saved contact ${index + 1}/${namedFaces.length}: ${newContact.name} (${AUTH_MOCK ? 'demo' : 'queued for sync'})`
+            `[PartyMode] Saved contact ${index + 1}/${namedFaces.length}: ${newContact.name} (${AUTH_MOCK ? "demo" : "queued for sync"})`
           );
         } catch (error) {
           console.error(`Failed to process contact "${namedFace.name}":`, error);
@@ -219,7 +212,7 @@ export default function PartyModeScreen() {
           const fallbackContact: Contact = {
             _id: `contact_${now}_${index}_${Math.random().toString(36).substr(2, 9)}`,
             name: namedFace.name.trim(),
-            category: category as Contact['category'],
+            category: category as Contact["category"],
             groups: tags,
             photo: namedFace.faceUri, // Use local URI as fallback
             created: now,
@@ -233,13 +226,13 @@ export default function PartyModeScreen() {
       setIsSaving(false);
 
       // Navigate to listing with filters applied
-      navigation.navigate('Listing', {
+      navigation.navigate("Listing", {
         category,
         tags,
       });
     } catch (error: any) {
-      console.error('Bulk save failed:', error);
-      setSaveError(error?.message || 'Failed to create contacts. Please try again.');
+      console.error("Bulk save failed:", error);
+      setSaveError(error?.message || "Failed to create contacts. Please try again.");
       setIsSaving(false);
     }
   };
@@ -250,7 +243,13 @@ export default function PartyModeScreen() {
   };
 
   const handleEditTags = () => {
-    setTagModalVisible(true);
+    console.log("[PartyMode] Switching to tag management view");
+    setViewMode("tagManagement");
+  };
+
+  const handleExitTagManagement = () => {
+    console.log("[PartyMode] Returning to category view");
+    setViewMode("category");
   };
 
   const canSave = namedFaces.length > 0 && !isSaving;
@@ -258,10 +257,12 @@ export default function PartyModeScreen() {
   return (
     <View style={styles.container}>
       {/* Upload Step */}
-      {step === 'upload' && (
+      {step === "upload" && (
         <ScrollView style={styles.stepContainer}>
-          <Text style={styles.stepTitle}>Party Mode</Text>
-          <Text style={styles.stepSubtitle}>Upload a group photo to create multiple contacts</Text>
+          {/* Info */}
+          <FormGroup>
+            <InfoBox text="Upload a photo with multiple faces. We'll detect each person and let you name them." />
+          </FormGroup>
 
           {/* Image Selector */}
           <FormGroup>
@@ -272,16 +273,11 @@ export default function PartyModeScreen() {
             />
           </FormGroup>
 
-          {/* Info */}
-          <FormGroup>
-            <InfoBox text="Upload a photo with multiple faces. We'll detect each person and let you name them." />
-          </FormGroup>
-
           {/* Back Button */}
           <FormButtons
             cancelButton={{
-              label: 'Back',
-              icon: 'arrow-left',
+              label: "Back",
+              icon: "arrow-left",
               onPress: () => navigation.goBack(),
             }}
           />
@@ -289,18 +285,15 @@ export default function PartyModeScreen() {
       )}
 
       {/* Face Detection Step */}
-      {step === 'detecting' && (
+      {step === "detecting" && (
         <View style={styles.stepContainer}>
-          <LoadingState
-            title="Detecting Faces"
-            subtitle="Analyzing your photo..."
-          />
+          <LoadingState title="Detecting Faces" subtitle="Analyzing your photo..." />
         </View>
       )}
 
       {/* Naming Step */}
-      {step === 'naming' && detectedFaces.length > 0 && (
-        <View style={styles.namingStepContainer}>
+      {step === "naming" && detectedFaces.length > 0 && (
+        <ScrollView style={styles.namingStepContainer}>
           <BulkNamer
             faces={detectedFaces}
             onNamesChange={setNamedFaces}
@@ -313,15 +306,15 @@ export default function PartyModeScreen() {
             <FormButtons
               primaryButton={{
                 label: `Continue (${namedFaces.length})`,
-                icon: 'arrow-right',
-                onPress: () => setStep('category'),
+                icon: "arrow-right",
+                onPress: () => setStep("category"),
                 disabled: !namedFaces.length,
               }}
               cancelButton={{
-                label: 'Back to Upload',
-                icon: 'arrow-left',
+                label: "Back to Upload",
+                icon: "arrow-left",
                 onPress: () => {
-                  setStep('upload');
+                  setStep("upload");
                   setUploadedImageUri(null);
                   setDetectedFaces([]);
                   setNamedFaces([]);
@@ -329,58 +322,60 @@ export default function PartyModeScreen() {
               }}
             />
           </View>
-        </View>
+        </ScrollView>
       )}
 
       {/* Category + Tags Step */}
-      {step === 'category' && (
-        <CategoryTagsStep
-          contactCount={namedFaces.length}
-          category={category}
-          tags={tags}
-          categories={CATEGORIES}
-          contacts={namedFaces.map((face) => ({
-            id: face.id,
-            name: face.name,
-          }))}
-          onCategoryChange={setCategory}
-          onTagsChange={setTags}
-          onEditTags={handleEditTags}
-          onSave={handleSave}
-          onBack={() => setStep('naming')}
-          isSaving={isSaving}
-        />
+      {step === "category" && (
+        <>
+          {viewMode === "category" && (
+            <CategoryTagsStep
+              contactCount={namedFaces.length}
+              category={category}
+              tags={tags}
+              categories={CATEGORIES}
+              contacts={namedFaces.map((face) => ({
+                id: face.id,
+                name: face.name,
+              }))}
+              onCategoryChange={setCategory}
+              onTagsChange={setTags}
+              onEditTags={handleEditTags}
+              onSave={handleSave}
+              onBack={() => setStep("naming")}
+              isSaving={isSaving}
+            />
+          )}
+
+          {viewMode === "tagManagement" && <TagManagementView onExit={handleExitTagManagement} />}
+        </>
       )}
 
       {/* Manual Crop Step */}
-      {step === 'crop' && uploadedImageUri && (
-        <Cropper
-          imageUri={uploadedImageUri}
-          onCropConfirm={handleCropConfirm}
-          onCancel={handleCropCancel}
-          style={styles.stepContainer}
-        />
+      {step === "crop" && uploadedImageUri && (
+        <ScrollView>
+          <Cropper
+            imageUri={uploadedImageUri}
+            onCropConfirm={handleCropConfirm}
+            onCancel={handleCropCancel}
+            style={styles.stepContainer}
+          />
+        </ScrollView>
       )}
 
       {/* Full-Screen Spinner */}
       <FullScreenSpinner
         visible={isSaving && !saveError}
         variant="loading"
-        message={`Saving ${namedFaces.length} contact${namedFaces.length !== 1 ? 's' : ''}...`}
+        message={`Saving ${namedFaces.length} contact${namedFaces.length !== 1 ? "s" : ""}...`}
       />
 
       {/* Error State */}
       <FullScreenSpinner
         visible={!!saveError}
         variant="error"
-        errorMessage={saveError || ''}
+        errorMessage={saveError || ""}
         onBack={handleErrorBack}
-      />
-
-      {/* Tag Management Modal */}
-      <TagManagementModal
-        visible={tagModalVisible}
-        onClose={() => setTagModalVisible(false)}
       />
     </View>
   );
@@ -397,7 +392,7 @@ const styles = StyleSheet.create({
   },
   stepTitle: {
     fontSize: typography.headline.large.fontSize,
-    fontWeight: '700',
+    fontWeight: "700",
     color: colors.semantic.text,
     marginBottom: spacing.sm,
   },
@@ -408,7 +403,8 @@ const styles = StyleSheet.create({
   },
   namingStepContainer: {
     flex: 1,
-    flexDirection: 'column',
+    paddingHorizontal: spacing.lg,
+    flexDirection: "column",
     backgroundColor: colors.semantic.background,
   },
   bulkNamerContent: {

@@ -1,7 +1,8 @@
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react-native';
+import { fireEvent } from '@testing-library/react-native';
 import { CategoryTagSelector } from './CategoryTagSelector';
 import { CATEGORIES, AVAILABLE_TAGS } from '../../constants';
+import { renderWithRedux } from '../../../__tests__/utils/reduxTestUtils';
 
 describe('CategoryTagSelector', () => {
   const defaultProps = {
@@ -14,7 +15,11 @@ describe('CategoryTagSelector', () => {
   };
 
   it('renders CategorySelector and TagSelector', () => {
-    const { getByText } = render(<CategoryTagSelector {...defaultProps} />);
+    const { getByText } = renderWithRedux(<CategoryTagSelector {...defaultProps} />, {
+      preloadedState: {
+        tags: { tags: AVAILABLE_TAGS },
+      },
+    });
 
     // Category label with required asterisk is rendered
     expect(getByText(/Category/)).toBeTruthy();
@@ -23,8 +28,13 @@ describe('CategoryTagSelector', () => {
 
   it('calls onCategoryChange when category is selected', () => {
     const onCategoryChange = jest.fn();
-    const { getByText } = render(
-      <CategoryTagSelector {...defaultProps} onCategoryChange={onCategoryChange} />
+    const { getByText } = renderWithRedux(
+      <CategoryTagSelector {...defaultProps} onCategoryChange={onCategoryChange} />,
+      {
+        preloadedState: {
+          tags: { tags: AVAILABLE_TAGS },
+        },
+      }
     );
 
     // Open category selector
@@ -40,12 +50,17 @@ describe('CategoryTagSelector', () => {
 
   it('calls onTagsChange when tag is toggled', () => {
     const onTagsChange = jest.fn();
-    const { getByText } = render(
+    const { getByText } = renderWithRedux(
       <CategoryTagSelector
         {...defaultProps}
         availableTags={['Sports', 'Music']}
         onTagsChange={onTagsChange}
-      />
+      />,
+      {
+        preloadedState: {
+          tags: { tags: ['Sports', 'Music'] },
+        },
+      }
     );
 
     const sportsTag = getByText('Sports');
@@ -56,8 +71,13 @@ describe('CategoryTagSelector', () => {
 
   it('shows Edit button when onEditTags is provided', () => {
     const onEditTags = jest.fn();
-    const { getByText } = render(
-      <CategoryTagSelector {...defaultProps} onEditTags={onEditTags} />
+    const { getByText } = renderWithRedux(
+      <CategoryTagSelector {...defaultProps} onEditTags={onEditTags} />,
+      {
+        preloadedState: {
+          tags: { tags: AVAILABLE_TAGS },
+        },
+      }
     );
 
     const editButton = getByText('Edit');
@@ -68,7 +88,11 @@ describe('CategoryTagSelector', () => {
   });
 
   it('matches snapshot', () => {
-    const { toJSON } = render(<CategoryTagSelector {...defaultProps} />);
+    const { toJSON } = renderWithRedux(<CategoryTagSelector {...defaultProps} />, {
+      preloadedState: {
+        tags: { tags: AVAILABLE_TAGS },
+      },
+    });
 
     expect(toJSON()).toMatchSnapshot();
   });

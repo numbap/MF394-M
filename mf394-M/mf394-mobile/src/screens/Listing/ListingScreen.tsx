@@ -25,6 +25,16 @@ import { FontAwesome } from "@expo/vector-icons";
 import { colors, spacing, radii, typography } from "../../theme/theme";
 import { RootState, AppDispatch } from "../../store";
 import { setContacts, setLoading } from "../../store/slices/contacts.slice";
+import {
+  toggleCategory,
+  toggleTag,
+  setCategories,
+  setTags,
+  restoreFilters,
+  selectSelectedCategories,
+  selectSelectedTags,
+  selectFiltersLoaded,
+} from "../../store/slices/filters.slice";
 import { Contact } from "../../store/api/contacts.api";
 import { transformMockContacts } from "../../utils/contactDataTransform";
 import { ContactCard } from "../../components/ContactCard";
@@ -39,14 +49,15 @@ export default function ListingScreen({ navigation }: any) {
   const route = useRoute();
   const contacts = useSelector((state: RootState) => state.contacts.data);
   const loading = useSelector((state: RootState) => state.contacts.loading);
+  const selectedCategories = useSelector(selectSelectedCategories);
+  const selectedTags = useSelector(selectSelectedTags);
+  const filtersLoaded = useSelector(selectFiltersLoaded);
   const { width } = useWindowDimensions();
 
   // Get filter params from navigation (if navigated from save)
   const routeParams = route.params as { category?: string; tags?: string[] } | undefined;
 
-  // Local filter state
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  // Local UI state
   const [isGalleryView, setIsGalleryView] = useState(false);
 
   // Double-tap detection
@@ -93,6 +104,21 @@ export default function ListingScreen({ navigation }: any) {
     loadContacts();
   }, [dispatch, contacts.length]);
 
+  // Load filters from storage on mount
+  useEffect(() => {
+    const loadFilters = async () => {
+      if (!filtersLoaded) {
+        try {
+          const storedFilters = await StorageService.loadFilters();
+          dispatch(restoreFilters(storedFilters));
+        } catch (error) {
+          console.error("Failed to load filters:", error);
+        }
+      }
+    };
+    loadFilters();
+  }, [dispatch, filtersLoaded]);
+
   // Persist contacts to storage whenever they change
   useEffect(() => {
     if (contacts.length > 0) {
@@ -103,14 +129,14 @@ export default function ListingScreen({ navigation }: any) {
   // Apply filters from route params (when navigating from Add/Edit/Party)
   useEffect(() => {
     if (routeParams?.category) {
-      setSelectedCategories([routeParams.category]);
+      dispatch(setCategories([routeParams.category]));
       if (routeParams.tags && routeParams.tags.length > 0) {
-        setSelectedTags(routeParams.tags);
+        dispatch(setTags(routeParams.tags));
       } else {
-        setSelectedTags([]);
+        dispatch(setTags([]));
       }
     }
-  }, [routeParams?.category, routeParams?.tags]);
+  }, [dispatch, routeParams?.category, routeParams?.tags]);
 
   // Get available tags from category-filtered contacts
   const availableTags = useMemo(() => {
@@ -152,48 +178,33 @@ export default function ListingScreen({ navigation }: any) {
 
   // Handle category selection
   const handleCategoryPress = (category: string) => {
-    setSelectedCategories((prev) => {
-      if (prev.includes(category)) {
-        return prev.filter((c) => c !== category);
-      } else {
-        return [...prev, category];
-      }
-    });
-    // Clear tags when categories change
-    setSelectedTags([]);
+    dispatch(toggleCategory(category));
   };
 
   // Handle category long-press (select/deselect all)
   const handleCategoryLongPress = () => {
     if (selectedCategories.length >= CATEGORIES.length / 2) {
       // If 50% or more selected, deselect all
-      setSelectedCategories([]);
+      dispatch(setCategories([]));
     } else {
       // If less than 50% selected, select all
-      setSelectedCategories(CATEGORIES.map((c) => c.value));
+      dispatch(setCategories(CATEGORIES.map((c) => c.value)));
     }
-    setSelectedTags([]);
   };
 
   // Handle tag selection
   const handleTagPress = (tag: string) => {
-    setSelectedTags((prev) => {
-      if (prev.includes(tag)) {
-        return prev.filter((t) => t !== tag);
-      } else {
-        return [...prev, tag];
-      }
-    });
+    dispatch(toggleTag(tag));
   };
 
   // Handle tag long-press (select/deselect all)
   const handleTagLongPress = () => {
     if (selectedTags.length >= availableTags.length / 2) {
       // If 50% or more selected, deselect all
-      setSelectedTags([]);
+      dispatch(setTags([]));
     } else {
       // If less than 50% selected, select all
-      setSelectedTags([...availableTags]);
+      dispatch(setTags([...availableTags]));
     }
   };
 
@@ -324,10 +335,7 @@ export default function ListingScreen({ navigation }: any) {
             ) : (
               // Card view
               <View
-                style={[
-                  styles.cardsList,
-                  { justifyContent: isTablet ? "flex-start" : "center" },
-                ]}
+                style={[styles.cardsList, { justifyContent: isTablet ? "flex-start" : "center" }]}
               >
                 {filteredContacts.map((contact) => (
                   <Pressable
@@ -408,6 +416,7 @@ const styles = StyleSheet.create({
     color: "#fff",
   },
   actionRow: {
+    paddingTop: spacing.lg,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
@@ -434,6 +443,7 @@ const styles = StyleSheet.create({
     fontSize: typography.body.medium.fontSize,
   },
   viewToggle: {
+    marginLeft: spacing.lg,
     width: 44,
     height: 44,
     justifyContent: "center",

@@ -340,6 +340,7 @@ exports[`ListingScreen Snapshots matches snapshot of initial state 1`] = `
                 "alignItems": "center",
                 "flexDirection": "row",
                 "justifyContent": "space-between",
+                "paddingTop": 16,
               }
             }
           >
@@ -506,6 +507,7 @@ exports[`ListingScreen Snapshots matches snapshot of initial state 1`] = `
                   "borderWidth": 1,
                   "height": 44,
                   "justifyContent": "center",
+                  "marginLeft": 16,
                   "opacity": 1,
                   "width": 44,
                 }
@@ -866,6 +868,7 @@ exports[`ListingScreen Snapshots matches snapshot with category selected 1`] = `
                 "alignItems": "center",
                 "flexDirection": "row",
                 "justifyContent": "space-between",
+                "paddingTop": 16,
               }
             }
           >
@@ -1032,6 +1035,7 @@ exports[`ListingScreen Snapshots matches snapshot with category selected 1`] = `
                   "borderWidth": 1,
                   "height": 44,
                   "justifyContent": "center",
+                  "marginLeft": 16,
                   "opacity": 1,
                   "width": 44,
                 }

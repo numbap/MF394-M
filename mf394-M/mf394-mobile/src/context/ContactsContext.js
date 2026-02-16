@@ -1,4 +1,4 @@
-import React, { createContext, useReducer, useCallback } from "react";
+import React, { createContext, useReducer, useCallback, useEffect } from "react";
 import { contactService } from "../services/contactService";
 
 export const ContactsContext = createContext();
@@ -176,6 +176,11 @@ export function ContactsProvider({ children }) {
       state.filteredByTags.some((tagId) => contact.groups?.includes(tagId))
     );
   }, [state.contacts, state.filteredByTags]);
+
+  // Load contacts on mount
+  useEffect(() => {
+    loadContacts();
+  }, [loadContacts]);
 
   const value = {
     ...state,

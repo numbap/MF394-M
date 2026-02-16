@@ -5,19 +5,14 @@
  * Displays a preview of contacts to be created.
  */
 
-import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-} from 'react-native';
-import { FontAwesome } from '@expo/vector-icons';
-import { colors, spacing, radii, typography } from '../../theme/theme';
-import { Category } from '../CategorySelector';
-import { CategoryTagSelector } from '../CategoryTagSelector';
-import { FormGroup } from '../FormGroup';
-import { FormButtons } from '../FormButtons';
+import React from "react";
+import { View, Text, StyleSheet, ScrollView } from "react-native";
+import { FontAwesome } from "@expo/vector-icons";
+import { colors, spacing, radii, typography } from "../../theme/theme";
+import { Category } from "../CategorySelector";
+import { CategoryTagSelector } from "../CategoryTagSelector";
+import { FormGroup } from "../FormGroup";
+import { FormButtons } from "../FormButtons";
 
 export interface ContactPreview {
   id: string;
@@ -55,11 +50,6 @@ export function CategoryTagsStep({
 
   return (
     <ScrollView style={styles.stepContainer}>
-      <Text style={styles.stepTitle}>Finalize Bulk Import</Text>
-      <Text style={styles.stepSubtitle}>
-        {contactCount} contact{contactCount !== 1 ? 's' : ''} ready to add
-      </Text>
-
       {/* Category and Tags Selection */}
       <FormGroup>
         <CategoryTagSelector
@@ -74,12 +64,10 @@ export function CategoryTagsStep({
 
       {/* Contact List Preview */}
       <View style={styles.previewBox}>
-        <Text style={styles.previewTitle}>Contacts to Create:</Text>
         {contacts.map((contact, index) => (
           <View key={contact.id} style={styles.previewItem}>
             <Text style={styles.previewItemNumber}>{index + 1}.</Text>
             <Text style={styles.previewItemName}>{contact.name}</Text>
-            <FontAwesome name="check-circle" size={16} color={colors.semantic.success} />
           </View>
         ))}
       </View>
@@ -87,15 +75,15 @@ export function CategoryTagsStep({
       {/* Navigation Buttons */}
       <FormButtons
         primaryButton={{
-          label: 'Save All',
-          icon: 'save',
+          label: "Save All",
+          icon: "save",
           onPress: onSave,
           isLoading: isSaving,
           disabled: !canSave,
         }}
         cancelButton={{
-          label: 'Back',
-          icon: 'arrow-left',
+          label: "Back",
+          icon: "arrow-left",
           onPress: onBack,
         }}
       />
@@ -110,7 +98,7 @@ const styles = StyleSheet.create({
   },
   stepTitle: {
     fontSize: typography.headline.large.fontSize,
-    fontWeight: '700',
+    fontWeight: "700",
     color: colors.semantic.text,
     marginBottom: spacing.sm,
   },
@@ -127,13 +115,13 @@ const styles = StyleSheet.create({
   },
   previewTitle: {
     fontSize: typography.body.large.fontSize,
-    fontWeight: '600',
+    fontWeight: "600",
     color: colors.semantic.text,
     marginBottom: spacing.md,
   },
   previewItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: spacing.md,
     paddingVertical: spacing.sm,
     borderBottomWidth: 1,
@@ -141,7 +129,7 @@ const styles = StyleSheet.create({
   },
   previewItemNumber: {
     fontSize: typography.body.medium.fontSize,
-    fontWeight: '600',
+    fontWeight: "600",
     color: colors.semantic.textSecondary,
     width: 24,
   },
