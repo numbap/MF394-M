@@ -5,31 +5,15 @@ import {
   Text,
   StyleSheet,
   ScrollView,
+  ActivityIndicator,
 } from "react-native";
-import { useDispatch, useSelector } from "react-redux";
-import { loginSuccess } from "../../store/slices/auth.slice";
-import { RootState } from "../../store";
+import { useSelector } from "react-redux";
+import { useGoogleAuth } from "../../hooks/useGoogleAuth";
 import { colors, spacing, typography, radii } from "../../theme/theme";
 
 export default function LoginScreen() {
-  const dispatch = useDispatch();
-  const { error } = useSelector((state: RootState) => state.auth);
-
-  const handleGoogleSignIn = () => {
-    // Mock sign-in for development
-    dispatch(
-      loginSuccess({
-        user: {
-          id: "test-user-123",
-          email: "test@example.com",
-          name: "Test User",
-          provider: "google",
-        },
-        accessToken: "mock-access-token",
-        refreshToken: "mock-refresh-token",
-      })
-    );
-  };
+  const { isLoading, error } = useSelector((state) => state.auth);
+  const { signInWithGoogle } = useGoogleAuth();
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -46,14 +30,16 @@ export default function LoginScreen() {
 
       <View style={styles.buttonContainer}>
         <TouchableOpacity
-          style={styles.signInButton}
-          onPress={handleGoogleSignIn}
+          style={[styles.signInButton, isLoading && styles.signInButtonDisabled]}
+          onPress={signInWithGoogle}
+          disabled={isLoading}
         >
-          <Text style={styles.signInButtonText}>Sign in with Google</Text>
+          {isLoading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.signInButtonText}>Sign in with Google</Text>
+          )}
         </TouchableOpacity>
-        <Text style={styles.devNote}>
-          (Mock sign-in for development - click to continue)
-        </Text>
       </View>
     </ScrollView>
   );
@@ -107,15 +93,12 @@ const styles = StyleSheet.create({
     borderRadius: radii.lg,
     alignItems: "center",
   },
+  signInButtonDisabled: {
+    opacity: 0.7,
+  },
   signInButtonText: {
     color: "#fff",
     fontWeight: "600",
     fontSize: typography.title.medium.fontSize,
-  },
-  devNote: {
-    fontSize: typography.body.small.fontSize,
-    color: colors.semantic.textSecondary,
-    marginTop: spacing.md,
-    textAlign: "center",
   },
 });

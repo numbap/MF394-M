@@ -2,17 +2,17 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { useAppSelector } from '../../store/hooks';
 import { selectAuthUser } from '../../store/hooks';
-import { useLogoutMutation } from '../../store/api/auth.api';
 import { useDispatch } from 'react-redux';
 import { logout } from '../../store/slices/auth.slice';
+import { tokenStorage } from '../../utils/secureStore';
 import { colors, spacing, radii, typography } from '../../theme/theme';
 
 export default function SettingsScreen() {
   const user = useAppSelector(selectAuthUser);
-  const [logoutMutation, { isLoading }] = useLogoutMutation();
+  const [isLoading, setIsLoading] = React.useState(false);
   const dispatch = useDispatch();
 
-  const handleLogout = async () => {
+  const handleLogout = () => {
     Alert.alert(
       'Log Out',
       'Are you sure you want to log out?',
@@ -23,11 +23,14 @@ export default function SettingsScreen() {
           style: 'destructive',
           onPress: async () => {
             try {
-              await logoutMutation().unwrap();
+              setIsLoading(true);
+              await tokenStorage.clearToken();
               dispatch(logout());
             } catch (error) {
               console.error('Logout failed:', error);
               dispatch(logout());
+            } finally {
+              setIsLoading(false);
             }
           },
         },

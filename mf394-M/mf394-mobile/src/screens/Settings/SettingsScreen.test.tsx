@@ -5,10 +5,16 @@ import { Alert } from 'react-native';
 import { configureStore } from '@reduxjs/toolkit';
 import SettingsScreen from './SettingsScreen';
 import authReducer from '../../store/slices/auth.slice';
-import { authApi } from '../../store/api/auth.api';
 
 // Mock Alert
 jest.spyOn(Alert, 'alert');
+
+// Mock tokenStorage
+jest.mock('../../utils/secureStore', () => ({
+  tokenStorage: {
+    clearToken: jest.fn().mockResolvedValue(undefined),
+  },
+}));
 
 const mockUser = {
   id: '1',
@@ -21,20 +27,16 @@ const createMockStore = (user = mockUser) => {
   return configureStore({
     reducer: {
       auth: authReducer,
-      [authApi.reducerPath]: authApi.reducer,
     },
     preloadedState: {
       auth: {
         user,
-        accessToken: 'mock-token',
-        refreshToken: 'mock-refresh',
+        token: 'mock-token',
         isAuthenticated: true,
         isLoading: false,
         error: null,
       },
     },
-    middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware().concat(authApi.middleware),
   });
 };
 

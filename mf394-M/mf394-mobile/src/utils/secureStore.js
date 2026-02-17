@@ -1,46 +1,41 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const tokenStorage = {
-  async getAccessToken() {
+  async getToken() {
     try {
-      return await AsyncStorage.getItem("accessToken");
+      return await AsyncStorage.getItem("auth_token");
     } catch (e) {
-      console.warn("Error retrieving access token", e);
+      console.warn("Error retrieving token", e);
       return null;
     }
+  },
+
+  async setToken(token) {
+    try {
+      await AsyncStorage.setItem("auth_token", token);
+    } catch (e) {
+      console.warn("Error storing token", e);
+    }
+  },
+
+  async clearToken() {
+    try {
+      await AsyncStorage.removeItem("auth_token");
+    } catch (e) {
+      console.warn("Error clearing token", e);
+    }
+  },
+
+  // Legacy aliases kept for any remaining callers
+  async getAccessToken() {
+    return this.getToken();
   },
 
   async setAccessToken(token) {
-    try {
-      await AsyncStorage.setItem("accessToken", token);
-    } catch (e) {
-      console.warn("Error storing access token", e);
-    }
-  },
-
-  async getRefreshToken() {
-    try {
-      return await AsyncStorage.getItem("refreshToken");
-    } catch (e) {
-      console.warn("Error retrieving refresh token", e);
-      return null;
-    }
-  },
-
-  async setRefreshToken(token) {
-    try {
-      await AsyncStorage.setItem("refreshToken", token);
-    } catch (e) {
-      console.warn("Error storing refresh token", e);
-    }
+    return this.setToken(token);
   },
 
   async clearTokens() {
-    try {
-      await AsyncStorage.removeItem("accessToken");
-      await AsyncStorage.removeItem("refreshToken");
-    } catch (e) {
-      console.warn("Error clearing tokens", e);
-    }
+    return this.clearToken();
   },
 };

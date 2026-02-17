@@ -1,19 +1,72 @@
-import React from "react";
-import { Provider as ReduxProvider } from "react-redux";
+import React, { useEffect } from "react";
+import { Provider as ReduxProvider, useDispatch } from "react-redux";
 import { store } from "./store";
 import { RootNavigator } from "./navigation/RootNavigator";
 import { AlertDialogProvider } from "./components/AlertDialog";
 import { ContactsProvider } from "./context/ContactsContext";
+import { restoreSession } from "./store/slices/auth.slice";
+import { tokenStorage } from "./utils/secureStore";
 
-// As soon as the user logs in, we shoud list all of their contacts.
-// When testing in mock mode, load the contacts from the mock data json file with the test user to simulate.
+const API_BASE_URL =
+  process.env.API_DOMAIN || process.env.API_BASE_URL || "https://ummyou.com";
+
+/**
+ * SessionRestorer
+ *
+ * On app launch, checks for a stored JWT token and verifies it
+ * with the API. If valid, restores the user session automatically.
+ */
+function SessionRestorer({ children }) {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const restoreAuth = async () => {
+      const token = await tokenStorage.getToken();
+      if (!token) return;
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/user`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (response.ok) {
+          const userData = await response.json();
+          dispatch(
+            restoreSession({
+              user: {
+                id: userData.id || userData._id,
+                email: userData.email,
+                name: userData.name,
+                image: userData.image,
+                provider: "google",
+              },
+              token,
+            })
+          );
+        } else {
+          // Token is invalid or expired
+          await tokenStorage.clearToken();
+        }
+      } catch (err) {
+        console.error("Session restore failed:", err);
+        // Don't clear token on network error - user may be offline
+      }
+    };
+
+    restoreAuth();
+  }, [dispatch]);
+
+  return children;
+}
 
 export default function App() {
   return (
     <ReduxProvider store={store}>
       <ContactsProvider>
-        <RootNavigator />
-        <AlertDialogProvider />
+        <SessionRestorer>
+          <RootNavigator />
+          <AlertDialogProvider />
+        </SessionRestorer>
       </ContactsProvider>
     </ReduxProvider>
   );

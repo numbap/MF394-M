@@ -6,6 +6,7 @@
  * - Card/Thumbnail view toggle
  * - Long-press or double-tap to edit
  * - Status bar showing visible count
+ * - Data loaded from live API via RTK Query
  */
 
 import React, { useEffect, useState, useMemo, useRef } from "react";
@@ -17,6 +18,7 @@ import {
   Pressable,
   ScrollView,
   SafeAreaView,
+  ActivityIndicator,
   useWindowDimensions,
 } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
@@ -24,7 +26,6 @@ import { useRoute } from "@react-navigation/native";
 import { FontAwesome } from "@expo/vector-icons";
 import { colors, spacing, radii, typography } from "../../theme/theme";
 import { RootState, AppDispatch } from "../../store";
-import { setContacts, setLoading } from "../../store/slices/contacts.slice";
 import {
   toggleCategory,
   toggleTag,
@@ -35,74 +36,37 @@ import {
   selectSelectedTags,
   selectFiltersLoaded,
 } from "../../store/slices/filters.slice";
-import { Contact } from "../../store/api/contacts.api";
-import { transformMockContacts } from "../../utils/contactDataTransform";
+import { useGetUserQuery } from "../../store/api/contacts.api";
 import { ContactCard } from "../../components/ContactCard";
 import { SummaryThumbnail } from "../../components/SummaryThumbnail";
 import { CategoryTagFilter } from "../../components/CategoryTagFilter";
 import { FilterContainer } from "../../components/FilterContainer";
 import { StorageService } from "../../services/storage.service";
+import { useNetworkStatus } from "../../hooks/useNetworkStatus";
 import { CATEGORIES } from "../../constants";
 
 export default function ListingScreen({ navigation }: any) {
   const dispatch = useDispatch<AppDispatch>();
   const route = useRoute();
-  const contacts = useSelector((state: RootState) => state.contacts.data);
-  const loading = useSelector((state: RootState) => state.contacts.loading);
   const selectedCategories = useSelector(selectSelectedCategories);
   const selectedTags = useSelector(selectSelectedTags);
   const filtersLoaded = useSelector(selectFiltersLoaded);
   const { width } = useWindowDimensions();
+  const { isOnline } = useNetworkStatus();
 
-  // Get filter params from navigation (if navigated from save)
   const routeParams = route.params as { category?: string; tags?: string[] } | undefined;
 
-  // Local UI state
   const [isGalleryView, setIsGalleryView] = useState(false);
 
-  // Double-tap detection
   const lastTapTime = useRef<{ [key: string]: number }>({});
-  const DOUBLE_TAP_DELAY = 300; // milliseconds
+  const DOUBLE_TAP_DELAY = 300;
 
-  // Responsive breakpoint for tablet layout
   const TABLET_BREAKPOINT = 768;
   const isTablet = width >= TABLET_BREAKPOINT;
 
-  // Load contacts from storage or mock data on mount
-  useEffect(() => {
-    const loadContacts = async () => {
-      if (contacts.length === 0) {
-        try {
-          dispatch(setLoading(true));
-
-          // Try to load from storage first
-          const storedContacts = await StorageService.loadContacts();
-
-          if (storedContacts.length > 0) {
-            // Use stored contacts
-            dispatch(setContacts(storedContacts));
-          } else {
-            // Fallback to mock data if storage is empty
-            const mockUserDataRaw = require("../../mock_user.json");
-            const mockUserData =
-              typeof mockUserDataRaw === "string" ? JSON.parse(mockUserDataRaw) : mockUserDataRaw;
-
-            if (mockUserData?.contacts) {
-              const transformed = transformMockContacts(mockUserData.contacts);
-              dispatch(setContacts(transformed));
-              // Save to storage for next time
-              await StorageService.saveContacts(transformed);
-            }
-          }
-        } catch (error) {
-          console.error("Failed to load contacts:", error);
-        } finally {
-          dispatch(setLoading(false));
-        }
-      }
-    };
-    loadContacts();
-  }, [dispatch, contacts.length]);
+  // Load all contacts + tags from /api/user (single call)
+  const { data: userData, isLoading, error } = useGetUserQuery();
+  const contacts = userData?.contacts || [];
 
   // Load filters from storage on mount
   useEffect(() => {
@@ -111,20 +75,13 @@ export default function ListingScreen({ navigation }: any) {
         try {
           const storedFilters = await StorageService.loadFilters();
           dispatch(restoreFilters(storedFilters));
-        } catch (error) {
-          console.error("Failed to load filters:", error);
+        } catch (err) {
+          console.error("Failed to load filters:", err);
         }
       }
     };
     loadFilters();
   }, [dispatch, filtersLoaded]);
-
-  // Persist contacts to storage whenever they change
-  useEffect(() => {
-    if (contacts.length > 0) {
-      StorageService.saveContacts(contacts);
-    }
-  }, [contacts]);
 
   // Apply filters from route params (when navigating from Add/Edit/Party)
   useEffect(() => {
@@ -166,67 +123,86 @@ export default function ListingScreen({ navigation }: any) {
       result = result.filter((c) => c.groups?.some((tag) => tagSet.has(tag)));
     }
 
-    // Sort by edited timestamp (descending), fallback to created
     result.sort((a, b) => {
       const aTime = a.edited || a.created || 0;
       const bTime = b.edited || b.created || 0;
-      return bTime - aTime; // Descending order (newest first)
+      return bTime - aTime;
     });
 
     return result;
   }, [contacts, selectedCategories, selectedTags]);
 
-  // Handle category selection
   const handleCategoryPress = (category: string) => {
     dispatch(toggleCategory(category));
   };
 
-  // Handle category long-press (select/deselect all)
   const handleCategoryLongPress = () => {
     if (selectedCategories.length >= CATEGORIES.length / 2) {
-      // If 50% or more selected, deselect all
       dispatch(setCategories([]));
     } else {
-      // If less than 50% selected, select all
       dispatch(setCategories(CATEGORIES.map((c) => c.value)));
     }
   };
 
-  // Handle tag selection
   const handleTagPress = (tag: string) => {
     dispatch(toggleTag(tag));
   };
 
-  // Handle tag long-press (select/deselect all)
   const handleTagLongPress = () => {
     if (selectedTags.length >= availableTags.length / 2) {
-      // If 50% or more selected, deselect all
       dispatch(setTags([]));
     } else {
-      // If less than 50% selected, select all
       dispatch(setTags([...availableTags]));
     }
   };
 
-  // Handle contact long-press (edit)
   const handleContactLongPress = (contactId: string) => {
     navigation.navigate("EditContact", { contactId });
   };
 
-  // Handle contact press (detect double-tap for edit)
   const handleContactPress = (contactId: string) => {
     const now = Date.now();
     const lastTap = lastTapTime.current[contactId] || 0;
 
     if (now - lastTap < DOUBLE_TAP_DELAY) {
-      // Double-tap detected, navigate to edit
       handleContactLongPress(contactId);
-      lastTapTime.current[contactId] = 0; // Reset to prevent triple-tap
+      lastTapTime.current[contactId] = 0;
     } else {
-      // Single tap, just update last tap time
       lastTapTime.current[contactId] = now;
     }
   };
+
+  const handleAddContact = () => {
+    if (!isOnline) return;
+    navigation.navigate("AddContact");
+  };
+
+  const handlePartyMode = () => {
+    if (!isOnline) return;
+    navigation.navigate("PartyMode");
+  };
+
+  if (isLoading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.centeredState}>
+          <ActivityIndicator size="large" color={colors.primary[500]} />
+          <Text style={styles.stateText}>Loading contacts...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  if (error) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.centeredState}>
+          <Text style={styles.errorText}>Failed to load contacts</Text>
+          <Text style={styles.stateText}>Please check your connection and try again.</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -274,16 +250,18 @@ export default function ListingScreen({ navigation }: any) {
             <View style={styles.actionRow}>
               <View style={styles.buttonGroup}>
                 <TouchableOpacity
-                  style={styles.actionButton}
-                  onPress={() => navigation.navigate("AddContact")}
+                  style={[styles.actionButton, !isOnline && styles.actionButtonDisabled]}
+                  onPress={handleAddContact}
+                  disabled={!isOnline}
                 >
                   <FontAwesome name="user-plus" size={18} color="#fff" />
                   <Text style={styles.actionButtonText}>Add</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                  style={styles.actionButton}
-                  onPress={() => navigation.navigate("PartyMode")}
+                  style={[styles.actionButton, !isOnline && styles.actionButtonDisabled]}
+                  onPress={handlePartyMode}
+                  disabled={!isOnline}
                 >
                   <FontAwesome name="users" size={18} color="#fff" />
                   <Text style={styles.actionButtonText}>Party</Text>
@@ -313,7 +291,6 @@ export default function ListingScreen({ navigation }: any) {
                 <Text style={styles.emptyStateText}>No contacts found</Text>
               </View>
             ) : isGalleryView ? (
-              // Thumbnail view
               <View
                 style={[
                   styles.thumbnailGrid,
@@ -333,7 +310,6 @@ export default function ListingScreen({ navigation }: any) {
                 ))}
               </View>
             ) : (
-              // Card view
               <View
                 style={[styles.cardsList, { justifyContent: isTablet ? "flex-start" : "center" }]}
               >
@@ -374,6 +350,23 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
   },
+  centeredState: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    gap: spacing.md,
+    padding: spacing.lg,
+  },
+  stateText: {
+    fontSize: typography.body.medium.fontSize,
+    color: colors.semantic.textSecondary,
+    textAlign: "center",
+  },
+  errorText: {
+    fontSize: typography.title.medium.fontSize,
+    fontWeight: "600",
+    color: colors.semantic.error,
+  },
   section: {
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.lg,
@@ -383,12 +376,6 @@ const styles = StyleSheet.create({
   tagsSection: {
     marginTop: spacing.lg,
     marginBottom: spacing.lg,
-  },
-  tagsLabel: {
-    fontSize: typography.body.medium.fontSize,
-    fontWeight: "600",
-    color: colors.semantic.text,
-    marginBottom: spacing.md,
   },
   tagsContainer: {
     flexDirection: "row",
@@ -436,6 +423,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     backgroundColor: colors.primary[500],
     borderRadius: radii.md,
+  },
+  actionButtonDisabled: {
+    opacity: 0.5,
   },
   actionButtonText: {
     color: "#fff",

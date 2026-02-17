@@ -1,15 +1,14 @@
 import {
-  API_BASE_URL as ENV_API_BASE_URL,
+  API_DOMAIN as ENV_API_DOMAIN,
   API_TIMEOUT as ENV_API_TIMEOUT,
   GOOGLE_OAUTH_CLIENT_ID_iOS as ENV_GOOGLE_OAUTH_CLIENT_ID_iOS,
   GOOGLE_OAUTH_CLIENT_ID_Android as ENV_GOOGLE_OAUTH_CLIENT_ID_Android,
   GOOGLE_OAUTH_WEB_CLIENT_ID as ENV_GOOGLE_OAUTH_WEB_CLIENT_ID,
   FACE_DETECTION_MIN_CONFIDENCE as ENV_FACE_DETECTION_MIN_CONFIDENCE,
-  AUTH_MOCK as ENV_AUTH_MOCK,
 } from "@env";
 
 // API Configuration
-export const API_BASE_URL = ENV_API_BASE_URL || "https://ummyou.com/api";
+export const API_BASE_URL = ENV_API_DOMAIN || "https://ummyou.com";
 export const API_TIMEOUT = parseInt(ENV_API_TIMEOUT || "30000", 10);
 
 // Google OAuth Configuration
@@ -20,17 +19,12 @@ export const GOOGLE_OAUTH_WEB_CLIENT_ID = ENV_GOOGLE_OAUTH_WEB_CLIENT_ID;
 // Face Detection Configuration
 export const FACE_DETECTION_MIN_CONFIDENCE = parseFloat(ENV_FACE_DETECTION_MIN_CONFIDENCE || "0.5");
 
-// Auth Configuration
-export const AUTH_MOCK = ENV_AUTH_MOCK === "true";
-
 // API Endpoints
 export const API_ENDPOINTS = {
-  AUTH_LOGIN: "/auth/login",
-  AUTH_REFRESH: "/auth/refresh",
-  AUTH_LOGOUT: "/auth/logout",
-  AUTH_ME: "/auth/me",
+  AUTH_LOGIN: "/auth/mobile-login",
+  AUTH_ME: "/user",
   CONTACTS: "/contacts",
-  CONTACTS_BATCH: "/contacts/batch",
+  CONTACTS_BULK: "/contacts/bulk",
   TAGS: "/tags",
   UPLOAD: "/upload",
   GAME_CONTACTS: "/game-contacts",

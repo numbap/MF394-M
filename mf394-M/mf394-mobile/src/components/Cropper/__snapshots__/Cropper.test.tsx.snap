@@ -359,18 +359,6 @@ exports[`Cropper Component Snapshot matches snapshot for web 1`] = `
     ]
   }
 >
-  <Text
-    style={
-      {
-        "color": "#181b1b",
-        "fontSize": 32,
-        "fontWeight": "700",
-        "marginBottom": 16,
-      }
-    }
-  >
-    Crop Photo
-  </Text>
   <div
     style={
       {

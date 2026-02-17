@@ -1,39 +1,36 @@
 /**
  * Google OAuth Authentication Hook
  *
- * Handles cross-platform Google Sign-In using expo-auth-session
- * Works on iOS, Android, and Web
+ * Handles cross-platform Google Sign-In using expo-auth-session.
+ * After receiving ID token, exchanges it for a JWT via the live API.
  */
 
 import * as AuthSession from 'expo-auth-session';
+import * as Google from 'expo-auth-session/providers/google';
 import { useCallback } from 'react';
 import { useAppDispatch } from '../store/hooks';
 import { loginStart, loginSuccess, loginFailure } from '../store/slices/auth.slice';
 import { useLoginMutation } from '../store/api/auth.api';
 import { tokenStorage } from '../utils/secureStore';
-
-// Request config for Google OAuth
-const request = AuthSession.useAuthRequest(
-  {
-    clientId: process.env.GOOGLE_OAUTH_WEB_CLIENT_ID || '',
-    scopes: ['openid', 'profile', 'email'],
-    redirectUrl: AuthSession.getRedirectUrl(),
-    usePKCE: true,
-  },
-  AuthSession.discovery || {
-    authorizationEndpoint: 'https://accounts.google.com/o/oauth2/v2/auth',
-    tokenEndpoint: 'https://oauth2.googleapis.com/token',
-  },
-);
+import {
+  GOOGLE_OAUTH_CLIENT_ID_iOS,
+  GOOGLE_OAUTH_CLIENT_ID_Android,
+  GOOGLE_OAUTH_WEB_CLIENT_ID,
+} from '../utils/constants';
 
 export function useGoogleAuth() {
   const dispatch = useAppDispatch();
   const [login] = useLoginMutation();
-  const promptAsync = request?.[1]?.promptAsync;
+
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    iosClientId: GOOGLE_OAUTH_CLIENT_ID_iOS,
+    androidClientId: GOOGLE_OAUTH_CLIENT_ID_Android,
+    webClientId: GOOGLE_OAUTH_WEB_CLIENT_ID,
+    scopes: ['openid', 'profile', 'email'],
+  });
 
   const signInWithGoogle = useCallback(async () => {
     if (!promptAsync) {
-      console.error('OAuth not available');
       dispatch(loginFailure('OAuth not available'));
       return;
     }
@@ -43,32 +40,35 @@ export function useGoogleAuth() {
 
       const result = await promptAsync();
       if (result?.type !== 'success') {
-        dispatch(loginFailure('OAuth cancelled'));
+        dispatch(loginFailure('Sign-in cancelled'));
         return;
       }
 
-      // Get the ID token from the response
-      const { access_token, id_token } = result.params as any;
-      if (!id_token) {
-        dispatch(loginFailure('No ID token received'));
+      const { id_token: idToken } = result.params as any;
+      if (!idToken) {
+        dispatch(loginFailure('No ID token received from Google'));
         return;
       }
 
-      // Call backend to exchange token for session
-      const loginResult = await login({
-        provider: 'google',
-        idToken: id_token,
-      }).unwrap();
+      // Exchange Google ID token for app JWT
+      const loginResult = await login({ idToken }).unwrap();
 
-      // Store tokens securely
-      await tokenStorage.setAccessToken(loginResult.accessToken);
-      await tokenStorage.setRefreshToken(loginResult.refreshToken);
+      // Store token securely
+      await tokenStorage.setToken(loginResult.token);
+
+      // Normalise user ID field (_id vs id)
+      const userId = (loginResult.user as any)._id || (loginResult.user as any).id;
 
       // Update Redux state
       dispatch(loginSuccess({
-        user: loginResult.user,
-        accessToken: loginResult.accessToken,
-        refreshToken: loginResult.refreshToken,
+        user: {
+          id: userId,
+          email: loginResult.user.email,
+          name: loginResult.user.name,
+          image: loginResult.user.image,
+          provider: 'google',
+        },
+        token: loginResult.token,
       }));
     } catch (error: any) {
       const message = error?.message || 'Authentication failed';

@@ -15,7 +15,6 @@ import tagsReducer from '../../src/store/slices/tags.slice';
 import contactsReducer from '../../src/store/slices/contacts.slice';
 import authReducer from '../../src/store/slices/auth.slice';
 import uiReducer from '../../src/store/slices/ui.slice';
-import syncReducer from '../../src/store/slices/sync.slice';
 import filtersReducer from '../../src/store/slices/filters.slice';
 
 import type { RootState } from '../../src/store';
@@ -31,7 +30,6 @@ export function createMockStore(preloadedState?: PreloadedState<RootState>) {
       contacts: contactsReducer,
       auth: authReducer,
       ui: uiReducer,
-      sync: syncReducer,
       filters: filtersReducer,
     },
     preloadedState,

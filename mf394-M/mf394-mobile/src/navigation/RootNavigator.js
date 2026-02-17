@@ -1,14 +1,13 @@
 import React, { useEffect } from "react";
-import { ActivityIndicator, View } from "react-native";
+import { View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { FontAwesome } from "@expo/vector-icons";
 import { RootState } from "../store";
-import { restoreSession } from "../store/slices/auth.slice";
-import { tokenStorage } from "../utils/secureStore";
 import { colors } from "../theme/theme";
+import { OfflineBanner } from "../components/OfflineBanner";
 
 import LoginScreen from "../screens/Auth/LoginScreen";
 import { ListingScreen } from "../screens/Listing";
@@ -23,14 +22,16 @@ const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 export function RootNavigator() {
-  const dispatch = useDispatch();
   const auth = useSelector((state: RootState) => state.auth);
   const user = auth?.user || null;
 
   return (
-    <NavigationContainer>
-      {user ? <AuthenticatedStack /> : <UnauthenticatedStack />}
-    </NavigationContainer>
+    <>
+      <OfflineBanner />
+      <NavigationContainer>
+        {user ? <AuthenticatedStack /> : <UnauthenticatedStack />}
+      </NavigationContainer>
+    </>
   );
 }
 

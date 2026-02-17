@@ -1,12 +1,14 @@
 /**
  * Contacts API
  *
- * RTK Query API for contact CRUD operations.
- * Handles automatic caching, invalidation, and optimistic updates.
+ * RTK Query API for contact CRUD operations against the live API.
+ * Handles automatic caching and invalidation.
+ * Category format is mapped between app (kebab-case) and API (Title Case).
  */
 
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type { RootState } from '../index';
+import { mapCategoryToAPI, mapCategoryFromAPI } from '../../utils/categoryMapper';
 
 export interface Contact {
   _id: string;
@@ -15,7 +17,7 @@ export interface Contact {
   photo?: string; // S3 URL
   summary?: string;
   category: 'friends-family' | 'community' | 'work' | 'goals-hobbies' | 'miscellaneous';
-  groups: string[]; // Tag IDs
+  groups: string[]; // Tag names
   created: number;
   edited: number;
 }
@@ -25,24 +27,45 @@ export interface ContactInput {
   hint?: string;
   summary?: string;
   category: 'friends-family' | 'community' | 'work' | 'goals-hobbies' | 'miscellaneous';
-  groups?: string[]; // Tag IDs
+  groups?: string[]; // Tag names
   photo?: string; // S3 URL
 }
 
-export interface ContactsResponse {
-  contacts: Contact[];
-  total: number;
-  page: number;
-  limit: number;
+// API-side contact shape (Title Case category)
+interface APIContact {
+  _id: string;
+  name: string;
+  hint?: string;
+  photo?: string;
+  summary?: string;
+  category: string; // Title Case
+  groups: string[];
+  created: number;
+  edited: number;
 }
 
+const transformFromAPI = (contact: APIContact): Contact => ({
+  ...contact,
+  category: mapCategoryFromAPI(contact.category) as Contact['category'],
+});
+
+const transformToAPI = (contact: ContactInput) => ({
+  ...contact,
+  category: mapCategoryToAPI(contact.category),
+});
+
+const API_BASE_URL =
+  (process.env as any).API_DOMAIN ||
+  (process.env as any).API_BASE_URL ||
+  'https://ummyou.com';
+
 const baseQuery = fetchBaseQuery({
-  baseUrl: process.env.REACT_APP_API_URL || 'http://localhost:3000/api',
+  baseUrl: `${API_BASE_URL}/api`,
   prepareHeaders: (headers, { getState }) => {
     const state = getState() as RootState;
-    const token = state.auth.accessToken;
+    const token = state.auth.token;
     if (token) {
-      headers.set('authorization', `Bearer ${token}`);
+      headers.set('Authorization', `Bearer ${token}`);
     }
     return headers;
   },
@@ -51,70 +74,69 @@ const baseQuery = fetchBaseQuery({
 export const contactsApi = createApi({
   reducerPath: 'contactsApi',
   baseQuery,
-  tagTypes: ['Contact'],
+  tagTypes: ['Contact', 'User'],
   endpoints: (builder) => ({
-    // Get all contacts with pagination
-    getContacts: builder.query<
-      ContactsResponse,
-      { page?: number; limit?: number; search?: string }
-    >({
-      query: ({ page = 1, limit = 20, search = '' }) =>
-        `/contacts?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`,
-      providesTags: ['Contact'],
+    // Get full user data (contacts + tags) - primary data load
+    getUser: builder.query<{
+      id: string;
+      name: string;
+      email: string;
+      image?: string;
+      contacts: Contact[];
+      managedTags: string[];
+    }, void>({
+      query: () => '/user',
+      transformResponse: (response: any) => ({
+        ...response,
+        contacts: (response.contacts || []).map(transformFromAPI),
+      }),
+      providesTags: ['User', 'Contact'],
     }),
 
     // Get single contact
     getContactById: builder.query<Contact, string>({
       query: (id) => `/contacts/${id}`,
+      transformResponse: (response: APIContact) => transformFromAPI(response),
       providesTags: (result) => (result ? [{ type: 'Contact', id: result._id }] : ['Contact']),
     }),
 
-    // Create contact
+    // Create or update contact (API uses PUT for both)
     createContact: builder.mutation<Contact, ContactInput>({
       query: (data) => ({
         url: '/contacts',
-        method: 'POST',
-        body: data,
+        method: 'PUT',
+        body: transformToAPI(data),
       }),
-      invalidatesTags: ['Contact'],
+      transformResponse: (response: APIContact) => transformFromAPI(response),
+      invalidatesTags: ['Contact', 'User'],
     }),
 
     // Update contact
     updateContact: builder.mutation<Contact, { id: string; data: Partial<ContactInput> }>({
       query: ({ id, data }) => ({
-        url: `/contacts/${id}`,
-        method: 'PATCH',
-        body: data,
+        url: '/contacts',
+        method: 'PUT',
+        body: { _id: id, ...transformToAPI(data as ContactInput) },
       }),
-      invalidatesTags: (result, error, { id }) => (result ? [{ type: 'Contact', id: result._id }, 'Contact'] : ['Contact']),
+      transformResponse: (response: APIContact) => transformFromAPI(response),
+      invalidatesTags: ['Contact', 'User'],
     }),
 
-    // Delete contact
+    // Delete contact (query param, not path param)
     deleteContact: builder.mutation<void, string>({
       query: (id) => ({
-        url: `/contacts/${id}`,
+        url: `/contacts?id=${id}`,
         method: 'DELETE',
       }),
-      invalidatesTags: (result, error, id) => [{ type: 'Contact', id }, 'Contact'],
-    }),
-
-    // Batch delete contacts
-    deleteContacts: builder.mutation<void, string[]>({
-      query: (ids) => ({
-        url: '/contacts/batch/delete',
-        method: 'POST',
-        body: { ids },
-      }),
-      invalidatesTags: ['Contact'],
+      invalidatesTags: ['Contact', 'User'],
     }),
   }),
 });
 
 export const {
-  useGetContactsQuery,
+  useGetUserQuery,
   useGetContactByIdQuery,
   useCreateContactMutation,
   useUpdateContactMutation,
   useDeleteContactMutation,
-  useDeleteContactsMutation,
 } = contactsApi;

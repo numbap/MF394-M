@@ -138,18 +138,13 @@ export function createQuizStoreState(
     filters: filterState,
     auth: {
       user: null,
-      accessToken: null,
-      refreshToken: null,
-      loading: false,
+      token: null,
+      isAuthenticated: false,
+      isLoading: false,
       error: null,
     },
     ui: {
       toasts: [],
-    },
-    sync: {
-      queue: [],
-      syncing: false,
-      lastSync: null,
     },
     tags: {
       tags: ['Sports', 'Music', 'Tech'],

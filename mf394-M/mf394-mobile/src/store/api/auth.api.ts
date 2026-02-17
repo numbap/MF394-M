@@ -1,50 +1,51 @@
 /**
  * Auth API
  *
- * RTK Query API for authentication operations.
- * Handles login, logout, token refresh, and user profile updates.
+ * RTK Query API for authentication operations against the live API.
+ * Uses single JWT token (not access/refresh pair).
  */
 
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type { User } from '../slices/auth.slice';
-
-export interface LoginRequest {
-  provider: 'google' | 'apple' | 'facebook';
-  idToken: string;
-}
+import type { Contact } from './contacts.api';
 
 export interface LoginResponse {
-  user: User;
-  accessToken: string;
-  refreshToken: string;
+  token: string;
+  user: {
+    _id?: string;
+    id?: string;
+    email: string;
+    name: string;
+    image?: string;
+  };
 }
 
-export interface RefreshTokenRequest {
-  refreshToken: string;
+export interface UserDataResponse {
+  id: string;
+  name: string;
+  email: string;
+  image?: string;
+  contacts: Contact[];
+  managedTags: string[];
+  managedCategories?: string[];
+  stats?: any;
+  vcard?: any;
 }
 
-export interface RefreshTokenResponse {
-  accessToken: string;
-  refreshToken: string;
-}
-
-export interface UpdateProfileRequest {
-  name?: string;
-  avatar?: string;
-}
+const API_BASE_URL =
+  (process.env as any).API_DOMAIN ||
+  (process.env as any).API_BASE_URL ||
+  'https://ummyou.com';
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: process.env.REACT_APP_API_URL || 'https://ummyou.com/api',
+  baseUrl: `${API_BASE_URL}/api`,
   prepareHeaders: (headers, { getState }) => {
     headers.set('Content-Type', 'application/json');
-
-    // Add authorization token if available
     const state = getState() as any;
-    const token = state.auth?.accessToken;
+    const token = state.auth?.token;
     if (token) {
       headers.set('Authorization', `Bearer ${token}`);
     }
-
     return headers;
   },
 });
@@ -54,53 +55,19 @@ export const authApi = createApi({
   baseQuery,
   tagTypes: ['User'],
   endpoints: (builder) => ({
-    // Login with social provider
-    login: builder.mutation<LoginResponse, LoginRequest>({
-      query: (credentials) => ({
-        url: '/auth/login',
+    // Login with Google ID token
+    login: builder.mutation<LoginResponse, { idToken: string }>({
+      query: ({ idToken }) => ({
+        url: '/auth/mobile-login',
         method: 'POST',
-        body: credentials,
+        body: { idToken },
       }),
       invalidatesTags: ['User'],
     }),
 
-    // Logout
-    logout: builder.mutation<void, void>({
-      query: () => ({
-        url: '/auth/logout',
-        method: 'POST',
-      }),
-      invalidatesTags: ['User'],
-    }),
-
-    // Refresh access token
-    refreshToken: builder.mutation<RefreshTokenResponse, RefreshTokenRequest>({
-      query: ({ refreshToken }) => ({
-        url: '/auth/refresh',
-        method: 'POST',
-        body: { refreshToken },
-      }),
-    }),
-
-    // Get current user profile
-    getCurrentUser: builder.query<User, void>({
-      query: () => '/auth/me',
-      providesTags: ['User'],
-    }),
-
-    // Update user profile
-    updateProfile: builder.mutation<User, UpdateProfileRequest>({
-      query: (data) => ({
-        url: '/auth/profile',
-        method: 'PATCH',
-        body: data,
-      }),
-      invalidatesTags: ['User'],
-    }),
-
-    // Verify session (for restoring from storage)
-    verifySession: builder.query<User | null, void>({
-      query: () => '/auth/verify',
+    // Get full user data including contacts and tags
+    getUser: builder.query<UserDataResponse, void>({
+      query: () => '/user',
       providesTags: ['User'],
     }),
   }),
@@ -108,9 +75,5 @@ export const authApi = createApi({
 
 export const {
   useLoginMutation,
-  useLogoutMutation,
-  useRefreshTokenMutation,
-  useGetCurrentUserQuery,
-  useUpdateProfileMutation,
-  useVerifySessionQuery,
+  useGetUserQuery,
 } = authApi;

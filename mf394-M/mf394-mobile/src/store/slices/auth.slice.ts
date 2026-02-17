@@ -1,7 +1,8 @@
 /**
  * Authentication Slice
  *
- * Manages user authentication state including login, logout, and user profile
+ * Manages user authentication state including login, logout, and user profile.
+ * Uses a single JWT token field (not access/refresh pair).
  */
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
@@ -10,14 +11,13 @@ export interface User {
   id: string;
   email: string;
   name: string;
-  avatar?: string;
-  provider: 'google' | 'apple' | 'facebook';
+  image?: string;
+  provider: 'google';
 }
 
 interface AuthState {
   user: User | null;
-  accessToken: string | null;
-  refreshToken: string | null;
+  token: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
@@ -25,8 +25,7 @@ interface AuthState {
 
 const initialState: AuthState = {
   user: null,
-  accessToken: null,
-  refreshToken: null,
+  token: null,
   isAuthenticated: false,
   isLoading: false,
   error: null,
@@ -36,7 +35,6 @@ const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    // Login actions
     loginStart: (state) => {
       state.isLoading = true;
       state.error = null;
@@ -44,14 +42,12 @@ const authSlice = createSlice({
 
     loginSuccess: (state, action: PayloadAction<{
       user: User;
-      accessToken: string;
-      refreshToken: string;
+      token: string;
     }>) => {
       state.isLoading = false;
       state.isAuthenticated = true;
       state.user = action.payload.user;
-      state.accessToken = action.payload.accessToken;
-      state.refreshToken = action.payload.refreshToken;
+      state.token = action.payload.token;
       state.error = null;
     },
 
@@ -61,29 +57,20 @@ const authSlice = createSlice({
       state.isAuthenticated = false;
     },
 
-    // Logout action
     logout: (state) => {
       state.user = null;
-      state.accessToken = null;
-      state.refreshToken = null;
+      state.token = null;
       state.isAuthenticated = false;
       state.error = null;
-    },
-
-    // Token refresh
-    setAccessToken: (state, action: PayloadAction<string>) => {
-      state.accessToken = action.payload;
     },
 
     // Restore session from storage
     restoreSession: (state, action: PayloadAction<{
       user: User;
-      accessToken: string;
-      refreshToken: string;
+      token: string;
     }>) => {
       state.user = action.payload.user;
-      state.accessToken = action.payload.accessToken;
-      state.refreshToken = action.payload.refreshToken;
+      state.token = action.payload.token;
       state.isAuthenticated = true;
       state.isLoading = false;
     },
@@ -102,7 +89,6 @@ export const {
   loginSuccess,
   loginFailure,
   logout,
-  setAccessToken,
   restoreSession,
   updateUser,
 } = authSlice.actions;

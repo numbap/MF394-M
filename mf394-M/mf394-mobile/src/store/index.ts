@@ -1,67 +1,49 @@
 /**
  * Redux Store Configuration
  *
- * Combines Redux Toolkit slices, RTK Query, and custom middleware
- * for a robust state management solution.
+ * Combines Redux Toolkit slices, RTK Query, and custom middleware.
  */
 
 import { configureStore } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query';
 
 import { contactsApi } from './api/contacts.api';
-import { imagesApi } from './api/images.api';
 import { authApi } from './api/auth.api';
+import { tagsApi } from './api/tags.api';
+import { uploadApi } from './api/upload.api';
 
 import authReducer from './slices/auth.slice';
 import uiReducer from './slices/ui.slice';
-import syncReducer from './slices/sync.slice';
 import contactsReducer from './slices/contacts.slice';
 import tagsReducer from './slices/tags.slice';
 import filtersReducer from './slices/filters.slice';
 
-import { syncMiddleware } from './middleware/sync.middleware';
 import { errorHandlingMiddleware } from './middleware/errorHandling.middleware';
 
-/**
- * Configure the Redux store with all slices and RTK Query APIs
- */
 export const store = configureStore({
   reducer: {
-    // Redux slices
     auth: authReducer,
     ui: uiReducer,
-    sync: syncReducer,
     contacts: contactsReducer,
     tags: tagsReducer,
     filters: filtersReducer,
 
     // RTK Query APIs
     [contactsApi.reducerPath]: contactsApi.reducer,
-    [imagesApi.reducerPath]: imagesApi.reducer,
     [authApi.reducerPath]: authApi.reducer,
+    [tagsApi.reducerPath]: tagsApi.reducer,
+    [uploadApi.reducerPath]: uploadApi.reducer,
   },
 
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({
-      serializableCheck: {
-        // Ignore these action types from serialization checks
-        ignoredActions: [
-          'sync/addToQueue',
-          'sync/processQueue/fulfilled',
-        ],
-        // Ignore these paths in state from serialization checks
-        ignoredActionPaths: ['sync/queue'],
-        ignoredPaths: ['sync/queue'],
-      },
-    })
+    getDefaultMiddleware()
       .concat(contactsApi.middleware)
-      .concat(imagesApi.middleware)
       .concat(authApi.middleware)
-      .concat(syncMiddleware)
+      .concat(tagsApi.middleware)
+      .concat(uploadApi.middleware)
       .concat(errorHandlingMiddleware),
 
   devTools: {
-    // Redux DevTools configuration
     actionSanitizer: (action) => ({
       ...action,
       payload: action.payload instanceof File ? '[File Object]' : action.payload,
@@ -69,12 +51,9 @@ export const store = configureStore({
   },
 });
 
-// Setup listeners for RTK Query cache invalidation
 setupListeners(store.dispatch);
 
-// Type exports for use throughout the app
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 
-// Export all APIs for use in hooks
-export { contactsApi, imagesApi, authApi };
+export { contactsApi, authApi, tagsApi, uploadApi };

@@ -73,8 +73,7 @@ export function AuthProvider({ children }) {
           console.log("Setting mock user:", mockUser);
           setUser(mockUser);
           // Store mock token
-          await tokenStorage.setAccessToken("mock-access-token");
-          await tokenStorage.setRefreshToken("mock-refresh-token");
+          await tokenStorage.setToken("mock-access-token");
           setError(null);
           console.log("Mock authentication complete");
           return;
@@ -87,8 +86,7 @@ export function AuthProvider({ children }) {
           idToken,
         });
 
-        await tokenStorage.setAccessToken(response.data.accessToken);
-        await tokenStorage.setRefreshToken(response.data.refreshToken);
+        await tokenStorage.setToken(response.data.token || response.data.accessToken);
 
         setUser(userInfo.user);
         setError(null);
