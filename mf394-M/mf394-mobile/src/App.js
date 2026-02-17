@@ -1,11 +1,16 @@
 import React, { useEffect } from "react";
 import { Provider as ReduxProvider, useDispatch } from "react-redux";
+import * as WebBrowser from "expo-web-browser";
 import { store } from "./store";
 import { RootNavigator } from "./navigation/RootNavigator";
 import { AlertDialogProvider } from "./components/AlertDialog";
-import { ContactsProvider } from "./context/ContactsContext";
 import { restoreSession } from "./store/slices/auth.slice";
 import { tokenStorage } from "./utils/secureStore";
+
+// Must be called at the module level so it runs immediately when the app
+// loads inside the OAuth popup, before any screens render. Without this,
+// the popup never closes after Google redirects back to the app.
+WebBrowser.maybeCompleteAuthSession();
 
 const API_BASE_URL =
   process.env.API_DOMAIN || process.env.API_BASE_URL || "https://ummyou.com";
@@ -62,12 +67,10 @@ function SessionRestorer({ children }) {
 export default function App() {
   return (
     <ReduxProvider store={store}>
-      <ContactsProvider>
-        <SessionRestorer>
-          <RootNavigator />
-          <AlertDialogProvider />
-        </SessionRestorer>
-      </ContactsProvider>
+      <SessionRestorer>
+        <RootNavigator />
+        <AlertDialogProvider />
+      </SessionRestorer>
     </ReduxProvider>
   );
 }

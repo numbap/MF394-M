@@ -2,11 +2,22 @@
  * Google OAuth Authentication Hook
  *
  * Handles cross-platform Google Sign-In using expo-auth-session.
- * After receiving ID token, exchanges it for a JWT via the live API.
+ *
+ * Flow:
+ * 1. Open Google sign-in via authorization code + PKCE
+ * 2. Exchange code for tokens at Google's token endpoint
+ * 3. Extract id_token from token response
+ * 4. Send id_token to backend → receive app JWT
+ *
+ * On web, the web/desktop client ID is used.
+ * On native (iOS/Android), the platform-specific client IDs are used.
+ *
+ * Google's implicit flow (response_type=id_token) is no longer supported
+ * for web apps, so we always use the authorization code + PKCE flow.
  */
 
 import * as AuthSession from 'expo-auth-session';
-import * as Google from 'expo-auth-session/providers/google';
+import { Platform } from 'react-native';
 import { useCallback } from 'react';
 import { useAppDispatch } from '../store/hooks';
 import { loginStart, loginSuccess, loginFailure } from '../store/slices/auth.slice';
@@ -16,22 +27,42 @@ import {
   GOOGLE_OAUTH_CLIENT_ID_iOS,
   GOOGLE_OAUTH_CLIENT_ID_Android,
   GOOGLE_OAUTH_WEB_CLIENT_ID,
+  GOOGLE_CLIENT_SECRET,
 } from '../utils/constants';
+
+const discovery = {
+  authorizationEndpoint: 'https://accounts.google.com/o/oauth2/v2/auth',
+  tokenEndpoint: 'https://oauth2.googleapis.com/token',
+};
 
 export function useGoogleAuth() {
   const dispatch = useAppDispatch();
   const [login] = useLoginMutation();
 
-  const [request, response, promptAsync] = Google.useAuthRequest({
-    iosClientId: GOOGLE_OAUTH_CLIENT_ID_iOS,
-    androidClientId: GOOGLE_OAUTH_CLIENT_ID_Android,
-    webClientId: GOOGLE_OAUTH_WEB_CLIENT_ID,
-    scopes: ['openid', 'profile', 'email'],
+  const clientId = Platform.select({
+    ios: GOOGLE_OAUTH_CLIENT_ID_iOS,
+    android: GOOGLE_OAUTH_CLIENT_ID_Android,
+    default: GOOGLE_OAUTH_WEB_CLIENT_ID,
+  }) ?? GOOGLE_OAUTH_WEB_CLIENT_ID!;
+
+  const redirectUri = AuthSession.makeRedirectUri({
+    scheme: Platform.OS !== 'web' ? 'com.googleusercontent.apps' : undefined,
   });
 
+  const [request, , promptAsync] = AuthSession.useAuthRequest(
+    {
+      clientId,
+      redirectUri,
+      scopes: ['openid', 'profile', 'email'],
+      responseType: AuthSession.ResponseType.Code,
+      usePKCE: true,
+    },
+    discovery
+  );
+
   const signInWithGoogle = useCallback(async () => {
-    if (!promptAsync) {
-      dispatch(loginFailure('OAuth not available'));
+    if (!request) {
+      dispatch(loginFailure('OAuth not ready'));
       return;
     }
 
@@ -44,7 +75,23 @@ export function useGoogleAuth() {
         return;
       }
 
-      const { id_token: idToken } = result.params as any;
+      const { code } = result.params;
+
+      // Exchange authorization code for tokens using PKCE verifier + client secret
+      const tokenResponse = await AuthSession.exchangeCodeAsync(
+        {
+          clientId,
+          clientSecret: GOOGLE_CLIENT_SECRET,
+          redirectUri,
+          code,
+          extraParams: {
+            code_verifier: request.codeVerifier!,
+          },
+        },
+        discovery
+      );
+
+      const idToken = tokenResponse.idToken;
       if (!idToken) {
         dispatch(loginFailure('No ID token received from Google'));
         return;
@@ -53,13 +100,10 @@ export function useGoogleAuth() {
       // Exchange Google ID token for app JWT
       const loginResult = await login({ idToken }).unwrap();
 
-      // Store token securely
       await tokenStorage.setToken(loginResult.token);
 
-      // Normalise user ID field (_id vs id)
       const userId = (loginResult.user as any)._id || (loginResult.user as any).id;
 
-      // Update Redux state
       dispatch(loginSuccess({
         user: {
           id: userId,
@@ -76,7 +120,7 @@ export function useGoogleAuth() {
       dispatch(loginFailure(message));
       throw error;
     }
-  }, [dispatch, login, promptAsync]);
+  }, [dispatch, login, promptAsync, request, clientId, redirectUri]);
 
   return {
     signInWithGoogle,
