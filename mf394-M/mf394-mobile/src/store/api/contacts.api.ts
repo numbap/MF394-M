@@ -9,6 +9,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type { RootState } from '../index';
 import { mapCategoryToAPI, mapCategoryFromAPI } from '../../utils/categoryMapper';
+import { API_BASE_URL } from '../../utils/constants';
 
 export interface Contact {
   _id: string;
@@ -53,11 +54,6 @@ const transformToAPI = (contact: ContactInput) => ({
   ...contact,
   category: mapCategoryToAPI(contact.category),
 });
-
-const API_BASE_URL =
-  (process.env as any).API_DOMAIN ||
-  (process.env as any).API_BASE_URL ||
-  'https://ummyou.com';
 
 const baseQuery = fetchBaseQuery({
   baseUrl: `${API_BASE_URL}/api`,

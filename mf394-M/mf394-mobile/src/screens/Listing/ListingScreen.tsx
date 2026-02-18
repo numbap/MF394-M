@@ -194,6 +194,7 @@ export default function ListingScreen({ navigation }: any) {
   }
 
   if (error) {
+    console.error('[Contacts] error:', JSON.stringify(error));
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.centeredState}>

@@ -8,6 +8,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type { User } from '../slices/auth.slice';
 import type { Contact } from './contacts.api';
+import { API_BASE_URL } from '../../utils/constants';
 
 export interface LoginResponse {
   token: string;
@@ -31,11 +32,6 @@ export interface UserDataResponse {
   stats?: any;
   vcard?: any;
 }
-
-const API_BASE_URL =
-  (process.env as any).API_DOMAIN ||
-  (process.env as any).API_BASE_URL ||
-  'https://ummyou.com';
 
 const baseQuery = fetchBaseQuery({
   baseUrl: `${API_BASE_URL}/api`,

@@ -14,6 +14,9 @@
  *
  * Google's implicit flow (response_type=id_token) is no longer supported
  * for web apps, so we always use the authorization code + PKCE flow.
+ *
+ * Note: The web OAuth client in Google Cloud Console is type "Web application",
+ * which requires client_secret even when using PKCE. This is expected.
  */
 
 import * as AuthSession from 'expo-auth-session';
@@ -46,7 +49,7 @@ export function useGoogleAuth() {
   }) ?? GOOGLE_OAUTH_WEB_CLIENT_ID!;
 
   const redirectUri = AuthSession.makeRedirectUri({
-    scheme: Platform.OS !== 'web' ? 'com.googleusercontent.apps' : undefined,
+    scheme: Platform.OS !== 'web' ? 'com.ummyou.facememorizer' : undefined,
   });
 
   const [request, , promptAsync] = AuthSession.useAuthRequest(
@@ -77,7 +80,8 @@ export function useGoogleAuth() {
 
       const { code } = result.params;
 
-      // Exchange authorization code for tokens using PKCE verifier + client secret
+      // Exchange authorization code for tokens using PKCE verifier + client secret.
+      // The web client requires client_secret (Web application type in Google Cloud Console).
       const tokenResponse = await AuthSession.exchangeCodeAsync(
         {
           clientId,
@@ -115,8 +119,8 @@ export function useGoogleAuth() {
         token: loginResult.token,
       }));
     } catch (error: any) {
-      const message = error?.message || 'Authentication failed';
-      console.error('Google Sign-In Error:', message);
+      const message = error?.data?.error || error?.error || error?.message || 'Authentication failed';
+      console.error('Google Sign-In Error:', message, error);
       dispatch(loginFailure(message));
       throw error;
     }

@@ -6,6 +6,7 @@
 
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type { RootState } from '../index';
+import { API_BASE_URL } from '../../utils/constants';
 
 export interface UploadRequest {
   uri: string;
@@ -16,11 +17,6 @@ export interface UploadRequest {
 export interface UploadResponse {
   url: string;
 }
-
-const API_BASE_URL =
-  (process.env as any).API_DOMAIN ||
-  (process.env as any).API_BASE_URL ||
-  'https://ummyou.com';
 
 const baseQuery = fetchBaseQuery({
   baseUrl: `${API_BASE_URL}/api`,

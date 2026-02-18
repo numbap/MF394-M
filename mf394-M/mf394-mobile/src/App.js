@@ -6,14 +6,12 @@ import { RootNavigator } from "./navigation/RootNavigator";
 import { AlertDialogProvider } from "./components/AlertDialog";
 import { restoreSession } from "./store/slices/auth.slice";
 import { tokenStorage } from "./utils/secureStore";
+import { API_BASE_URL } from "./utils/constants";
 
 // Must be called at the module level so it runs immediately when the app
 // loads inside the OAuth popup, before any screens render. Without this,
 // the popup never closes after Google redirects back to the app.
 WebBrowser.maybeCompleteAuthSession();
-
-const API_BASE_URL =
-  process.env.API_DOMAIN || process.env.API_BASE_URL || "https://ummyou.com";
 
 /**
  * SessionRestorer
