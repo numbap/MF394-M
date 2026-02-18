@@ -26,6 +26,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 jest.mock('react-native-reanimated', () => {
   const View = require('react-native').View;
   return {
+    __esModule: true,
     default: { View },
     useSharedValue: jest.fn((val) => ({ value: val })),
     useAnimatedStyle: jest.fn((cb) => cb()),
@@ -73,11 +74,22 @@ jest.mock('../../components/FilterContainer/FilterContainer', () => {
   };
 });
 
+// Mock RTK Query so contacts come from useGetUserQuery, not state.contacts.data
+const mockUseGetUserQuery = jest.fn();
+jest.mock('../../store/api/contacts.api', () => ({
+  useGetUserQuery: (...args) => mockUseGetUserQuery(...args),
+}));
+
 describe('QuizGameScreen - Edge Cases', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.useFakeTimers();
     AsyncStorage.clear();
+    // Default: return minimal contacts (5 friends-family with photos)
+    mockUseGetUserQuery.mockReturnValue({
+      data: { contacts: QUIZ_CONTACTS.minimal },
+      isLoading: false,
+    });
   });
 
   afterEach(() => {
@@ -97,6 +109,7 @@ describe('QuizGameScreen - Edge Cases', () => {
     });
 
     it('shows empty state with 4 contacts', async () => {
+      mockUseGetUserQuery.mockReturnValue({ data: { contacts: QUIZ_CONTACTS.minimal.slice(0, 4) }, isLoading: false });
       const { getByText } = renderWithRedux(<QuizGameScreen />, {
         preloadedState: createQuizStoreState(QUIZ_CONTACTS.minimal.slice(0, 4), FILTER_STATES.singleCategory),
       });
@@ -107,6 +120,7 @@ describe('QuizGameScreen - Edge Cases', () => {
     });
 
     it('handles 0 contacts', async () => {
+      mockUseGetUserQuery.mockReturnValue({ data: { contacts: [] }, isLoading: false });
       const { getByText } = renderWithRedux(<QuizGameScreen />, {
         preloadedState: createQuizStoreState([], FILTER_STATES.singleCategory),
       });
@@ -117,6 +131,7 @@ describe('QuizGameScreen - Edge Cases', () => {
     });
 
     it('handles large contact pool (100+)', async () => {
+      mockUseGetUserQuery.mockReturnValue({ data: { contacts: QUIZ_CONTACTS.large }, isLoading: false });
       const { getByText } = renderWithRedux(<QuizGameScreen />, {
         preloadedState: createQuizStoreState(QUIZ_CONTACTS.large, FILTER_STATES.singleCategory),
       });
@@ -141,6 +156,7 @@ describe('QuizGameScreen - Edge Cases', () => {
         createMockContact({ _id: '5', name: 'Eve', photo: 'data:image/jpeg;base64,eve' }),
         createMockContact({ _id: '6', name: 'Frank', photo: 'data:image/jpeg;base64,frank' }),
       ];
+      mockUseGetUserQuery.mockReturnValue({ data: { contacts }, isLoading: false });
 
       const { getByText, queryByText } = renderWithRedux(<QuizGameScreen />, {
         preloadedState: createQuizStoreState(contacts, FILTER_STATES.singleCategory),
@@ -163,6 +179,7 @@ describe('QuizGameScreen - Edge Cases', () => {
         createMockContact({ _id: '5', name: 'Eve', photo: 'data:image/jpeg;base64,eve' }),
         createMockContact({ _id: '6', name: 'Frank', photo: 'data:image/jpeg;base64,frank' }),
       ];
+      mockUseGetUserQuery.mockReturnValue({ data: { contacts }, isLoading: false });
 
       const { getByText } = renderWithRedux(<QuizGameScreen />, {
         preloadedState: createQuizStoreState(contacts, FILTER_STATES.singleCategory),
@@ -182,6 +199,7 @@ describe('QuizGameScreen - Edge Cases', () => {
         createMockContact({ _id: '5', name: 'Eve', photo: 'data:image/jpeg;base64,eve' }),
         createMockContact({ _id: '6', name: 'Frank', photo: 'data:image/jpeg;base64,frank' }),
       ];
+      mockUseGetUserQuery.mockReturnValue({ data: { contacts }, isLoading: false });
 
       const { getByText } = renderWithRedux(<QuizGameScreen />, {
         preloadedState: createQuizStoreState(contacts, FILTER_STATES.singleCategory),
@@ -363,6 +381,7 @@ describe('QuizGameScreen - Edge Cases', () => {
         createMockContact({ _id: '4', name: 'Charlie', photo: 'data:image/jpeg;base64,charlie' }),
         createMockContact({ _id: '5', name: 'David', photo: 'data:image/jpeg;base64,david' }),
       ];
+      mockUseGetUserQuery.mockReturnValue({ data: { contacts }, isLoading: false });
 
       const { getByText } = renderWithRedux(<QuizGameScreen />, {
         preloadedState: createQuizStoreState(contacts, FILTER_STATES.singleCategory),
@@ -645,6 +664,7 @@ describe('QuizGameScreen - Edge Cases', () => {
           category: 'friends-family',
         })
       );
+      mockUseGetUserQuery.mockReturnValue({ data: { contacts: largePool }, isLoading: false });
 
       const { getByText } = renderWithRedux(<QuizGameScreen />, {
         preloadedState: createQuizStoreState(largePool, FILTER_STATES.singleCategory),
@@ -664,6 +684,7 @@ describe('QuizGameScreen - Edge Cases', () => {
         createMockContact({ _id: '1', name: longName }),
         ...QUIZ_CONTACTS.minimal.slice(1),
       ];
+      mockUseGetUserQuery.mockReturnValue({ data: { contacts }, isLoading: false });
 
       const { getByText } = renderWithRedux(<QuizGameScreen />, {
         preloadedState: createQuizStoreState(contacts, FILTER_STATES.singleCategory),
@@ -683,6 +704,7 @@ describe('QuizGameScreen - Edge Cases', () => {
         createMockContact({ _id: '1', name: specialName }),
         ...QUIZ_CONTACTS.minimal.slice(1),
       ];
+      mockUseGetUserQuery.mockReturnValue({ data: { contacts }, isLoading: false });
 
       const { getByText } = renderWithRedux(<QuizGameScreen />, {
         preloadedState: createQuizStoreState(contacts, FILTER_STATES.singleCategory),

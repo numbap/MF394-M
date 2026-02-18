@@ -101,20 +101,20 @@ export const contactsApi = createApi({
       query: (data) => ({
         url: '/contacts',
         method: 'PUT',
-        body: transformToAPI(data),
+        body: { contact: transformToAPI(data) },
       }),
-      transformResponse: (response: APIContact) => transformFromAPI(response),
+      transformResponse: (response: { message: string; contact: APIContact }) =>
+        transformFromAPI(response.contact),
       invalidatesTags: ['Contact', 'User'],
     }),
 
     // Update contact
-    updateContact: builder.mutation<Contact, { id: string; data: Partial<ContactInput> }>({
+    updateContact: builder.mutation<{ message: string }, { id: string; data: Partial<ContactInput> }>({
       query: ({ id, data }) => ({
         url: '/contacts',
         method: 'PUT',
-        body: { _id: id, ...transformToAPI(data as ContactInput) },
+        body: { contact: { _id: id, ...transformToAPI(data as ContactInput) } },
       }),
-      transformResponse: (response: APIContact) => transformFromAPI(response),
       invalidatesTags: ['Contact', 'User'],
     }),
 

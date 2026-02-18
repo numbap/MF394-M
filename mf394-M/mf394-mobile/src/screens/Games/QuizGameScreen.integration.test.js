@@ -23,6 +23,7 @@ import { toggleCategory, toggleTag } from '../../store/slices/filters.slice';
 jest.mock('react-native-reanimated', () => {
   const View = require('react-native').View;
   return {
+    __esModule: true,
     default: { View },
     useSharedValue: jest.fn((val) => ({ value: val })),
     useAnimatedStyle: jest.fn((cb) => cb()),
@@ -57,10 +58,21 @@ jest.mock('../../services/storage.service', () => ({
 
 // DO NOT mock CategoryTagFilter or FilterContainer (integration test!)
 
+// Mock RTK Query so contacts come from useGetUserQuery, not state.contacts.data
+const mockUseGetUserQuery = jest.fn();
+jest.mock('../../store/api/contacts.api', () => ({
+  useGetUserQuery: (...args) => mockUseGetUserQuery(...args),
+}));
+
 describe('QuizGameScreen - Integration', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.useFakeTimers();
+    // Default: return minimal contacts (5 friends-family with photos)
+    mockUseGetUserQuery.mockReturnValue({
+      data: { contacts: QUIZ_CONTACTS.minimal },
+      isLoading: false,
+    });
   });
 
   afterEach(() => {
@@ -125,6 +137,7 @@ describe('QuizGameScreen - Integration', () => {
     });
 
     it('handles empty contacts array', async () => {
+      mockUseGetUserQuery.mockReturnValue({ data: { contacts: [] }, isLoading: false });
       const { getByText } = renderWithRedux(<QuizGameScreen />, {
         preloadedState: createQuizStoreState([], FILTER_STATES.singleCategory),
       });

@@ -11,6 +11,7 @@ import {
   Pressable,
 } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
+import { useGetUserQuery } from "../../store/api/contacts.api";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -27,6 +28,7 @@ import {
   setCategories,
   setTags,
   restoreFilters,
+  markFiltersLoaded,
   selectSelectedCategories,
   selectSelectedTags,
   selectFiltersLoaded,
@@ -39,8 +41,13 @@ import { CATEGORIES } from "../../constants";
 export default function QuizGameScreen() {
   const dispatch = useDispatch();
 
+  // RTK Query — primary source of contacts data
+  const { data: userData, isLoading: isUserLoading } = useGetUserQuery();
+  // useMemo prevents a new [] reference on every render when userData is undefined,
+  // which would cause filteredContacts to recompute and trigger the quiz-load effect.
+  const allContacts = useMemo(() => userData?.contacts || [], [userData]);
+
   // Redux state
-  const allContacts = useSelector((state) => state.contacts.data);
   const selectedCategories = useSelector(selectSelectedCategories);
   const selectedTags = useSelector(selectSelectedTags);
   const filtersLoaded = useSelector(selectFiltersLoaded);
@@ -70,6 +77,8 @@ export default function QuizGameScreen() {
           dispatch(restoreFilters(storedFilters));
         } catch (error) {
           console.error("Failed to load filters:", error);
+          // Mark loaded even on error so the quiz renders (with empty defaults)
+          dispatch(markFiltersLoaded());
         }
       }
     };
@@ -171,12 +180,12 @@ export default function QuizGameScreen() {
     return result;
   }, [allContacts, selectedCategories, selectedTags]);
 
-  // Reload quiz contacts when filters change
+  // Reload quiz contacts when filters or user data changes
   useEffect(() => {
-    if (filtersLoaded) {
+    if (filtersLoaded && !isUserLoading) {
       loadQuizContacts();
     }
-  }, [filteredContacts, filtersLoaded]);
+  }, [filteredContacts, filtersLoaded, isUserLoading]);
 
   // Generate options when question changes (but NOT when clicking answers)
   useEffect(() => {
@@ -319,11 +328,11 @@ export default function QuizGameScreen() {
     }
   };
 
-  if (isLoading) {
+  if (isLoading || isUserLoading) {
     return (
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.container}>
-          <ActivityIndicator size="large" color={colors.primary[500]} />
+          <ActivityIndicator testID="activity-indicator" size="large" color={colors.primary[500]} />
         </View>
       </SafeAreaView>
     );

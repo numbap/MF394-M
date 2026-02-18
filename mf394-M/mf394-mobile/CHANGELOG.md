@@ -50,3 +50,13 @@
 - Navigation guard in AddEdit and PartyMode screens - only navigates after successful API mutation
 - Category format mismatch between app (kebab-case) and API (Title Case) now handled by `categoryMapper`
 - Write actions (Add, Party Mode) properly blocked when device is offline
+- `QuizGameScreen`: contacts now sourced from RTK Query (`useGetUserQuery`) instead of empty Redux slice
+- `QuizGameScreen`: wrapped `allContacts` in `useMemo` to prevent infinite re-render loop when `userData` is undefined
+- `QuizGameScreen`: dispatch `markFiltersLoaded()` on AsyncStorage load failure so loading spinner resolves
+- `contacts.api.ts`: `createContact` and `updateContact` mutations now wrap body in `{ contact: {...} }` as required by the live API
+- `contacts.api.ts`: `createContact` `transformResponse` now unwraps `response.contact`; `updateContact` no longer tries to transform a `{ message }` response
+- `filters.slice.ts`: reducers now spread plain arrays before passing to `StorageService.saveFilters` to prevent immer draft proxies escaping the reducer
+
+### Added
+- `src/store/api/contacts.api.test.ts` — tests verifying request body format, category transformation, auth headers, and cache invalidation for all three mutations
+- `src/screens/AddEdit/AddEditContactScreen.test.tsx` — tests for mutation call shape (`{ contact: {...} }` wrapper) and delete flow

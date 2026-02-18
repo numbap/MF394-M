@@ -28,9 +28,9 @@ const filtersSlice = createSlice({
       state.selectedCategories = action.payload;
       // Clear tags when categories change
       state.selectedTags = [];
-      // Persist to storage
+      // Spread to plain arrays — immer draft proxies are revoked after reducer returns
       StorageService.saveFilters({
-        categories: action.payload,
+        categories: [...action.payload],
         tags: [],
       });
     },
@@ -44,19 +44,19 @@ const filtersSlice = createSlice({
       }
       // Clear tags when categories change
       state.selectedTags = [];
-      // Persist to storage
+      // Spread to plain arrays — immer draft proxies are revoked after reducer returns
       StorageService.saveFilters({
-        categories: state.selectedCategories,
+        categories: [...state.selectedCategories],
         tags: [],
       });
     },
 
     setTags: (state, action: PayloadAction<string[]>) => {
       state.selectedTags = action.payload;
-      // Persist to storage
+      // Spread to plain arrays — immer draft proxies are revoked after reducer returns
       StorageService.saveFilters({
-        categories: state.selectedCategories,
-        tags: action.payload,
+        categories: [...state.selectedCategories],
+        tags: [...action.payload],
       });
     },
 
@@ -67,10 +67,10 @@ const filtersSlice = createSlice({
       } else {
         state.selectedTags.push(tag);
       }
-      // Persist to storage
+      // Spread to plain arrays — immer draft proxies are revoked after reducer returns
       StorageService.saveFilters({
-        categories: state.selectedCategories,
-        tags: state.selectedTags,
+        categories: [...state.selectedCategories],
+        tags: [...state.selectedTags],
       });
     },
 

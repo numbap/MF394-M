@@ -17,11 +17,22 @@ import { renderWithRedux } from '../../../__tests__/utils/reduxTestUtils';
 import { QUIZ_CONTACTS, createQuizStoreState, FILTER_STATES } from '../../../__tests__/fixtures/quizGame.fixtures';
 import { StorageService } from '../../services/storage.service';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { toggleCategory, toggleTag } from '../../store/slices/filters.slice';
+
+// Mock shuffle to be deterministic for snapshot tests
+jest.mock('../../utils/shuffle', () => (arr) => [...arr]);
+
+// Mock RTK Query so contacts come from useGetUserQuery, not state.contacts.data
+const mockUseGetUserQuery = jest.fn();
+jest.mock('../../store/api/contacts.api', () => ({
+  useGetUserQuery: (...args) => mockUseGetUserQuery(...args),
+}));
 
 // Mock dependencies
 jest.mock('react-native-reanimated', () => {
   const View = require('react-native').View;
   return {
+    __esModule: true,
     default: { View },
     useSharedValue: jest.fn((val) => ({ value: val })),
     useAnimatedStyle: jest.fn((cb) => cb()),
@@ -81,6 +92,11 @@ describe('QuizGameScreen - Filters', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     AsyncStorage.clear();
+    // Default: user data loaded with standard contacts
+    mockUseGetUserQuery.mockReturnValue({
+      data: { contacts: QUIZ_CONTACTS.standard },
+      isLoading: false,
+    });
   });
 
   describe('Filter Initialization', () => {
@@ -189,29 +205,27 @@ describe('QuizGameScreen - Filters', () => {
     });
 
     it('persists selection to AsyncStorage', async () => {
-      const { getByTestId } = renderWithRedux(<QuizGameScreen />, {
+      const { store } = renderWithRedux(<QuizGameScreen />, {
         preloadedState: createQuizStoreState(QUIZ_CONTACTS.standard, FILTER_STATES.empty),
       });
 
-      await waitFor(() => {
-        expect(getByTestId('category-friends-family')).toBeTruthy();
+      // saveFilters is called synchronously in the reducer
+      act(() => {
+        store.dispatch(toggleCategory('friends-family'));
       });
 
-      fireEvent.press(getByTestId('category-friends-family'));
-
-      await waitFor(() => {
-        expect(StorageService.saveFilters).toHaveBeenCalledWith(
-          expect.objectContaining({
-            categories: expect.arrayContaining(['friends-family']),
-          })
-        );
-      });
+      expect(StorageService.saveFilters).toHaveBeenCalledWith(
+        expect.objectContaining({
+          categories: expect.arrayContaining(['friends-family']),
+        })
+      );
     });
 
     it('shows empty state if no contacts in category', async () => {
       const contacts = [
         ...QUIZ_CONTACTS.minimal.map(c => ({ ...c, category: 'work' })),
       ];
+      mockUseGetUserQuery.mockReturnValue({ data: { contacts }, isLoading: false });
 
       const { getByTestId, getByText } = renderWithRedux(<QuizGameScreen />, {
         preloadedState: createQuizStoreState(contacts, FILTER_STATES.empty),
@@ -269,6 +283,7 @@ describe('QuizGameScreen - Filters', () => {
           groups: i < 3 ? ['Sports'] : [],
         })),
       ];
+      mockUseGetUserQuery.mockReturnValue({ data: { contacts }, isLoading: false });
 
       const { getByText, store } = renderWithRedux(<QuizGameScreen />, {
         preloadedState: createQuizStoreState(contacts, {
@@ -300,18 +315,20 @@ describe('QuizGameScreen - Filters', () => {
     });
 
     it('persists tag selection to AsyncStorage', async () => {
-      const { getByTestId, store } = renderWithRedux(<QuizGameScreen />, {
+      const { store } = renderWithRedux(<QuizGameScreen />, {
         preloadedState: createQuizStoreState(QUIZ_CONTACTS.standard, FILTER_STATES.singleCategory),
       });
 
-      // Dispatch tag toggle action directly
-      await waitFor(() => {
-        const state = store.getState();
-        expect(state.filters.selectedCategories).toContain('friends-family');
+      // Dispatch tag toggle — saveFilters is called synchronously in the reducer
+      act(() => {
+        store.dispatch(toggleTag('Sports'));
       });
 
-      // StorageService.saveFilters should have been called (on category selection)
-      expect(StorageService.saveFilters).toHaveBeenCalled();
+      expect(StorageService.saveFilters).toHaveBeenCalledWith(
+        expect.objectContaining({
+          tags: expect.arrayContaining(['Sports']),
+        })
+      );
     });
 
     it('clears selected tags when all categories deselected', async () => {
@@ -352,6 +369,7 @@ describe('QuizGameScreen - Filters', () => {
 
     it('deselects all categories when all selected', async () => {
       const allCategories = ['friends-family', 'work', 'community', 'goals-hobbies', 'miscellaneous'];
+      mockUseGetUserQuery.mockReturnValue({ data: { contacts: QUIZ_CONTACTS.large }, isLoading: false });
 
       const { store } = renderWithRedux(<QuizGameScreen />, {
         preloadedState: createQuizStoreState(QUIZ_CONTACTS.large, {
@@ -375,6 +393,7 @@ describe('QuizGameScreen - Filters', () => {
           groups: i === 0 ? ['Sports'] : [],
         })),
       ];
+      mockUseGetUserQuery.mockReturnValue({ data: { contacts }, isLoading: false });
 
       const { getByText } = renderWithRedux(<QuizGameScreen />, {
         preloadedState: createQuizStoreState(contacts, {
@@ -399,6 +418,7 @@ describe('QuizGameScreen - Filters', () => {
           groups: i < 2 ? ['Sports'] : i < 4 ? ['Music'] : [],
         })),
       ];
+      mockUseGetUserQuery.mockReturnValue({ data: { contacts }, isLoading: false });
 
       const { getByText } = renderWithRedux(<QuizGameScreen />, {
         preloadedState: createQuizStoreState(contacts, {
@@ -465,7 +485,7 @@ describe('QuizGameScreen - Filters', () => {
       });
 
       await waitFor(() => {
-        expect(getByText('Question 1 of')).toBeTruthy();
+        expect(getByText(/Question 1 of/)).toBeTruthy();
       });
 
       // Change filter mid-game
@@ -474,6 +494,63 @@ describe('QuizGameScreen - Filters', () => {
       // Should reset to question 1 (with new pool)
       await waitFor(() => {
         expect(getByText(/Question 1 of/)).toBeTruthy();
+      });
+    });
+  });
+
+  describe('RTK Query Data Source', () => {
+    it('shows loading spinner when useGetUserQuery isLoading is true', async () => {
+      mockUseGetUserQuery.mockReturnValue({ data: undefined, isLoading: true });
+
+      const { getByTestId } = renderWithRedux(<QuizGameScreen />, {
+        preloadedState: createQuizStoreState([], FILTER_STATES.singleCategory),
+      });
+
+      await waitFor(() => {
+        expect(getByTestId('activity-indicator')).toBeTruthy();
+      });
+    });
+
+    it('shows quiz when userData.contacts has >= 5 contacts with photos', async () => {
+      mockUseGetUserQuery.mockReturnValue({
+        data: { contacts: QUIZ_CONTACTS.standard },
+        isLoading: false,
+      });
+
+      const { getByText } = renderWithRedux(<QuizGameScreen />, {
+        preloadedState: createQuizStoreState(QUIZ_CONTACTS.standard, FILTER_STATES.singleCategory),
+      });
+
+      await waitFor(() => {
+        expect(getByText('Who is this?')).toBeTruthy();
+      });
+    });
+
+    it('shows empty state when userData.contacts has < 5 contacts with photos', async () => {
+      const tooFew = QUIZ_CONTACTS.minimal.slice(0, 3).map(c => ({
+        ...c,
+        category: 'friends-family',
+      }));
+      mockUseGetUserQuery.mockReturnValue({ data: { contacts: tooFew }, isLoading: false });
+
+      const { getByText } = renderWithRedux(<QuizGameScreen />, {
+        preloadedState: createQuizStoreState(tooFew, FILTER_STATES.singleCategory),
+      });
+
+      await waitFor(() => {
+        expect(getByText(/Not enough contacts with photos/i)).toBeTruthy();
+      });
+    });
+
+    it('shows empty state when userData is undefined (not yet loaded)', async () => {
+      mockUseGetUserQuery.mockReturnValue({ data: undefined, isLoading: false });
+
+      const { getByText } = renderWithRedux(<QuizGameScreen />, {
+        preloadedState: createQuizStoreState([], FILTER_STATES.singleCategory),
+      });
+
+      await waitFor(() => {
+        expect(getByText(/Not enough contacts with photos/i)).toBeTruthy();
       });
     });
   });
@@ -508,9 +585,9 @@ describe('QuizGameScreen - Filters', () => {
         preloadedState: createQuizStoreState(QUIZ_CONTACTS.standard, FILTER_STATES.withTags),
       });
 
+      // friends-family + Sports/Music tags → only 2 contacts match → empty state
       await waitFor(() => {
-        // May show quiz or empty state depending on filtered contacts
-        expect(tree.container).toBeTruthy();
+        expect(tree.getByText(/Not enough contacts with photos/i)).toBeTruthy();
       });
 
       expect(tree.toJSON()).toMatchSnapshot();

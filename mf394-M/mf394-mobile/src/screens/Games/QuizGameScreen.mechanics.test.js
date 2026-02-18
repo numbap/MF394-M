@@ -21,6 +21,7 @@ import { StorageService } from '../../services/storage.service';
 jest.mock('react-native-reanimated', () => {
   const View = require('react-native').View;
   return {
+    __esModule: true,
     default: {
       View,
     },
@@ -79,11 +80,22 @@ jest.mock('../../components/FilterContainer/FilterContainer', () => {
   };
 });
 
+// Mock RTK Query so contacts come from useGetUserQuery, not state.contacts.data
+const mockUseGetUserQuery = jest.fn();
+jest.mock('../../store/api/contacts.api', () => ({
+  useGetUserQuery: (...args) => mockUseGetUserQuery(...args),
+}));
+
 describe('QuizGameScreen - Mechanics', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.clearAllTimers();
     jest.useFakeTimers();
+    // Default: return minimal contacts (5 friends-family with photos)
+    mockUseGetUserQuery.mockReturnValue({
+      data: { contacts: QUIZ_CONTACTS.minimal },
+      isLoading: false,
+    });
   });
 
   afterEach(() => {
@@ -127,6 +139,7 @@ describe('QuizGameScreen - Mechanics', () => {
     });
 
     it('shows empty state with <5 contacts', async () => {
+      mockUseGetUserQuery.mockReturnValue({ data: { contacts: QUIZ_CONTACTS.minimal.slice(0, 4) }, isLoading: false });
       const { getByText } = renderWithRedux(<QuizGameScreen />, {
         preloadedState: createQuizStoreState(QUIZ_CONTACTS.minimal.slice(0, 4), FILTER_STATES.singleCategory),
       });
@@ -137,6 +150,7 @@ describe('QuizGameScreen - Mechanics', () => {
     });
 
     it('filters out contacts without photos', async () => {
+      mockUseGetUserQuery.mockReturnValue({ data: { contacts: QUIZ_CONTACTS.withoutPhotos }, isLoading: false });
       const { getByText, queryByText } = renderWithRedux(<QuizGameScreen />, {
         preloadedState: createQuizStoreState(QUIZ_CONTACTS.withoutPhotos, FILTER_STATES.singleCategory),
       });

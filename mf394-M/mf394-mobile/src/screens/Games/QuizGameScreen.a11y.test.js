@@ -21,6 +21,7 @@ import { QUIZ_CONTACTS, createQuizStoreState, FILTER_STATES } from '../../../__t
 jest.mock('react-native-reanimated', () => {
   const View = require('react-native').View;
   return {
+    __esModule: true,
     default: { View },
     useSharedValue: jest.fn((val) => ({ value: val })),
     useAnimatedStyle: jest.fn((cb) => cb()),
@@ -70,9 +71,20 @@ jest.mock('../../components/FilterContainer/FilterContainer', () => {
   };
 });
 
+// Mock RTK Query so contacts come from useGetUserQuery, not state.contacts.data
+const mockUseGetUserQuery = jest.fn();
+jest.mock('../../store/api/contacts.api', () => ({
+  useGetUserQuery: (...args) => mockUseGetUserQuery(...args),
+}));
+
 describe('QuizGameScreen - Accessibility', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    // Default: return minimal contacts (5 friends-family with photos)
+    mockUseGetUserQuery.mockReturnValue({
+      data: { contacts: QUIZ_CONTACTS.minimal },
+      isLoading: false,
+    });
   });
 
   describe('Screen Structure', () => {
@@ -255,6 +267,7 @@ describe('QuizGameScreen - Accessibility', () => {
 
   describe('Empty States', () => {
     it('has accessible empty state message', async () => {
+      mockUseGetUserQuery.mockReturnValue({ data: { contacts: [] }, isLoading: false });
       const { getByText } = renderWithRedux(<QuizGameScreen />, {
         preloadedState: createQuizStoreState([], FILTER_STATES.singleCategory),
       });
@@ -265,6 +278,7 @@ describe('QuizGameScreen - Accessibility', () => {
     });
 
     it('has testID on empty state', async () => {
+      mockUseGetUserQuery.mockReturnValue({ data: { contacts: [] }, isLoading: false });
       const { getByText } = renderWithRedux(<QuizGameScreen />, {
         preloadedState: createQuizStoreState([], FILTER_STATES.singleCategory),
       });
@@ -332,6 +346,7 @@ describe('QuizGameScreen - Accessibility', () => {
     });
 
     it('provides helpful context in empty state', async () => {
+      mockUseGetUserQuery.mockReturnValue({ data: { contacts: [] }, isLoading: false });
       const { getByText } = renderWithRedux(<QuizGameScreen />, {
         preloadedState: createQuizStoreState([], FILTER_STATES.singleCategory),
       });

@@ -11,7 +11,7 @@
  */
 
 import React from 'react';
-import { render, fireEvent, waitFor } from '@testing-library/react-native';
+import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
 import { Alert } from 'react-native';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
@@ -22,14 +22,21 @@ import filtersReducer from '../../store/slices/filters.slice';
 import tagsReducer from '../../store/slices/tags.slice';
 import contactsReducer from '../../store/slices/contacts.slice';
 
+// Mock showAlert (used by screen instead of Alert.alert directly)
+const mockShowAlert = jest.fn();
+jest.mock('../../utils/showAlert', () => ({
+  showAlert: (...args: any[]) => mockShowAlert(...args),
+}));
+
 // RTK Query mutation mocks
 const mockCreateContact = jest.fn();
 const mockUpdateContact = jest.fn();
 const mockDeleteContact = jest.fn();
 const mockUploadImage = jest.fn();
 
+let mockUserContacts: any[] = [];
 jest.mock('../../store/api/contacts.api', () => ({
-  useGetUserQuery: () => ({ data: { contacts: [] }, isLoading: false }),
+  useGetUserQuery: () => ({ data: { contacts: mockUserContacts }, isLoading: false }),
   useCreateContactMutation: () => [mockCreateContact, { isLoading: false }],
   useUpdateContactMutation: () => [mockUpdateContact, { isLoading: false }],
   useDeleteContactMutation: () => [mockDeleteContact, { isLoading: false }],
@@ -42,14 +49,13 @@ jest.mock('../../store/api/upload.api', () => ({
 // Mock navigation
 const mockGoBack = jest.fn();
 const mockNavigate = jest.fn();
+const mockRouteParams = { params: {} as any };
 jest.mock('@react-navigation/native', () => ({
   useNavigation: () => ({
     goBack: mockGoBack,
     navigate: mockNavigate,
   }),
-  useRoute: () => ({
-    params: {},
-  }),
+  useRoute: () => mockRouteParams,
 }));
 
 // Mock face detection hook
@@ -217,9 +223,13 @@ describe('AddEditContactScreen', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.spyOn(Alert, 'alert').mockImplementation(() => {});
+    mockShowAlert.mockImplementation(() => {});
+    // Reset route params to "add" mode and empty contacts
+    mockRouteParams.params = {};
+    mockUserContacts = [];
     // Default: mutations succeed
     mockCreateContact.mockResolvedValue({ data: { _id: '123' } });
-    mockUpdateContact.mockResolvedValue({ data: { _id: '123' } });
+    mockUpdateContact.mockResolvedValue({ data: { message: 'Contact updated successfully.' } });
     mockDeleteContact.mockResolvedValue({ data: {} });
     mockUploadImage.mockResolvedValue({ data: { url: 'https://s3.example.com/photo.jpg' } });
   });
@@ -372,6 +382,185 @@ describe('AddEditContactScreen', () => {
       const { getByTestId } = renderWithProvider(<AddEditContactScreen />);
       fireEvent.press(getByTestId('cancel-button'));
       expect(mockGoBack).toHaveBeenCalled();
+    });
+  });
+
+  describe('Mutation call shape', () => {
+    it('calls createContact with name and hint fields', async () => {
+      const { getByPlaceholderText, getByTestId } = renderWithProvider(<AddEditContactScreen />);
+
+      fireEvent.changeText(getByPlaceholderText('Contact name'), 'Iris');
+      fireEvent.changeText(getByPlaceholderText('e.g., tall, red jacket'), 'wears glasses');
+
+      fireEvent.press(getByTestId('primary-button'));
+
+      await waitFor(() => {
+        expect(mockCreateContact).toHaveBeenCalledWith(
+          expect.objectContaining({ name: 'Iris', hint: 'wears glasses' })
+        );
+      });
+    });
+
+    it('navigates to Listing after successful create', async () => {
+      const { getByPlaceholderText, getByTestId } = renderWithProvider(<AddEditContactScreen />);
+
+      fireEvent.changeText(getByPlaceholderText('Contact name'), 'Jack');
+      fireEvent.changeText(getByPlaceholderText('e.g., tall, red jacket'), 'tall');
+
+      fireEvent.press(getByTestId('primary-button'));
+
+      await waitFor(() => {
+        expect(mockNavigate).toHaveBeenCalledWith('Listing', expect.any(Object));
+      });
+    });
+
+    it('shows error and does NOT navigate when createContact fails', async () => {
+      mockCreateContact.mockResolvedValue({ error: { message: 'Network error' } });
+
+      const { getByPlaceholderText, getByTestId } = renderWithProvider(<AddEditContactScreen />);
+
+      fireEvent.changeText(getByPlaceholderText('Contact name'), 'Karen');
+      fireEvent.changeText(getByPlaceholderText('e.g., tall, red jacket'), 'short hair');
+
+      fireEvent.press(getByTestId('primary-button'));
+
+      await waitFor(() => {
+        expect(mockCreateContact).toHaveBeenCalled();
+        expect(mockNavigate).not.toHaveBeenCalled();
+      });
+    });
+
+    it('calls updateContact with contact id when editing', async () => {
+      const existingContact = {
+        _id: 'edit-contact-id',
+        name: 'Lee',
+        hint: 'old hint',
+        summary: '',
+        category: 'friends-family' as const,
+        groups: [],
+        photo: undefined,
+        created: 1000,
+        edited: 1000,
+      };
+      mockRouteParams.params = { contactId: 'edit-contact-id' };
+      mockUserContacts = [existingContact];
+
+      const { getByPlaceholderText, getByTestId } = renderWithProvider(<AddEditContactScreen />);
+
+      await waitFor(() => {
+        expect(getByPlaceholderText('Contact name')).toBeTruthy();
+      });
+
+      fireEvent.changeText(getByPlaceholderText('Contact name'), 'Lee Updated');
+
+      // Add hint to satisfy validation (no photo)
+      await waitFor(() => expect(getByPlaceholderText('e.g., tall, red jacket')).toBeTruthy());
+      fireEvent.changeText(getByPlaceholderText('e.g., tall, red jacket'), 'old hint');
+
+      fireEvent.press(getByTestId('primary-button'));
+
+      await waitFor(() => {
+        expect(mockUpdateContact).toHaveBeenCalledWith(
+          expect.objectContaining({ id: 'edit-contact-id' })
+        );
+      });
+    });
+
+    it('does NOT navigate if updateContact fails', async () => {
+      mockUpdateContact.mockResolvedValue({ error: { message: 'Failed to update' } });
+
+      const existingContact = {
+        _id: 'fail-contact-id',
+        name: 'Mike',
+        hint: 'hint',
+        summary: '',
+        category: 'work' as const,
+        groups: [],
+        photo: undefined,
+        created: 1000,
+        edited: 1000,
+      };
+      mockRouteParams.params = { contactId: 'fail-contact-id' };
+      mockUserContacts = [existingContact];
+
+      const { getByPlaceholderText, getByTestId } = renderWithProvider(<AddEditContactScreen />);
+
+      await waitFor(() => {
+        expect(getByPlaceholderText('Contact name')).toBeTruthy();
+      });
+
+      fireEvent.press(getByTestId('primary-button'));
+
+      await waitFor(() => {
+        expect(mockUpdateContact).toHaveBeenCalled();
+        expect(mockNavigate).not.toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('Delete contact', () => {
+    it('calls deleteContact with the correct contact ID after confirmation', async () => {
+      let deleteConfirmCallback: (() => void) | null = null;
+      mockShowAlert.mockImplementation((_title: string, _msg: string, buttons: any[]) => {
+        const deleteBtn = buttons?.find((b: any) => b.style === 'destructive');
+        if (deleteBtn?.onPress) {
+          deleteConfirmCallback = deleteBtn.onPress;
+        }
+      });
+
+      const existingContact = {
+        _id: 'del-contact-id',
+        name: 'Nina',
+        hint: 'hint',
+        summary: '',
+        category: 'community' as const,
+        groups: [],
+        photo: undefined,
+        created: 1000,
+        edited: 1000,
+      };
+      mockRouteParams.params = { contactId: 'del-contact-id' };
+      mockUserContacts = [existingContact];
+
+      const { getByTestId } = renderWithProvider(<AddEditContactScreen />);
+
+      await waitFor(() => expect(getByTestId('delete-button')).toBeTruthy());
+      fireEvent.press(getByTestId('delete-button'));
+
+      // Trigger the destructive confirm action
+      await waitFor(() => expect(deleteConfirmCallback).not.toBeNull());
+      await act(async () => { deleteConfirmCallback!(); });
+
+      await waitFor(() => {
+        expect(mockDeleteContact).toHaveBeenCalledWith('del-contact-id');
+      });
+    });
+
+    it('does NOT delete when user presses Cancel in the dialog', async () => {
+      // showAlert is mocked to do nothing (simulating Cancel)
+      mockShowAlert.mockImplementation(() => {});
+
+      const existingContact = {
+        _id: 'cancel-del-id',
+        name: 'Oscar',
+        hint: 'hint',
+        summary: '',
+        category: 'miscellaneous' as const,
+        groups: [],
+        photo: undefined,
+        created: 1000,
+        edited: 1000,
+      };
+      mockRouteParams.params = { contactId: 'cancel-del-id' };
+      mockUserContacts = [existingContact];
+
+      const { getByTestId } = renderWithProvider(<AddEditContactScreen />);
+
+      await waitFor(() => expect(getByTestId('delete-button')).toBeTruthy());
+      fireEvent.press(getByTestId('delete-button'));
+
+      await waitFor(() => expect(mockShowAlert).toHaveBeenCalled());
+      expect(mockDeleteContact).not.toHaveBeenCalled();
     });
   });
 });
