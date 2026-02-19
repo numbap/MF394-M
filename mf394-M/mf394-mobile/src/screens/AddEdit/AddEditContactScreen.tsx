@@ -207,6 +207,9 @@ export default function AddEditContactScreen() {
           throw new Error("Image upload failed. Please try again.");
         }
         finalPhotoUrl = uploadResult.data?.url;
+        if (!finalPhotoUrl) {
+          throw new Error("Image upload failed. Please try again.");
+        }
       }
 
       const contactData = {
@@ -221,11 +224,13 @@ export default function AddEditContactScreen() {
       if (isEditing && existingContact) {
         const result = await updateContact({ id: existingContact._id, data: contactData });
         if ('error' in result) {
+          console.error("updateContact error:", JSON.stringify(result.error));
           throw new Error("Failed to update contact. Please try again.");
         }
       } else {
         const result = await createContact(contactData);
         if ('error' in result) {
+          console.error("createContact error:", result.error);
           throw new Error("Failed to create contact. Please try again.");
         }
       }

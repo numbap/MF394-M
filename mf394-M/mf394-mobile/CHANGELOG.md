@@ -15,7 +15,14 @@
 - `StorageService.loadContacts()`, `saveContacts()`, `clearContacts()` (data now served via API)
 - `StorageService.loadFilters()` offline mock bypass
 
+### Fixed
+- `upload.api.ts` — request body was `{ image, metadata }` but live API requires `{ fileName, fileType, fileContent }`. Fixed to match server contract.
+- `upload.api.ts` — `FileReader` (browser-only) was used on all platforms. Native now uses `expo-image-manipulator` with `base64: true`; web data-URLs bypass fetch entirely. Party Mode saves now work on iOS/Android.
+
 ### Added
+- `src/store/api/upload.api.test.ts` — new test suite verifying upload request body shape, auth header, URL response, and error handling.
+- `getBase64FromUri` exported helper in `upload.api.ts` for platform-safe base64 conversion.
+
 - `src/utils/categoryMapper.ts` - Maps between app kebab-case category format and API Title Case format
 - `src/utils/categoryMapper.test.ts` - Full test coverage for category mapping
 - `src/store/api/tags.api.ts` - RTK Query endpoints for GET/POST/DELETE `/api/tags`

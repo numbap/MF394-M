@@ -113,7 +113,7 @@ export default function QuizGameScreen() {
   const playSound = async (isCorrect) => {
     try {
       // Using Web Audio API for simple beep sounds
-      if (typeof window !== 'undefined' && window.AudioContext) {
+      if (typeof window !== "undefined" && window.AudioContext) {
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
         const oscillator = audioContext.createOscillator();
         const gainNode = audioContext.createGain();
@@ -125,7 +125,7 @@ export default function QuizGameScreen() {
           // Success sound: Rising tone
           oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // C5
           oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.1); // E5
-          oscillator.type = 'sine';
+          oscillator.type = "sine";
           gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
           gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
           oscillator.start(audioContext.currentTime);
@@ -134,7 +134,7 @@ export default function QuizGameScreen() {
           // Error sound: Descending buzz
           oscillator.frequency.setValueAtTime(300, audioContext.currentTime);
           oscillator.frequency.setValueAtTime(150, audioContext.currentTime + 0.1);
-          oscillator.type = 'sawtooth';
+          oscillator.type = "sawtooth";
           gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
           gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
           oscillator.start(audioContext.currentTime);
@@ -175,7 +175,7 @@ export default function QuizGameScreen() {
     }
 
     // Filter to only contacts with photos
-    result = result.filter(c => c.photo && c.photo.trim().length > 0);
+    result = result.filter((c) => c.photo && c.photo.trim().length > 0);
 
     return result;
   }, [allContacts, selectedCategories, selectedTags]);
@@ -195,8 +195,7 @@ export default function QuizGameScreen() {
 
       // Add 4 random wrong answers
       while (options.length < 5) {
-        const randomContact =
-          quizContacts[Math.floor(Math.random() * quizContacts.length)];
+        const randomContact = quizContacts[Math.floor(Math.random() * quizContacts.length)];
         if (!options.includes(randomContact.name)) {
           options.push(randomContact.name);
         }
@@ -276,10 +275,7 @@ export default function QuizGameScreen() {
 
   const animatedImageStyle = useAnimatedStyle(() => {
     return {
-      transform: [
-        { scale: scale.value },
-        { translateX: shakeX.value },
-      ],
+      transform: [{ scale: scale.value }, { translateX: shakeX.value }],
     };
   });
 
@@ -394,8 +390,8 @@ export default function QuizGameScreen() {
   // Show empty state if not enough contacts with photos
   if (quizContacts.length === 0) {
     const categoryNames = selectedCategories
-      .map(cat => CATEGORIES.find(c => c.value === cat)?.label || cat)
-      .join(', ');
+      .map((cat) => CATEGORIES.find((c) => c.value === cat)?.label || cat)
+      .join(", ");
 
     return (
       <SafeAreaView style={styles.safeArea}>
@@ -439,11 +435,11 @@ export default function QuizGameScreen() {
           </FilterContainer>
           <View style={styles.emptyContainer}>
             <Text style={styles.emptyText}>
-              Not enough contacts with photos in "{categoryNames}".
+              Only {quizContacts.length} found. Minimum 5 contacts with photos required.
             </Text>
             <Text style={styles.emptySubtext}>
-              You need at least 5 contacts with photos to play the quiz.
-              Try selecting more categories or tags.
+              You need at least 5 contacts with photos to play the quiz. Try selecting more
+              categories or tags.
             </Text>
           </View>
         </ScrollView>
@@ -491,10 +487,7 @@ export default function QuizGameScreen() {
                     ]}
                   >
                     <Text
-                      style={[
-                        styles.tagText,
-                        selectedTags.includes(tag) && styles.tagTextSelected,
-                      ]}
+                      style={[styles.tagText, selectedTags.includes(tag) && styles.tagTextSelected]}
                     >
                       {tag}
                     </Text>

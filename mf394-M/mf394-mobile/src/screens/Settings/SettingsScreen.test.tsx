@@ -1,13 +1,10 @@
 import React from 'react';
-import { render, fireEvent, waitFor } from '@testing-library/react-native';
+import { render, fireEvent, act } from '@testing-library/react-native';
 import { Provider } from 'react-redux';
-import { Alert } from 'react-native';
 import { configureStore } from '@reduxjs/toolkit';
 import SettingsScreen from './SettingsScreen';
 import authReducer from '../../store/slices/auth.slice';
-
-// Mock Alert
-jest.spyOn(Alert, 'alert');
+import { tokenStorage } from '../../utils/secureStore';
 
 // Mock tokenStorage
 jest.mock('../../utils/secureStore', () => ({
@@ -101,7 +98,7 @@ describe('SettingsScreen', () => {
     expect(getByText('Log Out')).toBeTruthy();
   });
 
-  it('shows confirmation alert when logout button is pressed', () => {
+  it('clears token when logout button is pressed', async () => {
     const store = createMockStore();
     const { getByText } = render(
       <Provider store={store}>
@@ -109,17 +106,14 @@ describe('SettingsScreen', () => {
       </Provider>
     );
 
-    const logoutButton = getByText('Log Out');
-    fireEvent.press(logoutButton);
+    await act(async () => {
+      fireEvent.press(getByText('Log Out'));
+    });
 
-    expect(Alert.alert).toHaveBeenCalledWith(
-      'Log Out',
-      'Are you sure you want to log out?',
-      expect.any(Array)
-    );
+    expect(tokenStorage.clearToken).toHaveBeenCalledTimes(1);
   });
 
-  it('disables button during logout', () => {
+  it('clears auth state when logout button is pressed', async () => {
     const store = createMockStore();
     const { getByText } = render(
       <Provider store={store}>
@@ -127,11 +121,41 @@ describe('SettingsScreen', () => {
       </Provider>
     );
 
-    const logoutButton = getByText('Log Out');
-    expect(logoutButton).toBeTruthy();
+    await act(async () => {
+      fireEvent.press(getByText('Log Out'));
+    });
 
-    // Button should not be disabled initially
-    const buttonParent = logoutButton.parent;
-    expect(buttonParent?.props.accessibilityState?.disabled).toBeFalsy();
+    const state = store.getState();
+    expect(state.auth.user).toBeNull();
+    expect(state.auth.token).toBeNull();
+    expect(state.auth.isAuthenticated).toBe(false);
+  });
+
+  it('clears token before dispatching logout', async () => {
+    const callOrder: string[] = [];
+    (tokenStorage.clearToken as jest.Mock).mockImplementation(async () => {
+      callOrder.push('clearToken');
+    });
+
+    const store = createMockStore();
+    const originalDispatch = store.dispatch.bind(store);
+    store.dispatch = jest.fn((action) => {
+      if (action.type === 'auth/logout') {
+        callOrder.push('logout');
+      }
+      return originalDispatch(action);
+    }) as typeof store.dispatch;
+
+    const { getByText } = render(
+      <Provider store={store}>
+        <SettingsScreen />
+      </Provider>
+    );
+
+    await act(async () => {
+      fireEvent.press(getByText('Log Out'));
+    });
+
+    expect(callOrder).toEqual(['clearToken', 'logout']);
   });
 });

@@ -294,6 +294,27 @@ describe('AddEditContactScreen', () => {
       });
     });
 
+    it('shows upload error when upload succeeds but returns no URL', async () => {
+      mockUploadImage.mockResolvedValue({ data: {} }); // no url field
+      mockDetectFaces.mockResolvedValue({ faces: [], isRealDetection: true });
+
+      const { getByTestId, getByPlaceholderText } = renderWithProvider(<AddEditContactScreen />);
+
+      fireEvent.changeText(getByPlaceholderText('Contact name'), 'John Doe');
+      fireEvent.press(getByTestId('image-selector'));
+
+      await waitFor(() => expect(getByTestId('crop-confirm')).toBeTruthy());
+      fireEvent.press(getByTestId('crop-confirm'));
+
+      await waitFor(() => expect(getByPlaceholderText('Contact name')).toBeTruthy());
+      fireEvent.press(getByTestId('primary-button'));
+
+      await waitFor(() => {
+        expect(mockCreateContact).not.toHaveBeenCalled();
+        expect(mockNavigate).not.toHaveBeenCalled();
+      });
+    });
+
     it('does NOT navigate if uploadImage fails', async () => {
       mockUploadImage.mockResolvedValue({ error: { message: 'Upload failed' } });
       mockDetectFaces.mockResolvedValue({ faces: [], isRealDetection: true });

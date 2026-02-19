@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useAppSelector } from '../../store/hooks';
 import { selectAuthUser } from '../../store/hooks';
 import { useDispatch } from 'react-redux';
@@ -9,33 +9,11 @@ import { colors, spacing, radii, typography } from '../../theme/theme';
 
 export default function SettingsScreen() {
   const user = useAppSelector(selectAuthUser);
-  const [isLoading, setIsLoading] = React.useState(false);
   const dispatch = useDispatch();
 
-  const handleLogout = () => {
-    Alert.alert(
-      'Log Out',
-      'Are you sure you want to log out?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Log Out',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              setIsLoading(true);
-              await tokenStorage.clearToken();
-              dispatch(logout());
-            } catch (error) {
-              console.error('Logout failed:', error);
-              dispatch(logout());
-            } finally {
-              setIsLoading(false);
-            }
-          },
-        },
-      ]
-    );
+  const handleLogout = async () => {
+    await tokenStorage.clearToken();
+    dispatch(logout());
   };
 
   return (
@@ -52,11 +30,8 @@ export default function SettingsScreen() {
         <TouchableOpacity
           style={styles.logoutButton}
           onPress={handleLogout}
-          disabled={isLoading}
         >
-          <Text style={styles.logoutButtonText}>
-            {isLoading ? 'Logging out...' : 'Log Out'}
-          </Text>
+          <Text style={styles.logoutButtonText}>Log Out</Text>
         </TouchableOpacity>
       </View>
     </View>
