@@ -6,4 +6,5 @@ module.exports = {
   API_DOMAIN: "https://memcard-git-mobileapi-numbaps-projects.vercel.app",
   API_TIMEOUT: "30000",
   FACE_DETECTION_MIN_CONFIDENCE: "0.5",
+  AUTH_MOCK: "false",
 };

@@ -20,12 +20,11 @@ jest.mock('react-native', () => ({
   },
 }));
 
-// Mock expo-image-manipulator
+// Mock expo-image-manipulator (v14 named-export API)
 const mockManipulateAsync = jest.fn();
 jest.mock('expo-image-manipulator', () => ({
-  ImageManipulator: {
-    manipulateAsync: mockManipulateAsync,
-  },
+  manipulateAsync: mockManipulateAsync,
+  SaveFormat: { JPEG: 'jpeg', PNG: 'png' },
 }));
 
 describe('imageCropping utilities', () => {

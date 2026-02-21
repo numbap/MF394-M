@@ -8,8 +8,9 @@ import {
   Image,
   ScrollView,
   SafeAreaView,
-  Pressable,
+  Platform,
 } from "react-native";
+import * as Haptics from "expo-haptics";
 import { useSelector, useDispatch } from "react-redux";
 import { useGetUserQuery } from "../../store/api/contacts.api";
 import Animated, {
@@ -35,6 +36,7 @@ import {
 } from "../../store/slices/filters.slice";
 import { CategoryTagFilter } from "../../components/CategoryTagFilter";
 import { FilterContainer } from "../../components/FilterContainer";
+import { QuizCelebration } from "../../components/QuizCelebration";
 import { StorageService } from "../../services/storage.service";
 import { CATEGORIES } from "../../constants";
 
@@ -59,6 +61,8 @@ export default function QuizGameScreen() {
   const [isLoading, setIsLoading] = useState(true);
   const [feedback, setFeedback] = useState(null); // null | 'correct' | 'incorrect'
   const [selectedOption, setSelectedOption] = useState(null);
+  const [score, setScore] = useState(0);
+  const [quizComplete, setQuizComplete] = useState(false);
 
   // Animation values
   const scale = useSharedValue(1);
@@ -67,6 +71,9 @@ export default function QuizGameScreen() {
   // Sound refs
   const correctSoundRef = useRef(null);
   const incorrectSoundRef = useRef(null);
+
+  // Timer ref for cleanup
+  const timerRef = useRef(null);
 
   // Load filters from storage on mount
   useEffect(() => {
@@ -112,37 +119,44 @@ export default function QuizGameScreen() {
 
   const playSound = async (isCorrect) => {
     try {
-      // Using Web Audio API for simple beep sounds
-      if (typeof window !== "undefined" && window.AudioContext) {
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
+      if (Platform.OS === "web") {
+        // Web Audio API oscillator (web only)
+        if (typeof window !== "undefined" && window.AudioContext) {
+          const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+          const oscillator = audioContext.createOscillator();
+          const gainNode = audioContext.createGain();
 
-        oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
+          oscillator.connect(gainNode);
+          gainNode.connect(audioContext.destination);
 
+          if (isCorrect) {
+            oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime);
+            oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.1);
+            oscillator.type = "sine";
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.2);
+          } else {
+            oscillator.frequency.setValueAtTime(300, audioContext.currentTime);
+            oscillator.frequency.setValueAtTime(150, audioContext.currentTime + 0.1);
+            oscillator.type = "sawtooth";
+            gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.15);
+          }
+        }
+      } else {
+        // Native haptics (iOS/Android)
         if (isCorrect) {
-          // Success sound: Rising tone
-          oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // C5
-          oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.1); // E5
-          oscillator.type = "sine";
-          gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-          gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
-          oscillator.start(audioContext.currentTime);
-          oscillator.stop(audioContext.currentTime + 0.2);
+          await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
         } else {
-          // Error sound: Descending buzz
-          oscillator.frequency.setValueAtTime(300, audioContext.currentTime);
-          oscillator.frequency.setValueAtTime(150, audioContext.currentTime + 0.1);
-          oscillator.type = "sawtooth";
-          gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
-          gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
-          oscillator.start(audioContext.currentTime);
-          oscillator.stop(audioContext.currentTime + 0.15);
+          await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
         }
       }
     } catch (error) {
-      console.log("Could not play sound:", error);
+      console.log("Could not play feedback:", error);
     }
   };
 
@@ -191,20 +205,28 @@ export default function QuizGameScreen() {
   useEffect(() => {
     if (quizContacts.length > 0 && currentIndex < quizContacts.length) {
       const current = quizContacts[currentIndex];
-      const options = [current.name];
 
-      // Add 4 random wrong answers
-      while (options.length < 5) {
-        const randomContact = quizContacts[Math.floor(Math.random() * quizContacts.length)];
-        if (!options.includes(randomContact.name)) {
-          options.push(randomContact.name);
-        }
-      }
+      // Get unique names from other contacts (deduped by name)
+      const otherUniqueNames = [...new Set(
+        quizContacts
+          .filter((c) => c.name !== current.name)
+          .map((c) => c.name)
+      )];
 
-      // Shuffle and store (only happens when question changes!)
-      setCurrentOptions(shuffle(options));
+      // Shuffle and take up to 4 wrong answers
+      const wrongOptions = shuffle(otherUniqueNames).slice(0, 4);
+
+      // Final options: correct answer + up to 4 wrong, shuffled
+      setCurrentOptions(shuffle([current.name, ...wrongOptions]));
     }
   }, [currentIndex, quizContacts]);
+
+  // Cleanup pending timers on unmount
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, []);
 
   const loadQuizContacts = () => {
     try {
@@ -242,15 +264,15 @@ export default function QuizGameScreen() {
         withTiming(1, { duration: 150 })
       );
 
+      setScore((prev) => prev + 1);
+
       // Auto-advance after 600ms (animation + small pause)
-      setTimeout(() => {
+      timerRef.current = setTimeout(() => {
         setFeedback(null);
         setSelectedOption(null);
 
         if (currentIndex + 1 >= quizContacts.length) {
-          // Reshuffle and restart
-          setQuizContacts(shuffle(quizContacts));
-          setCurrentIndex(0);
+          setQuizComplete(true);
         } else {
           setCurrentIndex((prev) => prev + 1);
         }
@@ -266,11 +288,20 @@ export default function QuizGameScreen() {
       );
 
       // Clear the red highlight after 300ms so user can try again quickly
-      setTimeout(() => {
+      timerRef.current = setTimeout(() => {
         setFeedback(null);
         setSelectedOption(null);
       }, 300);
     }
+  };
+
+  const handlePlayAgain = () => {
+    setQuizComplete(false);
+    setScore(0);
+    setCurrentIndex(0);
+    setFeedback(null);
+    setSelectedOption(null);
+    setQuizContacts(shuffle(quizContacts));
   };
 
   const animatedImageStyle = useAnimatedStyle(() => {
@@ -351,36 +382,11 @@ export default function QuizGameScreen() {
               selectedCategories={selectedCategories}
               onCategoryPress={handleCategoryPress}
               onCategoryLongPress={handleCategoryLongPress}
+              availableTags={availableTags}
+              selectedTags={selectedTags}
+              onTagPress={handleTagPress}
+              onTagLongPress={handleTagLongPress}
             />
-
-            {/* Tag Filter */}
-            {selectedCategories.length > 0 && availableTags.length > 0 && (
-              <View style={styles.tagsSection}>
-                <View style={styles.tagsContainer}>
-                  {availableTags.map((tag) => (
-                    <Pressable
-                      key={tag}
-                      onPress={() => handleTagPress(tag)}
-                      onLongPress={handleTagLongPress}
-                      delayLongPress={500}
-                      style={[
-                        styles.tagButton,
-                        selectedTags.includes(tag) && styles.tagButtonSelected,
-                      ]}
-                    >
-                      <Text
-                        style={[
-                          styles.tagText,
-                          selectedTags.includes(tag) && styles.tagTextSelected,
-                        ]}
-                      >
-                        {tag}
-                      </Text>
-                    </Pressable>
-                  ))}
-                </View>
-              </View>
-            )}
           </FilterContainer>
         </ScrollView>
       </SafeAreaView>
@@ -402,36 +408,11 @@ export default function QuizGameScreen() {
               selectedCategories={selectedCategories}
               onCategoryPress={handleCategoryPress}
               onCategoryLongPress={handleCategoryLongPress}
+              availableTags={availableTags}
+              selectedTags={selectedTags}
+              onTagPress={handleTagPress}
+              onTagLongPress={handleTagLongPress}
             />
-
-            {/* Tag Filter */}
-            {selectedCategories.length > 0 && availableTags.length > 0 && (
-              <View style={styles.tagsSection}>
-                <View style={styles.tagsContainer}>
-                  {availableTags.map((tag) => (
-                    <Pressable
-                      key={tag}
-                      onPress={() => handleTagPress(tag)}
-                      onLongPress={handleTagLongPress}
-                      delayLongPress={500}
-                      style={[
-                        styles.tagButton,
-                        selectedTags.includes(tag) && styles.tagButtonSelected,
-                      ]}
-                    >
-                      <Text
-                        style={[
-                          styles.tagText,
-                          selectedTags.includes(tag) && styles.tagTextSelected,
-                        ]}
-                      >
-                        {tag}
-                      </Text>
-                    </Pressable>
-                  ))}
-                </View>
-              </View>
-            )}
           </FilterContainer>
           <View style={styles.emptyContainer}>
             <Text style={styles.emptyText}>
@@ -469,33 +450,11 @@ export default function QuizGameScreen() {
             selectedCategories={selectedCategories}
             onCategoryPress={handleCategoryPress}
             onCategoryLongPress={handleCategoryLongPress}
+            availableTags={availableTags}
+            selectedTags={selectedTags}
+            onTagPress={handleTagPress}
+            onTagLongPress={handleTagLongPress}
           />
-
-          {/* Tag Filter */}
-          {selectedCategories.length > 0 && availableTags.length > 0 && (
-            <View style={styles.tagsSection}>
-              <View style={styles.tagsContainer}>
-                {availableTags.map((tag) => (
-                  <Pressable
-                    key={tag}
-                    onPress={() => handleTagPress(tag)}
-                    onLongPress={handleTagLongPress}
-                    delayLongPress={500}
-                    style={[
-                      styles.tagButton,
-                      selectedTags.includes(tag) && styles.tagButtonSelected,
-                    ]}
-                  >
-                    <Text
-                      style={[styles.tagText, selectedTags.includes(tag) && styles.tagTextSelected]}
-                    >
-                      {tag}
-                    </Text>
-                  </Pressable>
-                ))}
-              </View>
-            </View>
-          )}
         </FilterContainer>
 
         <View style={styles.quizContainer}>
@@ -533,6 +492,12 @@ export default function QuizGameScreen() {
           </View>
         </View>
       </ScrollView>
+      <QuizCelebration
+        visible={quizComplete}
+        score={score}
+        total={quizContacts.length}
+        onPlayAgain={handlePlayAgain}
+      />
     </SafeAreaView>
   );
 }
@@ -654,34 +619,5 @@ const styles = StyleSheet.create({
     ...typography.body.small,
     color: colors.semantic.textSecondary,
     textAlign: "center",
-  },
-  tagsSection: {
-    marginTop: spacing.lg,
-    marginBottom: spacing.lg,
-  },
-  tagsContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: spacing.sm,
-  },
-  tagButton: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: radii.full,
-    borderWidth: 1,
-    borderColor: colors.semantic.border,
-    backgroundColor: colors.semantic.surface,
-  },
-  tagButtonSelected: {
-    borderColor: colors.primary[500],
-    backgroundColor: colors.primary[500],
-  },
-  tagText: {
-    ...typography.body.small,
-    color: colors.semantic.text,
-    fontWeight: "500",
-  },
-  tagTextSelected: {
-    color: "#fff",
   },
 });

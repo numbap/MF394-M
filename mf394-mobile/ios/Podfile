@@ -59,5 +59,17 @@ target 'FaceMemorizer' do
       :mac_catalyst_enabled => false,
       :ccache_enabled => ccache_enabled?(podfile_properties),
     )
+
+    # Fix for ML Kit (expo-face-detector) on Apple Silicon:
+    # ML Kit pre-built binaries don't include arm64 simulator slices,
+    # so we exclude arm64 from simulator builds to force Rosetta (x86_64).
+    installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |config|
+        config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'arm64'
+      end
+    end
+
+    # Note: ML Kit (expo-face-detector) ships pre-built binaries without arm64 simulator slices.
+    # The simulator must run under Rosetta (x86_64) for this to work on Apple Silicon Macs.
   end
 end

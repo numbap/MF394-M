@@ -1,133 +1,123 @@
 /**
  * Google OAuth Authentication Hook
  *
- * Handles cross-platform Google Sign-In using expo-auth-session.
+ * Handles Google Sign-In using @react-native-google-signin/google-signin (native SDK).
  *
- * Flow:
- * 1. Open Google sign-in via authorization code + PKCE
- * 2. Exchange code for tokens at Google's token endpoint
- * 3. Extract id_token from token response
- * 4. Send id_token to backend → receive app JWT
+ * Flow (real auth):
+ * 1. GoogleSignin.signIn() opens native Google account picker
+ * 2. Extract idToken from the result
+ * 3. Send idToken to backend → receive app JWT
  *
- * On web, the web/desktop client ID is used.
- * On native (iOS/Android), the platform-specific client IDs are used.
+ * Development flow (AUTH_MOCK=true in .env):
+ * - Bypasses Google entirely, logs in instantly with a dev user.
  *
- * Google's implicit flow (response_type=id_token) is no longer supported
- * for web apps, so we always use the authorization code + PKCE flow.
- *
- * Note: The web OAuth client in Google Cloud Console is type "Web application",
- * which requires client_secret even when using PKCE. This is expected.
+ * Web:
+ * - GoogleSignin NativeModule is unavailable on web; web auth is handled separately.
  */
 
-import * as AuthSession from 'expo-auth-session';
+import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
 import { Platform } from 'react-native';
-import { useCallback } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useAppDispatch } from '../store/hooks';
 import { loginStart, loginSuccess, loginFailure } from '../store/slices/auth.slice';
 import { useLoginMutation } from '../store/api/auth.api';
 import { tokenStorage } from '../utils/secureStore';
 import {
   GOOGLE_OAUTH_CLIENT_ID_iOS,
-  GOOGLE_OAUTH_CLIENT_ID_Android,
   GOOGLE_OAUTH_WEB_CLIENT_ID,
-  GOOGLE_CLIENT_SECRET,
+  AUTH_MOCK,
 } from '../utils/constants';
-
-const discovery = {
-  authorizationEndpoint: 'https://accounts.google.com/o/oauth2/v2/auth',
-  tokenEndpoint: 'https://oauth2.googleapis.com/token',
-};
 
 export function useGoogleAuth() {
   const dispatch = useAppDispatch();
   const [login] = useLoginMutation();
+  const isSigningIn = useRef(false);
 
-  const clientId = Platform.select({
-    ios: GOOGLE_OAUTH_CLIENT_ID_iOS,
-    android: GOOGLE_OAUTH_CLIENT_ID_Android,
-    default: GOOGLE_OAUTH_WEB_CLIENT_ID,
-  }) ?? GOOGLE_OAUTH_WEB_CLIENT_ID!;
-
-  const redirectUri = AuthSession.makeRedirectUri({
-    scheme: Platform.OS !== 'web' ? 'com.ummyou.facememorizer' : undefined,
-  });
-
-  const [request, , promptAsync] = AuthSession.useAuthRequest(
-    {
-      clientId,
-      redirectUri,
-      scopes: ['openid', 'profile', 'email'],
-      responseType: AuthSession.ResponseType.Code,
-      usePKCE: true,
-    },
-    discovery
-  );
+  useEffect(() => {
+    if (Platform.OS === 'web') return;
+    GoogleSignin.configure({
+      iosClientId: GOOGLE_OAUTH_CLIENT_ID_iOS,
+      webClientId: GOOGLE_OAUTH_WEB_CLIENT_ID,
+      scopes: ['profile', 'email'],
+    });
+  }, []);
 
   const signInWithGoogle = useCallback(async () => {
-    if (!request) {
-      dispatch(loginFailure('OAuth not ready'));
+    if (isSigningIn.current) return;
+    isSigningIn.current = true;
+
+    dispatch(loginStart());
+
+    // ── Mock auth bypass ──────────────────────────────────────────────────────
+    if (AUTH_MOCK === 'true') {
+      dispatch(
+        loginSuccess({
+          user: {
+            id: 'mock-user-1',
+            email: 'dev@ummyou.com',
+            name: 'Dev User',
+            image: null,
+            provider: 'google',
+          },
+          token: 'mock-jwt-token',
+        })
+      );
+      isSigningIn.current = false;
       return;
     }
 
+    // ── Web guard ─────────────────────────────────────────────────────────────
+    if (Platform.OS === 'web') {
+      dispatch(loginFailure('Google Sign-In native SDK is not available on web.'));
+      isSigningIn.current = false;
+      return;
+    }
+
+    // ── Native Google Sign-In ─────────────────────────────────────────────────
     try {
-      dispatch(loginStart());
+      await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+      const userInfo = await GoogleSignin.signIn();
+      const idToken = userInfo.idToken ?? (userInfo as any).data?.idToken;
 
-      const result = await promptAsync();
-      if (result?.type !== 'success') {
-        dispatch(loginFailure('Sign-in cancelled'));
-        return;
-      }
-
-      const { code } = result.params;
-
-      // Exchange authorization code for tokens using PKCE verifier + client secret.
-      // The web client requires client_secret (Web application type in Google Cloud Console).
-      const tokenResponse = await AuthSession.exchangeCodeAsync(
-        {
-          clientId,
-          clientSecret: GOOGLE_CLIENT_SECRET,
-          redirectUri,
-          code,
-          extraParams: {
-            code_verifier: request.codeVerifier!,
-          },
-        },
-        discovery
-      );
-
-      const idToken = tokenResponse.idToken;
       if (!idToken) {
         dispatch(loginFailure('No ID token received from Google'));
         return;
       }
 
-      // Exchange Google ID token for app JWT
       const loginResult = await login({ idToken }).unwrap();
-
       await tokenStorage.setToken(loginResult.token);
 
       const userId = (loginResult.user as any)._id || (loginResult.user as any).id;
 
-      dispatch(loginSuccess({
-        user: {
-          id: userId,
-          email: loginResult.user.email,
-          name: loginResult.user.name,
-          image: loginResult.user.image,
-          provider: 'google',
-        },
-        token: loginResult.token,
-      }));
+      dispatch(
+        loginSuccess({
+          user: {
+            id: userId,
+            email: loginResult.user.email,
+            name: loginResult.user.name,
+            image: loginResult.user.image,
+            provider: 'google',
+          },
+          token: loginResult.token,
+        })
+      );
     } catch (error: any) {
-      const message = error?.data?.error || error?.error || error?.message || 'Authentication failed';
-      console.error('Google Sign-In Error:', message, error);
-      dispatch(loginFailure(message));
-      throw error;
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        dispatch(loginFailure('Sign-in cancelled'));
+      } else if (error.code === statusCodes.IN_PROGRESS) {
+        dispatch(loginFailure('Sign-in already in progress'));
+      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        dispatch(loginFailure('Google Play Services not available'));
+      } else {
+        const message =
+          error?.data?.error || error?.error || error?.message || 'Authentication failed';
+        dispatch(loginFailure(message));
+        throw error;
+      }
+    } finally {
+      isSigningIn.current = false;
     }
-  }, [dispatch, login, promptAsync, request, clientId, redirectUri]);
+  }, [dispatch, login]);
 
-  return {
-    signInWithGoogle,
-    request,
-  };
+  return { signInWithGoogle };
 }

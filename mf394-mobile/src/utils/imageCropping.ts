@@ -26,17 +26,17 @@ export async function cropFaceWithBounds(
   } else {
     // For native, use ImageManipulator
     try {
-      const { ImageManipulator } = require('expo-image-manipulator');
+      const { manipulateAsync, SaveFormat } = require('expo-image-manipulator');
       const cropRegion = {
         originX: Math.max(0, bounds.origin.x - padding),
         originY: Math.max(0, bounds.origin.y - padding),
         width: Math.min(bounds.size.width + padding * 2, 800),
         height: Math.min(bounds.size.height + padding * 2, 800),
       };
-      const result = await ImageManipulator.manipulateAsync(
+      const result = await manipulateAsync(
         imageUri,
         [{ crop: cropRegion }],
-        { compress: 0.9, format: 'jpeg' }
+        { compress: 0.9, format: SaveFormat.JPEG }
       );
       return result.uri;
     } catch (err) {

@@ -6,6 +6,7 @@ import {
   GOOGLE_OAUTH_WEB_CLIENT_ID as ENV_GOOGLE_OAUTH_WEB_CLIENT_ID,
   GOOGLE_CLIENT_SECRET as ENV_GOOGLE_CLIENT_SECRET,
   FACE_DETECTION_MIN_CONFIDENCE as ENV_FACE_DETECTION_MIN_CONFIDENCE,
+  AUTH_MOCK as ENV_AUTH_MOCK,
 } from "@env";
 
 // API Configuration
@@ -20,6 +21,9 @@ export const GOOGLE_CLIENT_SECRET = ENV_GOOGLE_CLIENT_SECRET;
 
 // Face Detection Configuration
 export const FACE_DETECTION_MIN_CONFIDENCE = parseFloat(ENV_FACE_DETECTION_MIN_CONFIDENCE || "0.5");
+
+// Development flags
+export const AUTH_MOCK = ENV_AUTH_MOCK || "false";
 
 // API Endpoints
 export const API_ENDPOINTS = {

@@ -86,8 +86,11 @@ const filtersSlice = createSlice({
 
     // Load filters from storage on app start
     restoreFilters: (state, action: PayloadAction<{ categories: string[]; tags: string[] }>) => {
-      state.selectedCategories = action.payload.categories;
-      state.selectedTags = action.payload.tags;
+      // Sanitize — guard against corrupted storage returning non-array values
+      state.selectedCategories = Array.isArray(action.payload.categories)
+        ? action.payload.categories
+        : [];
+      state.selectedTags = Array.isArray(action.payload.tags) ? action.payload.tags : [];
       state.isLoaded = true;
     },
 

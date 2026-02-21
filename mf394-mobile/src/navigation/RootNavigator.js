@@ -29,7 +29,7 @@ export function RootNavigator() {
     <>
       <OfflineBanner />
       <NavigationContainer>
-        {user ? <AuthenticatedStack /> : <UnauthenticatedStack />}
+        {user ? <AuthenticatedStack key={user.id} /> : <UnauthenticatedStack />}
       </NavigationContainer>
     </>
   );
@@ -51,6 +51,7 @@ function UnauthenticatedStack() {
 function AuthenticatedStack() {
   return (
     <Tab.Navigator
+      initialRouteName="HomeTab"
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;

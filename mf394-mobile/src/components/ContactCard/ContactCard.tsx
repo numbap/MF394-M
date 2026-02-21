@@ -114,7 +114,7 @@ export function ContactCard({ contact, style }: ContactCardProps) {
 
 const styles = StyleSheet.create({
   container: {
-    width: 360,
+    width: 300,
     backgroundColor: colors.semantic.surface,
     borderRadius: radii.lg,
     overflow: "hidden",

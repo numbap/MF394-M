@@ -2,6 +2,17 @@
 
 ## [Unreleased]
 
+### Fixed (iOS Debugging — 2026-02-19)
+- Updated 13 packages to Expo SDK 54 compatible versions (`react-native-screens`, `react-native-safe-area-context`, `react-native-gesture-handler`, `react-native-reanimated`, `react-native-worklets`, `expo-image-picker`, `expo-image-manipulator`, `expo-auth-session`, `expo-haptics`, `expo-av`, `expo-status-bar`, `@react-native-async-storage/async-storage`, `@react-native-community/netinfo`)
+- Restored `react-native-reanimated/plugin` in `babel.config.js` (removal was causing launch crashes on iOS)
+- Added `expo-file-system` to dependencies (required by `MobileCropper` at runtime)
+- Removed invalid `ios.supportsTabletMode` and `ios.deploymentTarget` fields from `app.json`
+- Created placeholder icon/favicon assets (`assets/icon.png`, `assets/favicon.png`)
+- Added `.nvmrc` pinned to Node 20.20.0 (metro 0.83.3 requires Node ≥20)
+- Re-added `AUTH_MOCK` support (`AUTH_MOCK=true` in `.env` logs in instantly with a dev user — required for Expo Go testing since `expo-auth-session` v7 removed the proxy)
+- Fixed OAuth redirect URI in `useGoogleAuth.ts` to use Google's reverse-client-ID scheme (`com.googleusercontent.apps.{id}:/`) for native builds; added Expo Go guard with clear error message
+- Added `AUTH_MOCK` to `constants.js` and `__tests__/mocks/env.mock.js`
+
 ### Removed
 - `AUTH_MOCK` environment variable and all mock/dummy data code paths
 - `src/mock_user.json` - static mock data file

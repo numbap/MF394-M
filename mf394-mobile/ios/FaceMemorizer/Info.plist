@@ -31,6 +31,12 @@
           <string>com.ummyou.ios</string>
         </array>
       </dict>
+      <dict>
+        <key>CFBundleURLSchemes</key>
+        <array>
+          <string>com.googleusercontent.apps.522498015179-g0htpel9384on5ubq0ofmlvsa9r2pqvl</string>
+        </array>
+      </dict>
     </array>
     <key>CFBundleVersion</key>
     <string>1</string>

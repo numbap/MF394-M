@@ -33,20 +33,11 @@ jest.mock('react-native-reanimated', () => {
   };
 });
 
-global.AudioContext = jest.fn().mockImplementation(() => ({
-  createOscillator: jest.fn(() => ({
-    connect: jest.fn(),
-    start: jest.fn(),
-    stop: jest.fn(),
-    frequency: { setValueAtTime: jest.fn(), exponentialRampToValueAtTime: jest.fn() },
-    type: 'sine',
-  })),
-  createGain: jest.fn(() => ({
-    connect: jest.fn(),
-    gain: { setValueAtTime: jest.fn() },
-  })),
-  destination: {},
-  currentTime: 0,
+jest.mock('expo-haptics', () => ({
+  impactAsync: jest.fn(() => Promise.resolve()),
+  notificationAsync: jest.fn(() => Promise.resolve()),
+  ImpactFeedbackStyle: { Medium: 'medium' },
+  NotificationFeedbackType: { Error: 'error' },
 }));
 
 jest.mock('../../services/storage.service', () => ({
@@ -57,6 +48,20 @@ jest.mock('../../services/storage.service', () => ({
 }));
 
 // DO NOT mock CategoryTagFilter or FilterContainer (integration test!)
+
+jest.mock('../../components/QuizCelebration', () => {
+  const React = require('react');
+  const { View, Text, TouchableOpacity } = require('react-native');
+  return {
+    QuizCelebration: ({ visible, score, total, onPlayAgain }) =>
+      visible
+        ? React.createElement(View, { testID: 'quiz-celebration' },
+            React.createElement(Text, null, `Score: ${score}/${total}`),
+            React.createElement(TouchableOpacity, { onPress: onPlayAgain, testID: 'play-again' })
+          )
+        : null,
+  };
+});
 
 // Mock RTK Query so contacts come from useGetUserQuery, not state.contacts.data
 const mockUseGetUserQuery = jest.fn();
@@ -364,7 +369,7 @@ describe('QuizGameScreen - Integration', () => {
 
   describe('Multi-Step Quiz Flow', () => {
     it('handles complete quiz with all correct answers', async () => {
-      const { getByText } = renderWithRedux(<QuizGameScreen />, {
+      const { getByText, getByTestId } = renderWithRedux(<QuizGameScreen />, {
         preloadedState: createQuizStoreState(QUIZ_CONTACTS.minimal, FILTER_STATES.singleCategory),
       });
 
@@ -390,9 +395,9 @@ describe('QuizGameScreen - Integration', () => {
         });
       }
 
-      // Should loop back to question 1
+      // Should show celebration screen instead of looping
       await waitFor(() => {
-        expect(getByText('Question 1 of 5')).toBeTruthy();
+        expect(getByTestId('quiz-celebration')).toBeTruthy();
       });
     });
 

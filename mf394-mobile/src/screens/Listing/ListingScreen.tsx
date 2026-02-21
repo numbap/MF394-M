@@ -216,36 +216,11 @@ export default function ListingScreen({ navigation }: any) {
               selectedCategories={selectedCategories}
               onCategoryPress={handleCategoryPress}
               onCategoryLongPress={handleCategoryLongPress}
+              availableTags={availableTags}
+              selectedTags={selectedTags}
+              onTagPress={handleTagPress}
+              onTagLongPress={handleTagLongPress}
             />
-
-            {/* Tag Filter */}
-            {selectedCategories.length > 0 && availableTags.length > 0 && (
-              <View style={styles.tagsSection}>
-                <View style={styles.tagsContainer}>
-                  {availableTags.map((tag) => (
-                    <Pressable
-                      key={tag}
-                      onPress={() => handleTagPress(tag)}
-                      onLongPress={handleTagLongPress}
-                      delayLongPress={500}
-                      style={[
-                        styles.tagButton,
-                        selectedTags.includes(tag) && styles.tagButtonSelected,
-                      ]}
-                    >
-                      <Text
-                        style={[
-                          styles.tagText,
-                          selectedTags.includes(tag) && styles.tagTextSelected,
-                        ]}
-                      >
-                        {tag}
-                      </Text>
-                    </Pressable>
-                  ))}
-                </View>
-              </View>
-            )}
 
             {/* Action Buttons */}
             <View style={styles.actionRow}>
@@ -329,16 +304,30 @@ export default function ListingScreen({ navigation }: any) {
             )}
           </View>
         )}
-      </ScrollView>
 
-      {/* Status Bar */}
+        {/* Status Bar */}
       {selectedCategories.length > 0 && (
         <View style={styles.statusBar}>
           <Text style={styles.statusText}>
             {filteredContacts.length} of {contacts.length} visible
           </Text>
+          <View style={styles.progressTrack}>
+            <View
+              style={[
+                styles.progressFill,
+                {
+                  width: contacts.length > 0
+                    ? `${(filteredContacts.length / contacts.length) * 100}%`
+                    : '0%',
+                },
+              ]}
+            />
+          </View>
         </View>
       )}
+      </ScrollView>
+
+      
     </SafeAreaView>
   );
 }
@@ -373,35 +362,6 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.lg,
     borderBottomWidth: 1,
     borderBottomColor: colors.semantic.border,
-  },
-  tagsSection: {
-    marginTop: spacing.lg,
-    marginBottom: spacing.lg,
-  },
-  tagsContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: spacing.sm,
-  },
-  tagButton: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: radii.full,
-    borderWidth: 1,
-    borderColor: colors.semantic.border,
-    backgroundColor: colors.semantic.surface,
-  },
-  tagButtonSelected: {
-    borderColor: colors.primary[500],
-    backgroundColor: colors.primary[500],
-  },
-  tagText: {
-    fontSize: typography.body.small.fontSize,
-    color: colors.semantic.text,
-    fontWeight: "500",
-  },
-  tagTextSelected: {
-    color: "#fff",
   },
   actionRow: {
     paddingTop: spacing.lg,
@@ -473,10 +433,22 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.lg,
     backgroundColor: colors.semantic.surface,
+    gap: spacing.sm,
   },
   statusText: {
     fontSize: typography.body.small.fontSize,
     color: colors.semantic.textSecondary,
     fontWeight: "500",
+  },
+  progressTrack: {
+    height: 4,
+    borderRadius: radii.full,
+    backgroundColor: colors.neutral.iron[100],
+    overflow: "hidden",
+  },
+  progressFill: {
+    height: 4,
+    borderRadius: radii.full,
+    backgroundColor: colors.primary[500],
   },
 });

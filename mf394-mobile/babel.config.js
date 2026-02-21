@@ -2,7 +2,7 @@ module.exports = function (api) {
   api.cache(true);
 
   const plugins = [
-    // Removed react-native-reanimated/plugin due to iOS compilation issues
+    "react-native-reanimated/plugin",
   ];
 
   // Only add dotenv plugin when NOT in test environment

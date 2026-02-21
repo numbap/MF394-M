@@ -11,11 +11,8 @@
       "policy": "appVersion"
     },
     "ios": {
-      "supportsTabletMode": true,
       "bundleIdentifier": "com.ummyou.ios",
-      "buildNumber": "1",
-      "requireFullScreen": true,
-      "deploymentTarget": "15.1"
+      "buildNumber": "1"
     },
     "android": {
       "package": "com.ummyou.android",
@@ -25,7 +22,8 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-image-picker"
+      "expo-image-picker",
+      "@react-native-google-signin/google-signin"
     ],
     "extra": {
       "eas": {

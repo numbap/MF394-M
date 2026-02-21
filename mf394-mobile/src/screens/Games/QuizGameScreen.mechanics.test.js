@@ -33,27 +33,12 @@ jest.mock('react-native-reanimated', () => {
   };
 });
 
-// Mock Web Audio API
-global.AudioContext = jest.fn().mockImplementation(() => ({
-  createOscillator: jest.fn(() => ({
-    connect: jest.fn(),
-    start: jest.fn(),
-    stop: jest.fn(),
-    frequency: {
-      setValueAtTime: jest.fn(),
-      exponentialRampToValueAtTime: jest.fn(),
-    },
-    type: 'sine',
-  })),
-  createGain: jest.fn(() => ({
-    connect: jest.fn(),
-    gain: {
-      setValueAtTime: jest.fn(),
-      exponentialRampToValueAtTime: jest.fn(),
-    },
-  })),
-  destination: {},
-  currentTime: 0,
+// Mock expo-haptics
+jest.mock('expo-haptics', () => ({
+  impactAsync: jest.fn(() => Promise.resolve()),
+  notificationAsync: jest.fn(() => Promise.resolve()),
+  ImpactFeedbackStyle: { Medium: 'medium' },
+  NotificationFeedbackType: { Error: 'error' },
 }));
 
 // Mock StorageService
@@ -77,6 +62,20 @@ jest.mock('../../components/FilterContainer/FilterContainer', () => {
   const React = require('react');
   return {
     FilterContainer: ({ children }) => children,
+  };
+});
+
+jest.mock('../../components/QuizCelebration', () => {
+  const React = require('react');
+  const { View, Text, TouchableOpacity } = require('react-native');
+  return {
+    QuizCelebration: ({ visible, score, total, onPlayAgain }) =>
+      visible
+        ? React.createElement(View, { testID: 'quiz-celebration' },
+            React.createElement(Text, null, `Score: ${score}/${total}`),
+            React.createElement(TouchableOpacity, { onPress: onPlayAgain, testID: 'play-again' })
+          )
+        : null,
   };
 });
 
@@ -286,7 +285,8 @@ describe('QuizGameScreen - Mechanics', () => {
       });
     });
 
-    it('plays rising tone sound', async () => {
+    it('triggers haptic feedback on correct answer', async () => {
+      const Haptics = require('expo-haptics');
       const { getByText } = renderWithRedux(<QuizGameScreen />, {
         preloadedState: createQuizStoreState(QUIZ_CONTACTS.minimal, FILTER_STATES.singleCategory),
       });
@@ -301,9 +301,8 @@ describe('QuizGameScreen - Mechanics', () => {
         fireEvent.press(aliceButton);
       });
 
-      // Verify AudioContext was used
       await waitFor(() => {
-        expect(global.AudioContext).toHaveBeenCalled();
+        expect(Haptics.impactAsync).toHaveBeenCalledWith('medium');
       });
     });
 
@@ -402,7 +401,8 @@ describe('QuizGameScreen - Mechanics', () => {
       });
     });
 
-    it('plays descending buzz sound', async () => {
+    it('triggers haptic feedback on wrong answer', async () => {
+      const Haptics = require('expo-haptics');
       const { getByText } = renderWithRedux(<QuizGameScreen />, {
         preloadedState: createQuizStoreState(QUIZ_CONTACTS.minimal, FILTER_STATES.singleCategory),
       });
@@ -417,9 +417,8 @@ describe('QuizGameScreen - Mechanics', () => {
         fireEvent.press(bobButton);
       });
 
-      // Verify AudioContext was called
       await waitFor(() => {
-        expect(global.AudioContext).toHaveBeenCalled();
+        expect(Haptics.notificationAsync).toHaveBeenCalledWith('error');
       });
     });
 
@@ -502,14 +501,15 @@ describe('QuizGameScreen - Mechanics', () => {
         fireEvent.press(aliceButton);
       });
 
-      // Should work (we verify by checking AudioContext called again)
-      expect(global.AudioContext).toHaveBeenCalled();
+      // Should work (we verify by checking haptics called again)
+      const Haptics = require('expo-haptics');
+      expect(Haptics.impactAsync).toHaveBeenCalled();
     });
   });
 
-  describe('Quiz Loop', () => {
-    it('loops back to start after last contact', async () => {
-      const { getByText } = renderWithRedux(<QuizGameScreen />, {
+  describe('Quiz Completion', () => {
+    it('shows celebration screen after last correct answer', async () => {
+      const { getByText, getByTestId } = renderWithRedux(<QuizGameScreen />, {
         preloadedState: createQuizStoreState(QUIZ_CONTACTS.minimal, FILTER_STATES.singleCategory),
       });
 
@@ -517,28 +517,25 @@ describe('QuizGameScreen - Mechanics', () => {
         expect(getByText('Question 1 of 5')).toBeTruthy();
       });
 
-      // Answer all 5 questions correctly (simplified - just advance through)
+      // Answer all 5 questions correctly
       for (let i = 0; i < 5; i++) {
         const aliceButton = getByText('Alice');
         act(() => {
           fireEvent.press(aliceButton);
         });
-
         act(() => {
           jest.advanceTimersByTime(600);
         });
       }
 
-      // Should loop back to question 1
+      // Should show celebration instead of looping
       await waitFor(() => {
-        expect(getByText(/Question 1 of 5/)).toBeTruthy();
+        expect(getByTestId('quiz-celebration')).toBeTruthy();
       });
     });
 
-    it('reshuffles contacts on loop restart', async () => {
-      const mathRandomSpy = jest.spyOn(Math, 'random');
-
-      const { getByText } = renderWithRedux(<QuizGameScreen />, {
+    it('shows correct score in celebration screen', async () => {
+      const { getByText, getByTestId } = renderWithRedux(<QuizGameScreen />, {
         preloadedState: createQuizStoreState(QUIZ_CONTACTS.minimal, FILTER_STATES.singleCategory),
       });
 
@@ -546,30 +543,25 @@ describe('QuizGameScreen - Mechanics', () => {
         expect(getByText('Question 1 of 5')).toBeTruthy();
       });
 
-      const initialCallCount = mathRandomSpy.mock.calls.length;
-
-      // Complete the quiz
+      // Answer all 5 questions correctly
       for (let i = 0; i < 5; i++) {
         const aliceButton = getByText('Alice');
         act(() => {
           fireEvent.press(aliceButton);
         });
-
         act(() => {
           jest.advanceTimersByTime(600);
         });
       }
 
-      // Math.random should be called again for reshuffling
       await waitFor(() => {
-        expect(mathRandomSpy.mock.calls.length).toBeGreaterThan(initialCallCount);
+        expect(getByTestId('quiz-celebration')).toBeTruthy();
+        expect(getByText('Score: 5/5')).toBeTruthy();
       });
-
-      mathRandomSpy.mockRestore();
     });
 
-    it('maintains quiz state across loops', async () => {
-      const { getByText } = renderWithRedux(<QuizGameScreen />, {
+    it('resets quiz on Play Again', async () => {
+      const { getByText, getByTestId } = renderWithRedux(<QuizGameScreen />, {
         preloadedState: createQuizStoreState(QUIZ_CONTACTS.minimal, FILTER_STATES.singleCategory),
       });
 
@@ -577,21 +569,31 @@ describe('QuizGameScreen - Mechanics', () => {
         expect(getByText('Question 1 of 5')).toBeTruthy();
       });
 
-      // Complete one full loop
+      // Complete quiz
       for (let i = 0; i < 5; i++) {
         const aliceButton = getByText('Alice');
         act(() => {
           fireEvent.press(aliceButton);
         });
-
         act(() => {
           jest.advanceTimersByTime(600);
         });
       }
 
-      // Should still show quiz (not crash or show empty state)
+      await waitFor(() => {
+        expect(getByTestId('quiz-celebration')).toBeTruthy();
+      });
+
+      // Press Play Again
+      const playAgainButton = getByTestId('play-again');
+      act(() => {
+        fireEvent.press(playAgainButton);
+      });
+
+      // Should return to quiz
       await waitFor(() => {
         expect(getByText('Who is this?')).toBeTruthy();
+        expect(getByText('Question 1 of 5')).toBeTruthy();
       });
     });
   });

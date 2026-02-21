@@ -27,10 +27,11 @@ jest.mock('react-easy-crop', () => ({
   },
 }));
 
+// Mock expo-image-manipulator (v14 named-export API)
+const mockManipulateAsync = jest.fn().mockResolvedValue({ uri: 'cropped-image-uri' });
 jest.mock('expo-image-manipulator', () => ({
-  ImageManipulator: {
-    manipulateAsync: jest.fn().mockResolvedValue({ uri: 'cropped-image-uri' }),
-  },
+  manipulateAsync: mockManipulateAsync,
+  SaveFormat: { JPEG: 'jpeg', PNG: 'png' },
 }));
 
 jest.mock('expo-file-system', () => ({
@@ -148,7 +149,9 @@ describe('Cropper Component', () => {
         />
       );
 
-      expect(getByText('Crop Photo')).toBeTruthy();
+      // WebCropper renders action buttons but no title heading
+      expect(getByText('Crop')).toBeTruthy();
+      expect(getByText('Cancel')).toBeTruthy();
     });
 
     it.skip('calls onCropConfirm with cropped image on web', async () => {
@@ -225,11 +228,8 @@ describe('Cropper Component', () => {
       Platform.OS = 'ios';
       const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
 
-      // Mock ImageManipulator failure
-      const { ImageManipulator } = require('expo-image-manipulator');
-      ImageManipulator.manipulateAsync.mockRejectedValueOnce(
-        new Error('Crop failed')
-      );
+      // Mock manipulateAsync failure (v14 named-export API)
+      mockManipulateAsync.mockRejectedValueOnce(new Error('Crop failed'));
 
       const { getByText } = render(
         <Cropper

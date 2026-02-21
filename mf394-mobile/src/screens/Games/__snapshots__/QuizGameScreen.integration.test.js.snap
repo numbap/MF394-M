@@ -399,7 +399,7 @@ exports[`QuizGameScreen - Integration Snapshot matches snapshot for full screen 
             resizeMode="cover"
             source={
               {
-                "uri": "data:image/jpeg;base64,bob",
+                "uri": "data:image/jpeg;base64,alice",
               }
             }
             style={
@@ -594,7 +594,7 @@ exports[`QuizGameScreen - Integration Snapshot matches snapshot for full screen 
                 }
               }
             >
-              Alice
+              David
             </Text>
           </View>
           <View
@@ -649,7 +649,7 @@ exports[`QuizGameScreen - Integration Snapshot matches snapshot for full screen 
                 }
               }
             >
-              David
+              Alice
             </Text>
           </View>
           <View

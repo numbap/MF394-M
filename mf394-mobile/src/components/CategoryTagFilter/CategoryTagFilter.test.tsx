@@ -381,6 +381,143 @@ describe('CategoryTagFilter', () => {
     });
   });
 
+  describe('Tag Pills', () => {
+    const mockOnTagPress = jest.fn();
+    const mockOnTagLongPress = jest.fn();
+    const MOCK_TAGS = ['alpha', 'beta', 'gamma'];
+
+    beforeEach(() => {
+      mockOnTagPress.mockClear();
+      mockOnTagLongPress.mockClear();
+    });
+
+    it('should not render tag section when availableTags is empty', () => {
+      render(
+        <CategoryTagFilter
+          categories={MOCK_CATEGORIES}
+          selectedCategories={['friends-family']}
+          onCategoryPress={mockOnCategoryPress}
+          onCategoryLongPress={mockOnCategoryLongPress}
+          availableTags={[]}
+          selectedTags={[]}
+          onTagPress={mockOnTagPress}
+          onTagLongPress={mockOnTagLongPress}
+        />
+      );
+
+      expect(screen.queryByTestId('tag-button-alpha')).toBeNull();
+    });
+
+    it('should not render tag section when no categories are selected', () => {
+      render(
+        <CategoryTagFilter
+          categories={MOCK_CATEGORIES}
+          selectedCategories={[]}
+          onCategoryPress={mockOnCategoryPress}
+          onCategoryLongPress={mockOnCategoryLongPress}
+          availableTags={MOCK_TAGS}
+          selectedTags={[]}
+          onTagPress={mockOnTagPress}
+          onTagLongPress={mockOnTagLongPress}
+        />
+      );
+
+      expect(screen.queryByTestId('tag-button-alpha')).toBeNull();
+    });
+
+    it('should render tag pills when categories are selected and tags are available', () => {
+      render(
+        <CategoryTagFilter
+          categories={MOCK_CATEGORIES}
+          selectedCategories={['friends-family']}
+          onCategoryPress={mockOnCategoryPress}
+          onCategoryLongPress={mockOnCategoryLongPress}
+          availableTags={MOCK_TAGS}
+          selectedTags={[]}
+          onTagPress={mockOnTagPress}
+          onTagLongPress={mockOnTagLongPress}
+        />
+      );
+
+      MOCK_TAGS.forEach((tag) => {
+        expect(screen.getByTestId(`tag-button-${tag}`)).toBeTruthy();
+        expect(screen.getByText(tag)).toBeTruthy();
+      });
+    });
+
+    it('should call onTagPress with the correct tag when a pill is pressed', () => {
+      render(
+        <CategoryTagFilter
+          categories={MOCK_CATEGORIES}
+          selectedCategories={['friends-family']}
+          onCategoryPress={mockOnCategoryPress}
+          onCategoryLongPress={mockOnCategoryLongPress}
+          availableTags={MOCK_TAGS}
+          selectedTags={[]}
+          onTagPress={mockOnTagPress}
+          onTagLongPress={mockOnTagLongPress}
+        />
+      );
+
+      fireEvent.press(screen.getByTestId('tag-button-beta'));
+      expect(mockOnTagPress).toHaveBeenCalledTimes(1);
+      expect(mockOnTagPress).toHaveBeenCalledWith('beta');
+    });
+
+    it('should call onTagLongPress when a pill is long pressed', () => {
+      render(
+        <CategoryTagFilter
+          categories={MOCK_CATEGORIES}
+          selectedCategories={['friends-family']}
+          onCategoryPress={mockOnCategoryPress}
+          onCategoryLongPress={mockOnCategoryLongPress}
+          availableTags={MOCK_TAGS}
+          selectedTags={[]}
+          onTagPress={mockOnTagPress}
+          onTagLongPress={mockOnTagLongPress}
+        />
+      );
+
+      fireEvent(screen.getByTestId('tag-button-alpha'), 'longPress');
+      expect(mockOnTagLongPress).toHaveBeenCalledTimes(1);
+    });
+
+    it('should reflect selected state on tag pills', () => {
+      render(
+        <CategoryTagFilter
+          categories={MOCK_CATEGORIES}
+          selectedCategories={['friends-family']}
+          onCategoryPress={mockOnCategoryPress}
+          onCategoryLongPress={mockOnCategoryLongPress}
+          availableTags={MOCK_TAGS}
+          selectedTags={['beta']}
+          onTagPress={mockOnTagPress}
+          onTagLongPress={mockOnTagLongPress}
+        />
+      );
+
+      const selectedBtn = screen.getByTestId('tag-button-beta');
+      const unselectedBtn = screen.getByTestId('tag-button-alpha');
+
+      expect(selectedBtn.props.accessibilityState.selected).toBe(true);
+      expect(unselectedBtn.props.accessibilityState.selected).toBe(false);
+    });
+
+    it('should render without tag props (backward compatible)', () => {
+      render(
+        <CategoryTagFilter
+          categories={MOCK_CATEGORIES}
+          selectedCategories={['friends-family']}
+          onCategoryPress={mockOnCategoryPress}
+          onCategoryLongPress={mockOnCategoryLongPress}
+        />
+      );
+
+      // No tags rendered, no crash
+      expect(screen.queryByTestId('tag-button-alpha')).toBeNull();
+    });
+  });
+
   describe('Snapshot', () => {
     it('should match snapshot with no selection', () => {
       const tree = render(

@@ -2,14 +2,14 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import { Image, Platform } from "react-native";
 import { FACE_DETECTION_MIN_CONFIDENCE } from "../utils/constants";
 
-let FaceDetector;
+let ExpoFaceDetector;
 let faceapi;
 
 // Import appropriate face detection library based on platform
 if (Platform.OS !== "web") {
   try {
-    const ExpoFaceDetector = require("expo-face-detector");
-    FaceDetector = ExpoFaceDetector.FaceDetector;
+    ExpoFaceDetector = require("expo-face-detector");
+    // Exports: detectFacesAsync, FaceDetectorMode, FaceDetectorLandmarks, FaceDetectorClassifications
   } catch (e) {
     console.warn("expo-face-detector not available on this platform");
   }
@@ -176,23 +176,21 @@ export function useFaceDetection() {
         }
 
         // Use native face detection on mobile platforms
-        if (detectedFaces.length === 0 && FaceDetector && Platform.OS !== "web") {
+        if (detectedFaces.length === 0 && ExpoFaceDetector && Platform.OS !== "web") {
           try {
-            const result = await FaceDetector.detectAsync(imageUri, {
-              mode: FaceDetector.Constants.Mode.fast,
-              detectLandmarks: FaceDetector.Constants.Landmarks.none,
-              runClassifications: FaceDetector.Constants.Classifications.none,
+            const result = await ExpoFaceDetector.detectFacesAsync(imageUri, {
+              mode: ExpoFaceDetector.FaceDetectorMode.fast,
+              detectLandmarks: ExpoFaceDetector.FaceDetectorLandmarks.none,
+              runClassifications: ExpoFaceDetector.FaceDetectorClassifications.none,
             });
 
             if (result.faces && result.faces.length > 0) {
-              detectedFaces = result.faces
-                .filter((face) => (face.confidence || 0) >= FACE_DETECTION_MIN_CONFIDENCE)
-                .map((face, index) => ({
-                  id: `face-${index}`,
-                  uri: imageUri,
-                  bounds: face.bounds,
-                  confidence: face.confidence,
-                }));
+              detectedFaces = result.faces.map((face, index) => ({
+                id: `face-${index}`,
+                uri: imageUri,
+                bounds: face.bounds,
+                confidence: 1, // expo-face-detector doesn't expose a confidence score
+              }));
               isRealDetection = true;
             }
           } catch (nativeErr) {
@@ -206,7 +204,7 @@ export function useFaceDetection() {
             "No real faces detected. isWebPlatform:", isWebPlatform,
             "faceapi:", !!faceapi,
             "modelsLoaded:", modelsLoaded,
-            "FaceDetector:", !!FaceDetector,
+            "ExpoFaceDetector:", !!ExpoFaceDetector,
             "User will proceed to manual cropping"
           );
         }
@@ -252,7 +250,7 @@ export function useFaceDetection() {
       } else {
         // For native: use ImageManipulator
         try {
-          const { ImageManipulator } = require("expo-image-manipulator");
+          const { manipulateAsync, SaveFormat } = require("expo-image-manipulator");
 
           const cropRegion = {
             originX: Math.max(0, bounds.origin.x - padding),
@@ -264,10 +262,10 @@ export function useFaceDetection() {
             height: Math.min(bounds.size.height + padding * 2, 800),
           };
 
-          const result = await ImageManipulator.manipulateAsync(
+          const result = await manipulateAsync(
             imageUri,
             [{ crop: cropRegion }],
-            { compress: 0.9, format: "jpeg" }
+            { compress: 0.9, format: SaveFormat.JPEG }
           );
 
           return result.uri;

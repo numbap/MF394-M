@@ -58,7 +58,7 @@ function SliderComponent({
 }: SliderComponentProps) {
   const sliderWidth = containerWidth - spacing.md * 2;
   const sliderRef = useRef<View>(null);
-  const [sliderX, setSliderX] = useState(0);
+  const sliderXRef = useRef(0);
 
   const panResponder = useRef(
     PanResponder.create({
@@ -68,13 +68,13 @@ function SliderComponent({
         // Get touch position relative to slider
         if (sliderRef.current) {
           sliderRef.current.measure((_x, _y, _width, _height, pageX) => {
-            setSliderX(pageX);
+            sliderXRef.current = pageX;
             updateValueFromTouch(evt.nativeEvent.pageX, pageX);
           });
         }
       },
       onPanResponderMove: (evt: GestureResponderEvent) => {
-        updateValueFromTouch(evt.nativeEvent.pageX, sliderX);
+        updateValueFromTouch(evt.nativeEvent.pageX, sliderXRef.current);
       },
     })
   ).current;
@@ -300,6 +300,12 @@ function MobileCropper({ imageUri, onCropConfirm, onCancel, style }: CropperProp
   const initialDistance = useRef<number | null>(null);
   const initialZoom = useRef<number>(zoom);
 
+  // Refs to track current offsets (avoids stale closures in PanResponder)
+  const offsetXRef = useRef(0);
+  const offsetYRef = useRef(0);
+  const panStartX = useRef(0);
+  const panStartY = useRef(0);
+
   // Calculate distance between two touch points
   const getDistance = (touches: any[]) => {
     const [touch1, touch2] = touches;
@@ -317,6 +323,10 @@ function MobileCropper({ imageUri, onCropConfirm, onCancel, style }: CropperProp
         if (evt.nativeEvent.touches.length === 2) {
           initialDistance.current = getDistance(evt.nativeEvent.touches);
           initialZoom.current = zoom;
+        } else {
+          // Capture offset at gesture start to avoid stale closure jump
+          panStartX.current = offsetXRef.current;
+          panStartY.current = offsetYRef.current;
         }
       },
       onPanResponderMove: (evt: GestureResponderEvent, gestureState: any) => {
@@ -331,15 +341,20 @@ function MobileCropper({ imageUri, onCropConfirm, onCancel, style }: CropperProp
             setZoom(clampedZoom);
           }
         } else {
-          // Pan gesture (1 touch)
-          const newOffsetX = offsetX + gestureState.dx;
-          const newOffsetY = offsetY + gestureState.dy;
+          // Pan gesture (1 touch) — use refs to avoid stale closure
+          const newOffsetX = panStartX.current + gestureState.dx;
+          const newOffsetY = panStartY.current + gestureState.dy;
 
           const maxOffsetX = (imageDimensions.width * zoom - CANVAS_SIZE) / 2;
           const maxOffsetY = (imageDimensions.height * zoom - CANVAS_SIZE) / 2;
 
-          setOffsetX(Math.max(-maxOffsetX, Math.min(maxOffsetX, newOffsetX)));
-          setOffsetY(Math.max(-maxOffsetY, Math.min(maxOffsetY, newOffsetY)));
+          const clampedX = Math.max(-maxOffsetX, Math.min(maxOffsetX, newOffsetX));
+          const clampedY = Math.max(-maxOffsetY, Math.min(maxOffsetY, newOffsetY));
+
+          setOffsetX(clampedX);
+          offsetXRef.current = clampedX;
+          setOffsetY(clampedY);
+          offsetYRef.current = clampedY;
         }
       },
       onPanResponderRelease: () => {
@@ -350,16 +365,24 @@ function MobileCropper({ imageUri, onCropConfirm, onCancel, style }: CropperProp
   ).current;
 
   const handleImageLoad = (e: any) => {
-    setImageDimensions({
-      width: e.nativeEvent.source.width,
-      height: e.nativeEvent.source.height,
-    });
+    const w = e.nativeEvent.source.width;
+    const h = e.nativeEvent.source.height;
+    setImageDimensions({ width: w, height: h });
+    // Center image in canvas on load
+    const initX = (CANVAS_SIZE - w * zoom) / 2;
+    const initY = (CANVAS_SIZE - h * zoom) / 2;
+    setOffsetX(initX);
+    offsetXRef.current = initX;
+    setOffsetY(initY);
+    offsetYRef.current = initY;
   };
 
   const handleZoomChange = (value: number) => {
     setZoom(value);
     setOffsetX(0);
+    offsetXRef.current = 0;
     setOffsetY(0);
+    offsetYRef.current = 0;
   };
 
   const handleConfirm = async () => {
@@ -376,7 +399,7 @@ function MobileCropper({ imageUri, onCropConfirm, onCancel, style }: CropperProp
 
   const cropImageNative = async (): Promise<string> => {
     try {
-      const { ImageManipulator } = require("expo-image-manipulator");
+      const { manipulateAsync, SaveFormat } = require("expo-image-manipulator");
 
       const scaledWidth = imageDimensions.width * zoom;
       const scaledHeight = imageDimensions.height * zoom;
@@ -384,7 +407,7 @@ function MobileCropper({ imageUri, onCropConfirm, onCancel, style }: CropperProp
       const sourceX = Math.max(0, (scaledWidth / 2 - CANVAS_SIZE / 2 - offsetX) / zoom);
       const sourceY = Math.max(0, (scaledHeight / 2 - CANVAS_SIZE / 2 - offsetY) / zoom);
 
-      const result = await ImageManipulator.manipulateAsync(
+      const result = await manipulateAsync(
         imageUri,
         [
           {
@@ -396,7 +419,7 @@ function MobileCropper({ imageUri, onCropConfirm, onCancel, style }: CropperProp
             },
           },
         ],
-        { compress: 0.9, format: "jpeg" }
+        { compress: 0.9, format: SaveFormat.JPEG }
       );
 
       // Convert to base64

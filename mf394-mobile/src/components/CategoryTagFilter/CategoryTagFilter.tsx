@@ -25,6 +25,10 @@ export interface CategoryTagFilterProps {
   selectedCategories: string[];
   onCategoryPress: (category: string) => void;
   onCategoryLongPress: () => void;
+  availableTags?: string[];
+  selectedTags?: string[];
+  onTagPress?: (tag: string) => void;
+  onTagLongPress?: () => void;
 }
 
 export function CategoryTagFilter({
@@ -32,6 +36,10 @@ export function CategoryTagFilter({
   selectedCategories,
   onCategoryPress,
   onCategoryLongPress,
+  availableTags = [],
+  selectedTags = [],
+  onTagPress,
+  onTagLongPress,
 }: CategoryTagFilterProps) {
   // Get category header text based on selection
   const getCategoryHeader = () => {
@@ -83,6 +91,39 @@ export function CategoryTagFilter({
           </Pressable>
         ))}
       </View>
+
+      {/* Tag Pills */}
+      {selectedCategories.length > 0 && availableTags.length > 0 && (
+        <View style={styles.tagsSection}>
+          <View style={styles.tagsContainer}>
+            {availableTags.map((tag) => (
+              <Pressable
+                key={tag}
+                onPress={() => onTagPress?.(tag)}
+                onLongPress={onTagLongPress}
+                delayLongPress={500}
+                testID={`tag-button-${tag}`}
+                accessibilityRole="button"
+                accessibilityLabel={`${tag} tag`}
+                accessibilityState={{ selected: selectedTags.includes(tag) }}
+                style={[
+                  styles.tagButton,
+                  selectedTags.includes(tag) && styles.tagButtonSelected,
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.tagText,
+                    selectedTags.includes(tag) && styles.tagTextSelected,
+                  ]}
+                >
+                  {tag}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
+        </View>
+      )}
     </View>
   );
 }
@@ -114,5 +155,34 @@ const styles = StyleSheet.create({
   categoryButtonSelected: {
     borderColor: colors.secondary[500],
     backgroundColor: colors.secondary[50],
+  },
+  tagsSection: {
+    marginTop: spacing.lg,
+    marginBottom: spacing.lg,
+  },
+  tagsContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: spacing.sm,
+  },
+  tagButton: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: radii.full,
+    borderWidth: 1,
+    borderColor: colors.semantic.border,
+    backgroundColor: colors.semantic.surface,
+  },
+  tagButtonSelected: {
+    borderColor: colors.primary[500],
+    backgroundColor: colors.primary[500],
+  },
+  tagText: {
+    fontSize: typography.body.small.fontSize,
+    color: colors.semantic.text,
+    fontWeight: "500",
+  },
+  tagTextSelected: {
+    color: "#fff",
   },
 });
