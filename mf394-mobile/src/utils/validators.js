@@ -9,7 +9,12 @@ export const validators = {
   },
 
   isValidTag(tagName) {
-    return tagName && tagName.trim().length > 0 && tagName.length <= 20;
+    return (
+      tagName &&
+      tagName.trim().length > 0 &&
+      tagName.length <= 30 &&
+      /^[A-Z0-9 -]+$/.test(tagName.trim())
+    );
   },
 
   isValidImageUrl(url) {

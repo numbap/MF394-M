@@ -63,7 +63,7 @@ export default function ListingScreen({ navigation }: any) {
 
   const THUMBNAIL_SIZE = 110;
   const numColumns = isGalleryView
-    ? Math.max(1, Math.floor((width - spacing.lg * 2) / (THUMBNAIL_SIZE + spacing.md)))
+    ? Math.max(1, Math.floor((width - spacing.lg * 2) / (THUMBNAIL_SIZE + spacing.xxs)))
     : 1;
 
   // Load all contacts + tags from /api/user (single call)
@@ -325,6 +325,7 @@ const styles = StyleSheet.create({
   },
   listContent: {
     paddingBottom: spacing.xl,
+    paddingHorizontal: spacing.lg,
   },
   centeredState: {
     flex: 1,
@@ -391,16 +392,15 @@ const styles = StyleSheet.create({
     borderColor: colors.semantic.border,
   },
   row: {
-    paddingHorizontal: spacing.lg,
-    gap: spacing.md,
-    justifyContent: "flex-start",
+    gap: spacing.xxs,
+    justifyContent: "center",
   },
   thumbnailItem: {
     margin: spacing.xs,
   },
   cardItem: {
-    paddingHorizontal: spacing.lg,
     paddingVertical: spacing.sm,
+    alignItems: "center",
   },
   emptyState: {
     paddingVertical: spacing.xl,
@@ -412,6 +412,8 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   statusBar: {
+    marginHorizontal: -spacing.lg,
+    marginBottom: -spacing.xl,
     borderTopWidth: 1,
     borderTopColor: colors.semantic.border,
     paddingVertical: spacing.md,

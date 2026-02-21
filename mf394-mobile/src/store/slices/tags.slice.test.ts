@@ -15,24 +15,25 @@ describe('tags.slice', () => {
 
     it('should add a new tag (prepended to beginning)', () => {
       const initialState = { tags: ['friend', 'family'] };
-      const state = tagsReducer(initialState, addTag('mentor'));
-      expect(state.tags).toEqual(['mentor', 'friend', 'family']);
+      const state = tagsReducer(initialState, addTag('MENTOR'));
+      expect(state.tags).toEqual(['MENTOR', 'friend', 'family']);
     });
 
-    it('should normalize tag to lowercase', () => {
+    it('should normalize tag to uppercase', () => {
       const initialState = { tags: ['friend'] };
       const state = tagsReducer(initialState, addTag('Work-Colleague'));
-      expect(state.tags).toContain('work-colleague');
+      expect(state.tags).toContain('WORK-COLLEAGUE');
     });
 
     it('should trim whitespace when adding tag', () => {
       const initialState = { tags: ['friend'] };
-      const state = tagsReducer(initialState, addTag('  mentor  '));
-      expect(state.tags).toContain('mentor');
+      const state = tagsReducer(initialState, addTag('  MENTOR  '));
+      expect(state.tags).toContain('MENTOR');
     });
 
     it('should prevent duplicate tags (case-insensitive)', () => {
       const initialState = { tags: ['friend', 'family'] };
+      // 'Friend' normalizes to 'FRIEND', which matches existing 'friend' case-insensitively
       const state = tagsReducer(initialState, addTag('Friend'));
       expect(state.tags).toEqual(['friend', 'family']); // No duplicate added
     });

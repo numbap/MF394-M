@@ -1,10 +1,10 @@
 import React, { useEffect } from "react";
-import { View } from "react-native";
+import { View, TouchableOpacity, Image } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { useSelector } from "react-redux";
-import { FontAwesome } from "@expo/vector-icons";
+import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import { RootState } from "../store";
 import { colors } from "../theme/theme";
 import { OfflineBanner } from "../components/OfflineBanner";
@@ -18,18 +18,33 @@ import AddEditContactScreen from "../screens/AddEdit/AddEditContactScreen";
 import PartyModeScreen from "../screens/Party/PartyModeScreen";
 import SettingsScreen from "../screens/Settings/SettingsScreen";
 
+const BackWithThumbnail = ({ onPress }) => (
+  <TouchableOpacity
+    onPress={onPress}
+    style={{ flexDirection: "row", alignItems: "center", marginLeft: 8 }}
+  >
+    <Ionicons name="chevron-back" size={24} color={colors.semantic.text} />
+    <Image
+      source={require("../../thumbnail.png")}
+      style={{ width: 28, height: 28, borderRadius: 4 }}
+      resizeMode="contain"
+    />
+  </TouchableOpacity>
+);
+
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 export function RootNavigator() {
   const auth = useSelector((state: RootState) => state.auth);
   const user = auth?.user || null;
+  const loginSessionKey = auth?.loginSessionKey || user?.id;
 
   return (
     <>
       <OfflineBanner />
       <NavigationContainer>
-        {user ? <AuthenticatedStack key={user.id} /> : <UnauthenticatedStack />}
+        {user ? <AuthenticatedStack key={loginSessionKey} /> : <UnauthenticatedStack />}
       </NavigationContainer>
     </>
   );
@@ -106,6 +121,7 @@ function HomeStack() {
         headerTitleStyle: {
           fontWeight: "600",
         },
+        headerTitleAlign: "center",
       }}
     >
       <Stack.Screen
@@ -116,17 +132,26 @@ function HomeStack() {
       <Stack.Screen
         name="AddContact"
         component={AddEditContactScreen}
-        options={{ title: "Add Contact" }}
+        options={({ navigation }) => ({
+          title: "Add Contact",
+          headerLeft: ({ onPress }) => <BackWithThumbnail onPress={onPress} />,
+        })}
       />
       <Stack.Screen
         name="EditContact"
         component={AddEditContactScreen}
-        options={{ title: "Edit Contact" }}
+        options={({ navigation }) => ({
+          title: "Edit Contact",
+          headerLeft: ({ onPress }) => <BackWithThumbnail onPress={onPress} />,
+        })}
       />
       <Stack.Screen
         name="PartyMode"
         component={PartyModeScreen}
-        options={{ title: "Party Mode" }}
+        options={({ navigation }) => ({
+          title: "Party Mode",
+          headerLeft: ({ onPress }) => <BackWithThumbnail onPress={onPress} />,
+        })}
       />
     </Stack.Navigator>
   );

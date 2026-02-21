@@ -13,7 +13,7 @@ import Animated, {
   withTiming,
   withDelay,
 } from "react-native-reanimated";
-import { colors, spacing, radii, typography, shadows } from "../../theme/theme";
+import { colors, spacing, radii, typography } from "../../theme/theme";
 
 const { height: screenHeight } = Dimensions.get("window");
 
@@ -82,18 +82,25 @@ function ConfettiParticle({ left, size, delay, duration, color }: ConfettiPartic
 export function QuizCelebration({ onPlayAgain }: QuizCelebrationProps) {
   return (
     <View style={styles.container}>
-      {PARTICLE_CONFIGS.map((config, i) => (
-        <ConfettiParticle
-          key={i}
-          left={config.left}
-          size={config.size}
-          delay={config.delay}
-          duration={config.duration}
-          color={config.color}
-        />
-      ))}
+      {/* Confetti falls as a full-area overlay behind the content */}
+      <View style={styles.confettiLayer} pointerEvents="none">
+        {PARTICLE_CONFIGS.map((config, i) => (
+          <ConfettiParticle
+            key={i}
+            left={config.left}
+            size={config.size}
+            delay={config.delay}
+            duration={config.duration}
+            color={config.color}
+          />
+        ))}
+      </View>
 
-      <View style={styles.card}>
+      {/* Spacer pushes content below the confetti spawn zone */}
+      <View style={styles.confettiSpacer} />
+
+      {/* Body content — no card/modal styling */}
+      <View style={styles.content}>
         <Text style={styles.headline}>Great job!</Text>
         <TouchableOpacity
           style={styles.button}
@@ -111,21 +118,27 @@ export function QuizCelebration({ onPlayAgain }: QuizCelebrationProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+  },
+  confettiLayer: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    height: screenHeight,
     overflow: "hidden",
   },
   particle: {
     position: "absolute",
     top: 0,
   },
-  card: {
-    backgroundColor: colors.semantic.surface,
-    borderRadius: radii.xl,
-    padding: spacing.xxxl,
+  confettiSpacer: {
+    height: 180,
+  },
+  content: {
+    flex: 1,
     alignItems: "center",
-    width: "80%",
-    ...shadows.xl,
+    justifyContent: "center",
+    paddingHorizontal: spacing.xl,
   },
   headline: {
     ...typography.headline.medium,

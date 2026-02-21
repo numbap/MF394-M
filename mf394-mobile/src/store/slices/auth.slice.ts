@@ -21,6 +21,7 @@ interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
+  loginSessionKey: string;
 }
 
 const initialState: AuthState = {
@@ -29,6 +30,7 @@ const initialState: AuthState = {
   isAuthenticated: false,
   isLoading: false,
   error: null,
+  loginSessionKey: '',
 };
 
 const authSlice = createSlice({
@@ -49,6 +51,7 @@ const authSlice = createSlice({
       state.user = action.payload.user;
       state.token = action.payload.token;
       state.error = null;
+      state.loginSessionKey = Date.now().toString();
     },
 
     loginFailure: (state, action: PayloadAction<string>) => {
@@ -73,6 +76,7 @@ const authSlice = createSlice({
       state.token = action.payload.token;
       state.isAuthenticated = true;
       state.isLoading = false;
+      state.loginSessionKey = Date.now().toString();
     },
 
     // Update user profile

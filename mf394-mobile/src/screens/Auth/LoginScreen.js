@@ -3,6 +3,7 @@ import {
   View,
   TouchableOpacity,
   Text,
+  Image,
   StyleSheet,
   ScrollView,
   ActivityIndicator,
@@ -18,8 +19,12 @@ export default function LoginScreen() {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.content}>
-        <Text style={styles.title}>Face Memorizer</Text>
-        <Text style={styles.subtitle}>Remember every face you meet</Text>
+        <Image
+          source={require("../../../assets/logo.png")}
+          style={styles.logo}
+          resizeMode="contain"
+        />
+
       </View>
 
       {error && (
@@ -58,17 +63,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  title: {
-    fontSize: typography.headline.large.fontSize,
-    fontWeight: "700",
+  logo: {
+    width: 280,
+    height: 88,
     marginBottom: spacing.md,
-    color: colors.semantic.text,
-    textAlign: "center",
-  },
-  subtitle: {
-    fontSize: typography.body.large.fontSize,
-    color: colors.semantic.textSecondary,
-    textAlign: "center",
   },
   errorBox: {
     backgroundColor: colors.accent[50],

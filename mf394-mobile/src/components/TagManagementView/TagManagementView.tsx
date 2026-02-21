@@ -41,10 +41,7 @@ export function TagManagementView({ onExit }: TagManagementViewProps) {
   const animationRefs = useRef<Record<string, Animated.Value>>({});
 
   const normalizeTag = (input: string): string => {
-    return input
-      .toLowerCase()
-      .trim()
-      .replace(/\s+/g, '-');
+    return input.toUpperCase().trim();
   };
 
   const validateTag = (input: string): string | null => {
@@ -60,7 +57,7 @@ export function TagManagementView({ onExit }: TagManagementViewProps) {
 
     const normalized = normalizeTag(trimmed);
 
-    if (tags.some(tag => tag.toLowerCase() === normalized)) {
+    if (tags.some(tag => tag.toUpperCase() === normalized)) {
       return 'This tag already exists';
     }
 
@@ -92,7 +89,9 @@ export function TagManagementView({ onExit }: TagManagementViewProps) {
   };
 
   const handleInputChange = (text: string) => {
-    setNewTagInput(text);
+    // Auto-uppercase and strip any character that isn't A-Z, 0-9, space, or hyphen
+    const sanitized = text.toUpperCase().replace(/[^A-Z0-9 -]/g, '');
+    setNewTagInput(sanitized);
     if (errorMessage) {
       setErrorMessage(null);
     }
@@ -159,7 +158,7 @@ export function TagManagementView({ onExit }: TagManagementViewProps) {
         <View style={styles.inputRow}>
           <TextInput
             style={[styles.input, errorMessage && styles.inputError]}
-            placeholder="e.g., mentor-advisor"
+            placeholder="e.g., MENTOR-ADVISOR"
             value={newTagInput}
             onChangeText={handleInputChange}
             placeholderTextColor={colors.semantic.textTertiary}

@@ -11,8 +11,8 @@
  * 5. Bulk save (create all validated contacts via API)
  */
 
-import React, { useState } from "react";
-import { View, Text, StyleSheet, ScrollView } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, Text, StyleSheet, ScrollView, Image } from "react-native";
 import { showAlert } from "../../utils/showAlert";
 import { useNavigation } from "@react-navigation/native";
 import { colors, spacing, radii, typography } from "../../theme/theme";
@@ -46,6 +46,10 @@ export default function PartyModeScreen() {
   const [viewMode, setViewMode] = useState<ViewMode>("category");
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+
+  useEffect(() => {
+    navigation.setOptions({ gestureEnabled: step !== "crop" });
+  }, [step, navigation]);
 
   const { detectFaces } = useFaceDetection();
   const [createContact] = useCreateContactMutation();
@@ -178,15 +182,23 @@ export default function PartyModeScreen() {
       {step === "upload" && (
         <ScrollView style={styles.stepContainer}>
           <FormGroup>
-            <InfoBox text="Upload a photo with multiple faces. We'll detect each person and let you name them." />
-          </FormGroup>
-
-          <FormGroup>
             <ImageSelector
               imageUri={uploadedImageUri}
               onImageSelected={handleImageSelected}
               onImageDeleted={handleImageDeleted}
             />
+          </FormGroup>
+
+          <FormGroup>
+            <InfoBox text="Upload a photo with multiple faces. We'll detect each person and let you name them.">
+              <View style={styles.multifaceImageWrapper}>
+                <Image
+                  source={require('../../../assets/multiface.png')}
+                  style={styles.multifaceImage}
+                  resizeMode="contain"
+                />
+              </View>
+            </InfoBox>
           </FormGroup>
 
           <FormButtons
@@ -267,14 +279,12 @@ export default function PartyModeScreen() {
 
       {/* Manual Crop Step */}
       {step === "crop" && uploadedImageUri && (
-        <ScrollView>
-          <Cropper
-            imageUri={uploadedImageUri}
-            onCropConfirm={handleCropConfirm}
-            onCancel={handleCropCancel}
-            style={styles.stepContainer}
-          />
-        </ScrollView>
+        <Cropper
+          imageUri={uploadedImageUri}
+          onCropConfirm={handleCropConfirm}
+          onCancel={handleCropCancel}
+          style={styles.stepContainer}
+        />
       )}
 
       {/* Full-Screen Spinner */}
@@ -312,6 +322,17 @@ const styles = StyleSheet.create({
   },
   bulkNamerContent: {
     flex: 1,
+  },
+  multifaceImageWrapper: {
+    alignSelf: 'center',
+    marginTop: spacing.md,
+    marginBottom: -spacing.xs,
+    borderRadius: radii.md,
+    overflow: 'hidden',
+  },
+  multifaceImage: {
+    width: 200,
+    height: 200,
   },
   buttonFooter: {
     paddingHorizontal: spacing.lg,

@@ -112,8 +112,20 @@ export default function QuizGameScreen() {
         playsInSilentModeIOS: true,
         staysActiveInBackground: false,
       });
+
+      if (Platform.OS !== 'web') {
+        const { sound: correctSound } = await Audio.Sound.createAsync(
+          require('../../../assets/sounds/correct.wav')
+        );
+        correctSoundRef.current = correctSound;
+
+        const { sound: incorrectSound } = await Audio.Sound.createAsync(
+          require('../../../assets/sounds/incorrect.wav')
+        );
+        incorrectSoundRef.current = incorrectSound;
+      }
     } catch (error) {
-      console.error("Error setting audio mode:", error);
+      console.error("Error loading sounds:", error);
     }
   };
 
@@ -148,7 +160,11 @@ export default function QuizGameScreen() {
           }
         }
       } else {
-        // Native haptics (iOS/Android)
+        // Native: play sound + haptics (iOS/Android)
+        const soundRef = isCorrect ? correctSoundRef : incorrectSoundRef;
+        if (soundRef.current) {
+          await soundRef.current.replayAsync();
+        }
         if (isCorrect) {
           await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
         } else {
@@ -481,7 +497,7 @@ export default function QuizGameScreen() {
         <View style={styles.quizContainer}>
           <View style={styles.header}>
             <Text style={styles.progressText}>
-              Question {currentIndex + 1} of {quizContacts.length}
+              {currentIndex + 1} of {quizContacts.length}
             </Text>
           </View>
 
@@ -496,8 +512,6 @@ export default function QuizGameScreen() {
               <Text style={styles.noImageText}>No Photo</Text>
             )}
           </Animated.View>
-
-          <Text style={styles.question}>Who is this?</Text>
 
           <View style={styles.optionsContainer}>
             {currentOptions.map((option, index) => (

@@ -102,38 +102,45 @@ describe('TagManagementView', () => {
       const input = getByTestId('tag-input');
       const addButton = getByTestId('add-tag-button');
 
-      fireEvent.changeText(input, 'mentor');
+      fireEvent.changeText(input, 'MENTOR');
       fireEvent.press(addButton);
 
       await waitFor(() => {
-        expect(getByText('mentor')).toBeTruthy();
+        expect(getByText('MENTOR')).toBeTruthy();
       });
     });
 
-    it('should normalize tag to lowercase', async () => {
+    it('should auto-uppercase lowercase input', () => {
+      const store = createMockStore();
+      const { getByTestId } = renderWithStore(store);
+
+      const input = getByTestId('tag-input');
+      fireEvent.changeText(input, 'work-colleague');
+
+      expect(input.props.value).toBe('WORK-COLLEAGUE');
+    });
+
+    it('should preserve spaces in tag names', async () => {
       const store = createMockStore();
       const { getByTestId, getByText } = renderWithStore(store);
 
       const input = getByTestId('tag-input');
-      fireEvent.changeText(input, 'Work-Colleague');
+      fireEvent.changeText(input, 'WORK COLLEAGUE');
       fireEvent.press(getByTestId('add-tag-button'));
 
       await waitFor(() => {
-        expect(getByText('work-colleague')).toBeTruthy();
+        expect(getByText('WORK COLLEAGUE')).toBeTruthy();
       });
     });
 
-    it('should replace spaces with hyphens', async () => {
+    it('should strip invalid characters from input', () => {
       const store = createMockStore();
-      const { getByTestId, getByText } = renderWithStore(store);
+      const { getByTestId } = renderWithStore(store);
 
       const input = getByTestId('tag-input');
-      fireEvent.changeText(input, 'work colleague');
-      fireEvent.press(getByTestId('add-tag-button'));
+      fireEvent.changeText(input, 'TAG_WITH.SPECIAL@CHARS!');
 
-      await waitFor(() => {
-        expect(getByText('work-colleague')).toBeTruthy();
-      });
+      expect(input.props.value).toBe('TAGWITHSPECIALCHARS');
     });
 
     it('should show error for empty tag', () => {
@@ -148,12 +155,13 @@ describe('TagManagementView', () => {
       expect(state.tags.tags).toEqual(['friend']);
     });
 
-    it('should show error for duplicate tag', () => {
+    it('should show error for duplicate tag (case-insensitive)', () => {
       const store = createMockStore(['friend', 'family']);
       const { getByTestId, getByText } = renderWithStore(store);
 
       const input = getByTestId('tag-input');
-      fireEvent.changeText(input, 'Friend'); // Case-insensitive duplicate
+      // 'friend' is auto-uppercased to 'FRIEND', which matches existing 'friend' case-insensitively
+      fireEvent.changeText(input, 'friend');
 
       fireEvent.press(getByTestId('add-tag-button'));
 
@@ -176,7 +184,7 @@ describe('TagManagementView', () => {
       const { getByTestId, getByText } = renderWithStore(store);
 
       const input = getByTestId('tag-input');
-      fireEvent.changeText(input, 'mentor');
+      fireEvent.changeText(input, 'MENTOR');
       fireEvent.press(getByTestId('add-tag-button'));
 
       await waitFor(() => {
@@ -189,11 +197,11 @@ describe('TagManagementView', () => {
       const { getByTestId, queryByText } = renderWithStore(store);
 
       const input = getByTestId('tag-input');
-      fireEvent.changeText(input, 'mentor');
+      fireEvent.changeText(input, 'MENTOR');
       fireEvent.press(getByTestId('add-tag-button'));
 
       await waitFor(() => {
-        expect(queryByText("Tag 'mentor' added")).toBeNull();
+        expect(queryByText("Tag 'MENTOR' added")).toBeNull();
       });
     });
 
@@ -203,13 +211,13 @@ describe('TagManagementView', () => {
 
       const input = getByTestId('tag-input');
 
-      // Trigger error
+      // Trigger error - 'friend' auto-uppercased to 'FRIEND', matches existing 'friend'
       fireEvent.changeText(input, 'friend');
       fireEvent.press(getByTestId('add-tag-button'));
       expect(getByText('This tag already exists')).toBeTruthy();
 
       // Type again - error should clear
-      fireEvent.changeText(input, 'mentor');
+      fireEvent.changeText(input, 'MENTOR');
       expect(queryByText('This tag already exists')).toBeNull();
     });
 
@@ -218,13 +226,13 @@ describe('TagManagementView', () => {
       const { getByTestId } = renderWithStore(store);
 
       const input = getByTestId('tag-input');
-      fireEvent.changeText(input, 'mentor');
+      fireEvent.changeText(input, 'MENTOR');
       fireEvent.press(getByTestId('add-tag-button'));
 
       await waitFor(() => {
         const state = store.getState();
-        expect(state.tags.tags[0]).toBe('mentor'); // New tag at beginning
-        expect(state.tags.tags).toEqual(['mentor', 'friend', 'family']);
+        expect(state.tags.tags[0]).toBe('MENTOR'); // New tag at beginning
+        expect(state.tags.tags).toEqual(['MENTOR', 'friend', 'family']);
       });
     });
   });
@@ -283,19 +291,6 @@ describe('TagManagementView', () => {
   });
 
   describe('edge cases', () => {
-    it('should handle tag with special characters', async () => {
-      const store = createMockStore();
-      const { getByTestId, getByText } = renderWithStore(store);
-
-      const input = getByTestId('tag-input');
-      fireEvent.changeText(input, 'tag-with_special.chars');
-      fireEvent.press(getByTestId('add-tag-button'));
-
-      await waitFor(() => {
-        expect(getByText('tag-with_special.chars')).toBeTruthy();
-      });
-    });
-
     it('should handle multiple tags being added sequentially', async () => {
       const store = createMockStore();
       const { getByTestId, getByText } = renderWithStore(store);
@@ -303,20 +298,20 @@ describe('TagManagementView', () => {
       const input = getByTestId('tag-input');
 
       // Add first tag
-      fireEvent.changeText(input, 'mentor');
+      fireEvent.changeText(input, 'MENTOR');
       fireEvent.press(getByTestId('add-tag-button'));
 
       await waitFor(() => {
-        expect(getByText('mentor')).toBeTruthy();
+        expect(getByText('MENTOR')).toBeTruthy();
       });
 
       // Add second tag
-      fireEvent.changeText(input, 'volunteer');
+      fireEvent.changeText(input, 'VOLUNTEER');
       fireEvent.press(getByTestId('add-tag-button'));
 
       await waitFor(() => {
-        expect(getByText('volunteer')).toBeTruthy();
-        expect(getByText('mentor')).toBeTruthy();
+        expect(getByText('VOLUNTEER')).toBeTruthy();
+        expect(getByText('MENTOR')).toBeTruthy();
       });
     });
 

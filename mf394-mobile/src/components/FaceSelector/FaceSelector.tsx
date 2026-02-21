@@ -83,7 +83,7 @@ export function FaceSelector({
       {/* Or crop manually option */}
       {onCropInstead && (
         <View style={styles.alternativeContainer}>
-          <Text style={styles.alternativeText}>Not happy with these faces?</Text>
+          <Text style={styles.alternativeText}>Or</Text>
           <TouchableOpacity
             style={styles.alternativeButton}
             onPress={onCropInstead}

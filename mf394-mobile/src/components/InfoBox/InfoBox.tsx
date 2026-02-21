@@ -19,27 +19,34 @@ export interface InfoBoxProps {
   iconColor?: string;
   /** Optional custom styles */
   style?: ViewStyle;
+  /** Optional content rendered below the text row */
+  children?: React.ReactNode;
 }
 
-export function InfoBox({ text, icon = 'info-circle', iconColor, style }: InfoBoxProps) {
+export function InfoBox({ text, icon = 'info-circle', iconColor, style, children }: InfoBoxProps) {
   const finalIconColor = iconColor || colors.primary[500];
 
   return (
     <View style={[styles.container, style]}>
-      <FontAwesome name={icon as any} size={20} color={finalIconColor} />
-      <Text style={styles.text}>{text}</Text>
+      <View style={styles.header}>
+        <FontAwesome name={icon as any} size={20} color={finalIconColor} />
+        <Text style={styles.text}>{text}</Text>
+      </View>
+      {children}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
     backgroundColor: colors.semantic.surface,
     padding: spacing.lg,
     borderRadius: radii.md,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
   },
   text: {
     flex: 1,

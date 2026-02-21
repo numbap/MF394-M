@@ -5,30 +5,37 @@ exports[`InfoBox matches snapshot 1`] = `
   style={
     [
       {
-        "alignItems": "center",
         "backgroundColor": "#ece7df",
         "borderRadius": 8,
-        "flexDirection": "row",
-        "gap": 12,
         "padding": 16,
       },
       undefined,
     ]
   }
 >
-  <Text>
-    info-circle
-  </Text>
-  <Text
+  <View
     style={
       {
-        "color": "#181b1b",
-        "flex": 1,
-        "fontSize": 14,
+        "alignItems": "center",
+        "flexDirection": "row",
+        "gap": 12,
       }
     }
   >
-    Upload a photo with multiple faces. We'll detect each person and let you name them.
-  </Text>
+    <Text>
+      info-circle
+    </Text>
+    <Text
+      style={
+        {
+          "color": "#181b1b",
+          "flex": 1,
+          "fontSize": 14,
+        }
+      }
+    >
+      Upload a photo with multiple faces. We'll detect each person and let you name them.
+    </Text>
+  </View>
 </View>
 `;

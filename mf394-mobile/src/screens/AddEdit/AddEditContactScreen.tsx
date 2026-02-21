@@ -92,6 +92,10 @@ export default function AddEditContactScreen() {
 
   // Pre-populate form if editing
   useEffect(() => {
+    navigation.setOptions({ gestureEnabled: step !== "crop" });
+  }, [step, navigation]);
+
+  useEffect(() => {
     if (existingContact) {
       setName(existingContact.name);
       setHint(existingContact.hint || "");
@@ -420,14 +424,12 @@ export default function AddEditContactScreen() {
 
       {/* Crop Step */}
       {step === "crop" && uploadedImageUri && (
-        <ScrollView>
-          <Cropper
-            imageUri={uploadedImageUri}
-            onCropConfirm={handleCropConfirm}
-            onCancel={handleCropCancel}
-            style={styles.stepContainer}
-          />
-        </ScrollView>
+        <Cropper
+          imageUri={uploadedImageUri}
+          onCropConfirm={handleCropConfirm}
+          onCancel={handleCropCancel}
+          style={styles.stepContainer}
+        />
       )}
 
       {/* Full-Screen Spinner */}
