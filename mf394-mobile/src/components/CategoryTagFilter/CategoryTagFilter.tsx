@@ -12,7 +12,7 @@
 import React from "react";
 import { View, Text, StyleSheet, Pressable } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
-import { colors, spacing, radii, typography } from "../../theme/theme";
+import { colors, spacing, radii, typography, shadows } from "../../theme/theme";
 
 export interface CategoryItem {
   label: string;
@@ -145,8 +145,8 @@ const styles = StyleSheet.create({
   categoryButton: {
     width: "18%",
     aspectRatio: 1,
-    borderRadius: radii.md,
-    borderWidth: 2,
+    borderRadius: radii.lg,
+    borderWidth: 1,
     borderColor: colors.semantic.border,
     justifyContent: "center",
     alignItems: "center",
@@ -155,6 +155,7 @@ const styles = StyleSheet.create({
   categoryButtonSelected: {
     borderColor: colors.secondary[500],
     backgroundColor: colors.secondary[50],
+    ...shadows.xs,
   },
   tagsSection: {
     marginTop: spacing.lg,
@@ -183,6 +184,6 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   tagTextSelected: {
-    color: "#fff",
+    color: colors.neutral.bone[50],
   },
 });

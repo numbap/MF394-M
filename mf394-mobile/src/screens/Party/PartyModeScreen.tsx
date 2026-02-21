@@ -15,7 +15,7 @@ import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, ScrollView, Image } from "react-native";
 import { showAlert } from "../../utils/showAlert";
 import { useNavigation } from "@react-navigation/native";
-import { colors, spacing, radii, typography } from "../../theme/theme";
+import { colors, spacing, radii, typography, shadows } from "../../theme/theme";
 import { ImageSelector } from "../../components/ImageSelector";
 import { BulkNamer, NamedFace } from "../../components/BulkNamer";
 import { CategoryTagsStep } from "../../components/CategoryTagsStep";
@@ -338,7 +338,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.lg,
     backgroundColor: colors.semantic.background,
-    borderTopWidth: 1,
-    borderTopColor: colors.semantic.border,
+    ...shadows.sm,
   },
 });

@@ -8,7 +8,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, ViewStyle } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
-import { colors, spacing, radii, typography } from '../../theme/theme';
+import { colors, spacing, radii, typography, shadows } from '../../theme/theme';
 
 export interface InfoBoxProps {
   /** The text content to display */
@@ -42,6 +42,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.semantic.surface,
     padding: spacing.lg,
     borderRadius: radii.md,
+    borderLeftWidth: 3,
+    borderLeftColor: colors.primary[500],
+    ...shadows.xs,
   },
   header: {
     flexDirection: 'row',

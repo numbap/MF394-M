@@ -110,7 +110,7 @@ export function Toast({
         },
       ]}
     >
-      <FontAwesome name={getIconName()} size={20} color="#fff" />
+      <FontAwesome name={getIconName()} size={20} color={colors.neutral.bone[50]} />
       <Text style={styles.message}>{message}</Text>
     </Animated.View>
   );
@@ -136,6 +136,6 @@ const styles = StyleSheet.create({
     fontSize: typography.body.medium.fontSize,
     lineHeight: typography.body.medium.lineHeight,
     fontWeight: '600',
-    color: '#fff',
+    color: colors.neutral.bone[50],
   },
 });

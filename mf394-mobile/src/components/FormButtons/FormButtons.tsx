@@ -24,7 +24,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
-import { colors, spacing, radii, typography } from '../../theme/theme';
+import { colors, spacing, radii, typography, shadows } from '../../theme/theme';
 
 /**
  * Configuration for a single button
@@ -77,14 +77,14 @@ export const FormButtons: React.FC<FormButtonsProps> = ({
           disabled={isAnyLoading || primaryButton.disabled}
         >
           {primaryButton.isLoading ? (
-            <ActivityIndicator color="#fff" size="small" />
+            <ActivityIndicator color={colors.neutral.bone[50]} size="small" />
           ) : (
             <>
               {primaryButton.icon && (
                 <FontAwesome
                   name={primaryButton.icon as any}
                   size={18}
-                  color="#fff"
+                  color={colors.neutral.bone[50]}
                   style={styles.buttonIcon}
                 />
               )}
@@ -106,14 +106,14 @@ export const FormButtons: React.FC<FormButtonsProps> = ({
           disabled={isAnyLoading || deleteButton.disabled}
         >
           {deleteButton.isLoading ? (
-            <ActivityIndicator color="#fff" size="small" />
+            <ActivityIndicator color={colors.neutral.bone[50]} size="small" />
           ) : (
             <>
               {deleteButton.icon && (
                 <FontAwesome
                   name={deleteButton.icon as any}
                   size={18}
-                  color="#fff"
+                  color={colors.neutral.bone[50]}
                   style={deleteButton.label ? styles.buttonIcon : undefined}
                 />
               )}
@@ -172,15 +172,16 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary[500],
     paddingVertical: spacing.lg,
     paddingHorizontal: spacing.lg,
-    borderRadius: radii.md,
+    borderRadius: radii.lg,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: spacing.sm,
     width: '100%',
+    ...shadows.sm,
   },
   primaryButtonText: {
-    color: '#fff',
+    color: colors.neutral.bone[50],
     fontWeight: '700',
     fontSize: typography.body.large.fontSize,
   },
@@ -188,15 +189,16 @@ const styles = StyleSheet.create({
     backgroundColor: colors.semantic.error,
     paddingVertical: spacing.lg,
     paddingHorizontal: spacing.lg,
-    borderRadius: radii.md,
+    borderRadius: radii.lg,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: spacing.sm,
     width: '100%',
+    ...shadows.sm,
   },
   deleteButtonText: {
-    color: '#fff',
+    color: colors.neutral.bone[50],
     fontWeight: '700',
     fontSize: typography.body.large.fontSize,
   },
@@ -206,7 +208,7 @@ const styles = StyleSheet.create({
     borderColor: colors.semantic.border,
     paddingVertical: spacing.lg,
     paddingHorizontal: spacing.lg,
-    borderRadius: radii.md,
+    borderRadius: radii.lg,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',

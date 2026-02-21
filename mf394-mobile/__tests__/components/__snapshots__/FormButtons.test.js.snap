@@ -43,13 +43,21 @@ exports[`FormButtons Snapshots matches snapshot with all three buttons 1`] = `
       {
         "alignItems": "center",
         "backgroundColor": "#547fab",
-        "borderRadius": 8,
+        "borderRadius": 12,
+        "elevation": 2,
         "flexDirection": "row",
         "gap": 8,
         "justifyContent": "center",
         "opacity": 1,
         "paddingHorizontal": 16,
         "paddingVertical": 16,
+        "shadowColor": "#3f3527",
+        "shadowOffset": {
+          "height": 2,
+          "width": 0,
+        },
+        "shadowOpacity": 0.08,
+        "shadowRadius": 4,
         "width": "100%",
       }
     }
@@ -67,7 +75,7 @@ exports[`FormButtons Snapshots matches snapshot with all three buttons 1`] = `
     <Text
       style={
         {
-          "color": "#fff",
+          "color": "#f5f3ef",
           "fontSize": 16,
           "fontWeight": "700",
         }
@@ -108,13 +116,21 @@ exports[`FormButtons Snapshots matches snapshot with all three buttons 1`] = `
       {
         "alignItems": "center",
         "backgroundColor": "#dc2626",
-        "borderRadius": 8,
+        "borderRadius": 12,
+        "elevation": 2,
         "flexDirection": "row",
         "gap": 8,
         "justifyContent": "center",
         "opacity": 1,
         "paddingHorizontal": 16,
         "paddingVertical": 16,
+        "shadowColor": "#3f3527",
+        "shadowOffset": {
+          "height": 2,
+          "width": 0,
+        },
+        "shadowOpacity": 0.08,
+        "shadowRadius": 4,
         "width": "100%",
       }
     }
@@ -132,7 +148,7 @@ exports[`FormButtons Snapshots matches snapshot with all three buttons 1`] = `
     <Text
       style={
         {
-          "color": "#fff",
+          "color": "#f5f3ef",
           "fontSize": 16,
           "fontWeight": "700",
         }
@@ -181,7 +197,7 @@ exports[`FormButtons Snapshots matches snapshot with all three buttons 1`] = `
         "alignItems": "center",
         "backgroundColor": "#ece7df",
         "borderColor": "#c8ced0",
-        "borderRadius": 8,
+        "borderRadius": 12,
         "borderWidth": 1,
         "flexDirection": "row",
         "gap": 8,
@@ -261,13 +277,21 @@ exports[`FormButtons Snapshots matches snapshot with delete button icon only 1`]
       {
         "alignItems": "center",
         "backgroundColor": "#547fab",
-        "borderRadius": 8,
+        "borderRadius": 12,
+        "elevation": 2,
         "flexDirection": "row",
         "gap": 8,
         "justifyContent": "center",
         "opacity": 1,
         "paddingHorizontal": 16,
         "paddingVertical": 16,
+        "shadowColor": "#3f3527",
+        "shadowOffset": {
+          "height": 2,
+          "width": 0,
+        },
+        "shadowOpacity": 0.08,
+        "shadowRadius": 4,
         "width": "100%",
       }
     }
@@ -285,7 +309,7 @@ exports[`FormButtons Snapshots matches snapshot with delete button icon only 1`]
     <Text
       style={
         {
-          "color": "#fff",
+          "color": "#f5f3ef",
           "fontSize": 16,
           "fontWeight": "700",
         }
@@ -326,13 +350,21 @@ exports[`FormButtons Snapshots matches snapshot with delete button icon only 1`]
       {
         "alignItems": "center",
         "backgroundColor": "#dc2626",
-        "borderRadius": 8,
+        "borderRadius": 12,
+        "elevation": 2,
         "flexDirection": "row",
         "gap": 8,
         "justifyContent": "center",
         "opacity": 1,
         "paddingHorizontal": 16,
         "paddingVertical": 16,
+        "shadowColor": "#3f3527",
+        "shadowOffset": {
+          "height": 2,
+          "width": 0,
+        },
+        "shadowOpacity": 0.08,
+        "shadowRadius": 4,
         "width": "100%",
       }
     }
@@ -382,7 +414,7 @@ exports[`FormButtons Snapshots matches snapshot with delete button icon only 1`]
         "alignItems": "center",
         "backgroundColor": "#ece7df",
         "borderColor": "#c8ced0",
-        "borderRadius": 8,
+        "borderRadius": 12,
         "borderWidth": 1,
         "flexDirection": "row",
         "gap": 8,
@@ -453,13 +485,21 @@ exports[`FormButtons Snapshots matches snapshot with disabled primary button 1`]
       {
         "alignItems": "center",
         "backgroundColor": "#547fab",
-        "borderRadius": 8,
+        "borderRadius": 12,
+        "elevation": 2,
         "flexDirection": "row",
         "gap": 8,
         "justifyContent": "center",
         "opacity": 0.5,
         "paddingHorizontal": 16,
         "paddingVertical": 16,
+        "shadowColor": "#3f3527",
+        "shadowOffset": {
+          "height": 2,
+          "width": 0,
+        },
+        "shadowOpacity": 0.08,
+        "shadowRadius": 4,
         "width": "100%",
       }
     }
@@ -477,7 +517,7 @@ exports[`FormButtons Snapshots matches snapshot with disabled primary button 1`]
     <Text
       style={
         {
-          "color": "#fff",
+          "color": "#f5f3ef",
           "fontSize": 16,
           "fontWeight": "700",
         }
@@ -526,7 +566,7 @@ exports[`FormButtons Snapshots matches snapshot with disabled primary button 1`]
         "alignItems": "center",
         "backgroundColor": "#ece7df",
         "borderColor": "#c8ced0",
-        "borderRadius": 8,
+        "borderRadius": 12,
         "borderWidth": 1,
         "flexDirection": "row",
         "gap": 8,
@@ -597,20 +637,28 @@ exports[`FormButtons Snapshots matches snapshot with loading state 1`] = `
       {
         "alignItems": "center",
         "backgroundColor": "#547fab",
-        "borderRadius": 8,
+        "borderRadius": 12,
+        "elevation": 2,
         "flexDirection": "row",
         "gap": 8,
         "justifyContent": "center",
         "opacity": 0.5,
         "paddingHorizontal": 16,
         "paddingVertical": 16,
+        "shadowColor": "#3f3527",
+        "shadowOffset": {
+          "height": 2,
+          "width": 0,
+        },
+        "shadowOpacity": 0.08,
+        "shadowRadius": 4,
         "width": "100%",
       }
     }
     testID="primary-button"
   >
     <ActivityIndicator
-      color="#fff"
+      color="#f5f3ef"
       size="small"
     />
   </View>
@@ -646,13 +694,21 @@ exports[`FormButtons Snapshots matches snapshot with loading state 1`] = `
       {
         "alignItems": "center",
         "backgroundColor": "#dc2626",
-        "borderRadius": 8,
+        "borderRadius": 12,
+        "elevation": 2,
         "flexDirection": "row",
         "gap": 8,
         "justifyContent": "center",
         "opacity": 0.5,
         "paddingHorizontal": 16,
         "paddingVertical": 16,
+        "shadowColor": "#3f3527",
+        "shadowOffset": {
+          "height": 2,
+          "width": 0,
+        },
+        "shadowOpacity": 0.08,
+        "shadowRadius": 4,
         "width": "100%",
       }
     }
@@ -670,7 +726,7 @@ exports[`FormButtons Snapshots matches snapshot with loading state 1`] = `
     <Text
       style={
         {
-          "color": "#fff",
+          "color": "#f5f3ef",
           "fontSize": 16,
           "fontWeight": "700",
         }
@@ -719,7 +775,7 @@ exports[`FormButtons Snapshots matches snapshot with loading state 1`] = `
         "alignItems": "center",
         "backgroundColor": "#ece7df",
         "borderColor": "#c8ced0",
-        "borderRadius": 8,
+        "borderRadius": 12,
         "borderWidth": 1,
         "flexDirection": "row",
         "gap": 8,
@@ -798,7 +854,7 @@ exports[`FormButtons Snapshots matches snapshot with only cancel button 1`] = `
         "alignItems": "center",
         "backgroundColor": "#ece7df",
         "borderColor": "#c8ced0",
-        "borderRadius": 8,
+        "borderRadius": 12,
         "borderWidth": 1,
         "flexDirection": "row",
         "gap": 8,
@@ -869,13 +925,21 @@ exports[`FormButtons Snapshots matches snapshot with primary and cancel buttons 
       {
         "alignItems": "center",
         "backgroundColor": "#547fab",
-        "borderRadius": 8,
+        "borderRadius": 12,
+        "elevation": 2,
         "flexDirection": "row",
         "gap": 8,
         "justifyContent": "center",
         "opacity": 1,
         "paddingHorizontal": 16,
         "paddingVertical": 16,
+        "shadowColor": "#3f3527",
+        "shadowOffset": {
+          "height": 2,
+          "width": 0,
+        },
+        "shadowOpacity": 0.08,
+        "shadowRadius": 4,
         "width": "100%",
       }
     }
@@ -893,7 +957,7 @@ exports[`FormButtons Snapshots matches snapshot with primary and cancel buttons 
     <Text
       style={
         {
-          "color": "#fff",
+          "color": "#f5f3ef",
           "fontSize": 16,
           "fontWeight": "700",
         }
@@ -942,7 +1006,7 @@ exports[`FormButtons Snapshots matches snapshot with primary and cancel buttons 
         "alignItems": "center",
         "backgroundColor": "#ece7df",
         "borderColor": "#c8ced0",
-        "borderRadius": 8,
+        "borderRadius": 12,
         "borderWidth": 1,
         "flexDirection": "row",
         "gap": 8,

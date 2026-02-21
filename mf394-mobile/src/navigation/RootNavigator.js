@@ -1,12 +1,12 @@
-import React, { useEffect } from "react";
-import { View, TouchableOpacity, Image } from "react-native";
+import React from "react";
+import { View, TouchableOpacity, Image, StyleSheet } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
-import { createStackNavigator } from "@react-navigation/stack";
+import { createStackNavigator, CardStyleInterpolators } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { useSelector } from "react-redux";
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import { RootState } from "../store";
-import { colors } from "../theme/theme";
+import { colors, spacing, shadows, typography, nav, animation } from "../theme/theme";
 import { OfflineBanner } from "../components/OfflineBanner";
 
 import LoginScreen from "../screens/Auth/LoginScreen";
@@ -21,19 +21,67 @@ import SettingsScreen from "../screens/Settings/SettingsScreen";
 const BackWithThumbnail = ({ onPress }) => (
   <TouchableOpacity
     onPress={onPress}
-    style={{ flexDirection: "row", alignItems: "center", marginLeft: 8 }}
+    style={backStyles.container}
   >
     <Ionicons name="chevron-back" size={24} color={colors.semantic.text} />
     <Image
       source={require("../../thumbnail.png")}
-      style={{ width: 28, height: 28, borderRadius: 4 }}
+      style={backStyles.thumbnail}
       resizeMode="contain"
     />
   </TouchableOpacity>
 );
 
+const backStyles = StyleSheet.create({
+  container: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginLeft: spacing.sm,
+  },
+  thumbnail: {
+    width: nav.headerThumbnailSize,
+    height: nav.headerThumbnailSize,
+    borderRadius: spacing.xs,
+    ...shadows.xs,
+  },
+});
+
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
+
+const fadeSlideTransition = {
+  cardStyleInterpolator: ({ current, layouts }) => ({
+    cardStyle: {
+      opacity: current.progress,
+      transform: [
+        {
+          translateX: current.progress.interpolate({
+            inputRange: [0, 1],
+            outputRange: [layouts.screen.width * 0.15, 0],
+          }),
+        },
+      ],
+    },
+  }),
+  transitionSpec: {
+    open: { animation: "timing", config: { duration: animation.normal } },
+    close: { animation: "timing", config: { duration: animation.normal } },
+  },
+};
+
+const stackScreenOptions = {
+  headerShown: true,
+  headerStyle: {
+    backgroundColor: colors.semantic.background,
+    ...shadows.sm,
+  },
+  headerTintColor: colors.semantic.text,
+  headerTitleStyle: {
+    ...typography.title.medium,
+  },
+  headerTitleAlign: "center",
+  ...fadeSlideTransition,
+};
 
 export function RootNavigator() {
   const auth = useSelector((state: RootState) => state.auth);
@@ -74,10 +122,22 @@ function AuthenticatedStack() {
           else if (route.name === 'QuizTab') iconName = 'trophy';
           else if (route.name === 'SettingsTab') iconName = 'cog';
 
-          return <FontAwesome name={iconName} size={24} color={color} />;
+          return <FontAwesome name={iconName} size={22} color={color} />;
         },
         tabBarActiveTintColor: colors.primary[500],
-        tabBarInactiveTintColor: colors.semantic.textTertiary,
+        tabBarInactiveTintColor: colors.neutral.iron[400],
+        tabBarStyle: {
+          backgroundColor: colors.semantic.tabBarBackground,
+          borderTopColor: colors.semantic.tabBarBorder,
+          borderTopWidth: 1,
+          height: nav.tabBarHeight,
+          paddingBottom: spacing.sm,
+          paddingTop: spacing.xs,
+          ...shadows.md,
+        },
+        tabBarLabelStyle: {
+          ...typography.label.small,
+        },
         headerShown: false,
       })}
     >
@@ -111,19 +171,7 @@ function AuthenticatedStack() {
 
 function HomeStack() {
   return (
-    <Stack.Navigator
-      screenOptions={{
-        headerShown: true,
-        headerStyle: {
-          backgroundColor: colors.semantic.background,
-        },
-        headerTintColor: colors.semantic.text,
-        headerTitleStyle: {
-          fontWeight: "600",
-        },
-        headerTitleAlign: "center",
-      }}
-    >
+    <Stack.Navigator screenOptions={stackScreenOptions}>
       <Stack.Screen
         name="Listing"
         component={ListingScreen}
@@ -159,18 +207,7 @@ function HomeStack() {
 
 function GamesStack() {
   return (
-    <Stack.Navigator
-      screenOptions={{
-        headerShown: true,
-        headerStyle: {
-          backgroundColor: colors.semantic.background,
-        },
-        headerTintColor: colors.semantic.text,
-        headerTitleStyle: {
-          fontWeight: "600",
-        },
-      }}
-    >
+    <Stack.Navigator screenOptions={stackScreenOptions}>
       <Stack.Screen
         name="Quiz"
         component={QuizGameScreen}
@@ -182,18 +219,7 @@ function GamesStack() {
 
 function SettingsStack() {
   return (
-    <Stack.Navigator
-      screenOptions={{
-        headerShown: true,
-        headerStyle: {
-          backgroundColor: colors.semantic.background,
-        },
-        headerTintColor: colors.semantic.text,
-        headerTitleStyle: {
-          fontWeight: "600",
-        },
-      }}
-    >
+    <Stack.Navigator screenOptions={stackScreenOptions}>
       <Stack.Screen
         name="Settings"
         component={SettingsScreen}

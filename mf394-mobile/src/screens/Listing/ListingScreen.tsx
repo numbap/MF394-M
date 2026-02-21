@@ -24,7 +24,7 @@ import {
 import { useSelector, useDispatch } from "react-redux";
 import { useRoute } from "@react-navigation/native";
 import { FontAwesome } from "@expo/vector-icons";
-import { colors, spacing, radii, typography } from "../../theme/theme";
+import { colors, spacing, radii, typography, shadows } from "../../theme/theme";
 import { RootState, AppDispatch } from "../../store";
 import {
   toggleCategory,
@@ -229,7 +229,7 @@ export default function ListingScreen({ navigation }: any) {
               onPress={handleAddContact}
               disabled={!isOnline}
             >
-              <FontAwesome name="user-plus" size={18} color="#fff" />
+              <FontAwesome name="user-plus" size={18} color={colors.neutral.bone[50]} />
               <Text style={styles.actionButtonText}>Add</Text>
             </TouchableOpacity>
 
@@ -238,7 +238,7 @@ export default function ListingScreen({ navigation }: any) {
               onPress={handlePartyMode}
               disabled={!isOnline}
             >
-              <FontAwesome name="users" size={18} color="#fff" />
+              <FontAwesome name="users" size={18} color={colors.neutral.bone[50]} />
               <Text style={styles.actionButtonText}>Party</Text>
             </TouchableOpacity>
           </View>
@@ -347,8 +347,7 @@ const styles = StyleSheet.create({
   section: {
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.lg,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.semantic.border,
+    ...shadows.sm,
   },
   actionRow: {
     paddingTop: spacing.lg,
@@ -370,13 +369,14 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.lg,
     backgroundColor: colors.primary[500],
-    borderRadius: radii.md,
+    borderRadius: radii.lg,
+    ...shadows.sm,
   },
   actionButtonDisabled: {
     opacity: 0.5,
   },
   actionButtonText: {
-    color: "#fff",
+    color: colors.neutral.bone[50],
     fontWeight: "600",
     fontSize: typography.body.medium.fontSize,
   },
@@ -386,10 +386,9 @@ const styles = StyleSheet.create({
     height: 44,
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: radii.md,
-    backgroundColor: colors.semantic.surface,
-    borderWidth: 1,
-    borderColor: colors.semantic.border,
+    borderRadius: radii.lg,
+    backgroundColor: colors.semantic.cardBackground,
+    ...shadows.xs,
   },
   row: {
     gap: spacing.xxs,
@@ -427,13 +426,13 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   progressTrack: {
-    height: 4,
+    height: 6,
     borderRadius: radii.full,
     backgroundColor: colors.neutral.iron[100],
     overflow: "hidden",
   },
   progressFill: {
-    height: 4,
+    height: 6,
     borderRadius: radii.full,
     backgroundColor: colors.primary[500],
   },

@@ -11,7 +11,7 @@ import { showAlert } from "../../utils/showAlert";
 import { gameService } from "../../services/gameService";
 import { useContacts } from "../../hooks/useContacts";
 import shuffle from "../../utils/shuffle";
-import { COLORS, SPACING } from "../../utils/constants";
+import { colors, spacing, radii, typography, shadows } from "../../theme/theme";
 
 export default function PracticeGameScreen() {
   const [contacts, setContacts] = useState([]);
@@ -72,7 +72,7 @@ export default function PracticeGameScreen() {
   if (isLoading) {
     return (
       <View style={styles.container}>
-        <ActivityIndicator size="large" color={COLORS.PRIMARY} />
+        <ActivityIndicator size="large" color={colors.primary[500]} />
       </View>
     );
   }
@@ -127,59 +127,64 @@ export default function PracticeGameScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.BACKGROUND,
-    padding: SPACING.LG,
+    backgroundColor: colors.semantic.background,
+    padding: spacing.lg,
   },
   resetButton: {
     alignSelf: "flex-end",
-    backgroundColor: COLORS.SURFACE,
-    paddingVertical: SPACING.SM,
-    paddingHorizontal: SPACING.MD,
-    borderRadius: 6,
-    marginBottom: SPACING.MD,
+    backgroundColor: colors.semantic.cardBackground,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
+    borderRadius: radii.lg,
+    marginBottom: spacing.md,
+    ...shadows.sm,
   },
   resetButtonText: {
-    fontWeight: "600",
-    color: COLORS.TEXT,
+    ...typography.label.large,
+    color: colors.semantic.text,
   },
   mainContent: {
     flex: 1,
     flexDirection: "row",
-    gap: SPACING.LG,
+    gap: spacing.lg,
   },
   imageColumn: {
     flex: 1,
   },
   imageCard: {
-    marginRight: SPACING.MD,
-    borderRadius: 8,
+    marginRight: spacing.md,
+    borderRadius: radii.lg,
     overflow: "hidden",
-    borderWidth: 2,
-    borderColor: COLORS.BORDER,
+    borderWidth: 1,
+    borderColor: colors.neutral.bone[200],
+    ...shadows.sm,
   },
   imageCardSelected: {
-    borderColor: COLORS.PRIMARY,
-    borderWidth: 3,
+    borderColor: colors.primary[500],
+    borderWidth: 2,
   },
   imageBox: {
     width: 120,
     height: 120,
-    backgroundColor: COLORS.SURFACE,
+    backgroundColor: colors.semantic.surface,
   },
   nameColumn: {
     flex: 1,
     justifyContent: "space-around",
   },
   nameButton: {
-    paddingVertical: SPACING.MD,
-    paddingHorizontal: SPACING.LG,
-    backgroundColor: COLORS.SURFACE,
-    borderRadius: 8,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.lg,
+    backgroundColor: colors.semantic.cardBackground,
+    borderRadius: radii.lg,
     alignItems: "center",
+    borderWidth: 1,
+    borderColor: colors.neutral.bone[100],
+    ...shadows.sm,
   },
   nameText: {
-    fontSize: 16,
+    ...typography.body.large,
     fontWeight: "500",
-    color: COLORS.TEXT,
+    color: colors.semantic.text,
   },
 });

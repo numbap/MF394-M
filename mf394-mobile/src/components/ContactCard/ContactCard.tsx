@@ -16,7 +16,7 @@ import {
   ViewStyle,
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
-import { colors, spacing, radii, shadows } from "../../theme/theme";
+import { colors, spacing, radii, shadows, typography } from "../../theme/theme";
 import type { Contact } from "../../store/api/contacts.api";
 
 export interface ContactCardProps {
@@ -68,7 +68,7 @@ export function ContactCard({ contact, style }: ContactCardProps) {
             style={[styles.infoIconBox, { backgroundColor: colors.semantic.info }]}
             onPress={() => setShowSummary(!showSummary)}
           >
-            <FontAwesome name={"info" as any} size={18} color="white" />
+            <FontAwesome name={"info" as any} size={18} color={colors.neutral.bone[50]} />
           </TouchableOpacity>
         )}
 
@@ -115,9 +115,11 @@ export function ContactCard({ contact, style }: ContactCardProps) {
 const styles = StyleSheet.create({
   container: {
     width: 300,
-    backgroundColor: colors.semantic.surface,
-    borderRadius: radii.lg,
+    backgroundColor: colors.semantic.cardBackground,
+    borderRadius: radii.xl,
     overflow: "hidden",
+    borderWidth: 1,
+    borderColor: colors.neutral.bone[100],
     ...shadows.md,
   },
   photoContainer: {
@@ -143,7 +145,7 @@ const styles = StyleSheet.create({
     paddingLeft: spacing.md,
     paddingRight: spacing.md + 36, // Margin to prevent icon overlap
     justifyContent: "center",
-    backgroundColor: colors.semantic.surface,
+    backgroundColor: colors.semantic.cardBackground,
   },
   bottomSectionActive: {
     backgroundColor: colors.secondary[100],
@@ -153,19 +155,18 @@ const styles = StyleSheet.create({
     paddingRight: spacing.sm,
   },
   name: {
-    fontSize: 16,
+    ...typography.body.large,
     fontWeight: "600",
     color: colors.semantic.text,
     marginBottom: spacing.xs,
   },
   hint: {
-    fontSize: 12,
+    ...typography.body.small,
     color: colors.semantic.textSecondary,
   },
   summary: {
-    fontSize: 12,
+    ...typography.body.small,
     color: colors.semantic.text,
-    lineHeight: 18,
   },
   categoryIconBox: {
     position: "absolute",
@@ -173,7 +174,7 @@ const styles = StyleSheet.create({
     right: 0,
     width: 36,
     height: 36,
-    borderRadius: radii.sm,
+    borderRadius: radii.md,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -183,7 +184,7 @@ const styles = StyleSheet.create({
     right: 0,
     width: 36,
     height: 36,
-    borderRadius: radii.sm,
+    borderRadius: radii.md,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -197,9 +198,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.sm,
     paddingVertical: 2,
     borderRadius: radii.full,
-    backgroundColor: colors.primary[100],
+    backgroundColor: colors.primary[50],
     borderWidth: 1,
-    borderColor: colors.primary[300],
+    borderColor: colors.primary[200],
   },
   tagText: {
     fontSize: 10,

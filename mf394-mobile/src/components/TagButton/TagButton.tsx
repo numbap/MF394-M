@@ -7,7 +7,7 @@
 
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet, ViewStyle, TextStyle } from 'react-native';
-import { colors, spacing, radii, typography } from '../../theme/theme';
+import { colors, spacing, radii, typography, shadows } from '../../theme/theme';
 
 export interface TagButtonProps {
   /** Tag label to display */
@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
   button: {
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
-    borderWidth: 2,
+    borderWidth: 1,
     borderColor: colors.primary[200],
     borderRadius: radii.xl,
     backgroundColor: colors.semantic.surface,
@@ -50,6 +50,7 @@ const styles = StyleSheet.create({
   buttonSelected: {
     backgroundColor: colors.primary[50],
     borderColor: colors.primary[500],
+    ...shadows.xs,
   },
   label: {
     fontSize: typography.body.medium.fontSize,

@@ -22,7 +22,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { Audio } from "expo-av";
 import shuffle from "../../utils/shuffle";
-import { colors, spacing, radii, typography } from "../../theme/theme";
+import { colors, spacing, radii, typography, shadows } from "../../theme/theme";
 import {
   toggleCategory,
   toggleTag,
@@ -496,9 +496,11 @@ export default function QuizGameScreen() {
 
         <View style={styles.quizContainer}>
           <View style={styles.header}>
-            <Text style={styles.progressText}>
-              {currentIndex + 1} of {quizContacts.length}
-            </Text>
+            <View style={styles.progressPill}>
+              <Text style={styles.progressText}>
+                {currentIndex + 1} of {quizContacts.length}
+              </Text>
+            </View>
           </View>
 
           <Animated.View style={[styles.imageBox, animatedImageStyle]}>
@@ -575,22 +577,32 @@ const styles = StyleSheet.create({
   header: {
     width: "100%",
     marginBottom: spacing.lg,
+    alignItems: "center",
+  },
+  progressPill: {
+    backgroundColor: colors.primary[50],
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.xs,
+    borderRadius: radii.full,
   },
   progressText: {
     ...typography.body.large,
     fontWeight: "600",
-    color: colors.semantic.text,
+    color: colors.primary[700],
     textAlign: "center",
   },
   imageBox: {
-    width: 250,
-    height: 250,
-    borderRadius: radii.lg,
+    width: 280,
+    height: 280,
+    borderRadius: radii.xl,
     backgroundColor: colors.semantic.surface,
     marginBottom: spacing.xl,
     overflow: "hidden",
     justifyContent: "center",
     alignItems: "center",
+    borderWidth: 3,
+    borderColor: colors.neutral.bone[200],
+    ...shadows.lg,
   },
   contactImage: {
     width: "100%",
@@ -612,11 +624,12 @@ const styles = StyleSheet.create({
   optionButton: {
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.lg,
-    backgroundColor: colors.semantic.surface,
-    borderRadius: radii.md,
+    backgroundColor: colors.semantic.cardBackground,
+    borderRadius: radii.lg,
     alignItems: "center",
-    borderWidth: 2,
-    borderColor: colors.semantic.surface,
+    borderWidth: 1,
+    borderColor: colors.neutral.bone[200],
+    ...shadows.sm,
   },
   optionText: {
     ...typography.body.large,
@@ -624,11 +637,11 @@ const styles = StyleSheet.create({
     color: colors.semantic.text,
   },
   optionCorrect: {
-    backgroundColor: colors.semantic.success,
+    backgroundColor: '#d1fae5', // soft success green
     borderColor: colors.semantic.success,
   },
   optionIncorrect: {
-    backgroundColor: colors.semantic.error,
+    backgroundColor: colors.accent[100],
     borderColor: colors.semantic.error,
   },
   emptyContainer: {

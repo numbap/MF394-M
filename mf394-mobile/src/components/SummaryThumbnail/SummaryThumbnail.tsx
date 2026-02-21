@@ -15,7 +15,8 @@ import {
   ViewStyle,
   Animated,
 } from 'react-native';
-import { colors, spacing, radii, shadows } from '../../theme/theme';
+import { FontAwesome } from '@expo/vector-icons';
+import { colors, spacing, radii, shadows, typography } from '../../theme/theme';
 
 export interface SummaryThumbnailProps {
   id: string;
@@ -91,7 +92,7 @@ export function SummaryThumbnail({
           />
         ) : (
           <View style={[styles.photoPlaceholder, { backgroundColor: colors.neutral.iron[100] }]}>
-            <Text style={styles.placeholderText}>👤</Text>
+            <FontAwesome name="user-circle" size={40} color={colors.semantic.textSecondary} />
           </View>
         )}
       </Animated.View>
@@ -127,7 +128,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: '100%',
     height: '100%',
-    borderRadius: radii.md,
+    borderRadius: radii.lg,
     overflow: 'hidden',
     backgroundColor: colors.semantic.surface,
     backfaceVisibility: 'hidden',
@@ -135,6 +136,8 @@ const styles = StyleSheet.create({
   },
   cardBack: {
     backgroundColor: colors.primary[500],
+    borderWidth: 1,
+    borderColor: colors.primary[400],
   },
   photo: {
     width: '100%',
@@ -146,8 +149,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  placeholderText: {
-    fontSize: 32,
+  placeholderIcon: {
   },
   nameContainer: {
     width: '100%',
@@ -157,9 +159,8 @@ const styles = StyleSheet.create({
     padding: spacing.sm,
   },
   nameText: {
-    color: '#fff',
-    fontSize: 12,
-    fontWeight: '600',
+    color: colors.neutral.bone[50],
+    ...typography.label.medium,
     textAlign: 'center',
   },
 });

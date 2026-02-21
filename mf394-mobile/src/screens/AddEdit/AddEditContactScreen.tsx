@@ -27,7 +27,7 @@ import {
 import { showAlert } from "../../utils/showAlert";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { FontAwesome } from "@expo/vector-icons";
-import { colors, spacing, radii, typography } from "../../theme/theme";
+import { colors, spacing, radii, typography, shadows } from "../../theme/theme";
 import { useGetUserQuery, useCreateContactMutation, useUpdateContactMutation, useDeleteContactMutation } from "../../store/api/contacts.api";
 import { useUploadImageMutation } from "../../store/api/upload.api";
 import { ImageSelector } from "../../components/ImageSelector";
@@ -479,13 +479,14 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: colors.semantic.border,
-    borderRadius: radii.md,
+    borderColor: colors.neutral.bone[200],
+    borderRadius: radii.lg,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.md,
     fontSize: typography.body.large.fontSize,
     color: colors.semantic.text,
     backgroundColor: colors.semantic.inputBackground,
+    ...shadows.xs,
   },
   multilineInput: {
     textAlignVertical: "top",
@@ -497,7 +498,7 @@ const styles = StyleSheet.create({
     borderColor: colors.semantic.border,
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.lg,
-    borderRadius: radii.md,
+    borderRadius: radii.lg,
     alignItems: "center",
     justifyContent: "center",
   },

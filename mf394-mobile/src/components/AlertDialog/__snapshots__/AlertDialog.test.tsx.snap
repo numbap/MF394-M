@@ -84,7 +84,7 @@ exports[`AlertDialog snapshot test - confirm dialog 1`] = `
           "elevation": 12,
           "maxWidth": 340,
           "padding": 20,
-          "shadowColor": "#000",
+          "shadowColor": "#3f3527",
           "shadowOffset": {
             "height": 12,
             "width": 0,
@@ -342,7 +342,7 @@ exports[`AlertDialog snapshot test - destructive dialog 1`] = `
           "elevation": 12,
           "maxWidth": 340,
           "padding": 20,
-          "shadowColor": "#000",
+          "shadowColor": "#3f3527",
           "shadowOffset": {
             "height": 12,
             "width": 0,
@@ -602,7 +602,7 @@ exports[`AlertDialog snapshot test - single button 1`] = `
           "elevation": 12,
           "maxWidth": 340,
           "padding": 20,
-          "shadowColor": "#000",
+          "shadowColor": "#3f3527",
           "shadowOffset": {
             "height": 12,
             "width": 0,

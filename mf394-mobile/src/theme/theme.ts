@@ -139,6 +139,10 @@ export const colors = {
     warning: '#d4b82b', // secondary-500
     error: '#dc2626', // red
     info: '#547fab', // primary-500
+    cardBackground: '#ffffff', // white cards that pop against bone-50 background
+    tabBarBackground: '#ffffff',
+    tabBarBorder: '#d8cec0', // bone-200
+    pressedOverlay: 'rgba(84, 127, 171, 0.08)', // primary at 8% for press feedback
   },
 };
 
@@ -289,40 +293,57 @@ export const shadows = {
     elevation: 0,
   },
   xs: {
-    shadowColor: '#000',
+    shadowColor: '#3f3527',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 2,
     elevation: 1,
   },
   sm: {
-    shadowColor: '#000',
+    shadowColor: '#3f3527',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
     shadowRadius: 4,
     elevation: 2,
   },
   md: {
-    shadowColor: '#000',
+    shadowColor: '#3f3527',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.12,
     shadowRadius: 8,
     elevation: 4,
   },
   lg: {
-    shadowColor: '#000',
+    shadowColor: '#3f3527',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.15,
     shadowRadius: 16,
     elevation: 8,
   },
   xl: {
-    shadowColor: '#000',
+    shadowColor: '#3f3527',
     shadowOffset: { width: 0, height: 12 },
     shadowOpacity: 0.2,
     shadowRadius: 24,
     elevation: 12,
   },
+};
+
+export const animation = {
+  fast: 150,
+  normal: 250,
+  slow: 400,
+};
+
+export const spring = {
+  damping: 15,
+  stiffness: 150,
+};
+
+export const nav = {
+  tabBarHeight: 64,
+  headerHeight: 56,
+  headerThumbnailSize: 32,
 };
 
 export const theme = {
@@ -332,6 +353,9 @@ export const theme = {
   typography,
   shadows,
   layout,
+  animation,
+  spring,
+  nav,
 };
 
 export type Theme = typeof theme;

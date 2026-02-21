@@ -6,8 +6,18 @@ exports[`InfoBox matches snapshot 1`] = `
     [
       {
         "backgroundColor": "#ece7df",
+        "borderLeftColor": "#547fab",
+        "borderLeftWidth": 3,
         "borderRadius": 8,
+        "elevation": 1,
         "padding": 16,
+        "shadowColor": "#3f3527",
+        "shadowOffset": {
+          "height": 1,
+          "width": 0,
+        },
+        "shadowOpacity": 0.05,
+        "shadowRadius": 2,
       },
       undefined,
     ]

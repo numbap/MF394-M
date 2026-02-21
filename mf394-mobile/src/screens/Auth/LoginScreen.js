@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { useSelector } from "react-redux";
 import { useGoogleAuth } from "../../hooks/useGoogleAuth";
-import { colors, spacing, typography, radii } from "../../theme/theme";
+import { colors, spacing, typography, radii, shadows } from "../../theme/theme";
 
 export default function LoginScreen() {
   const { isLoading, error } = useSelector((state) => state.auth);
@@ -19,12 +19,13 @@ export default function LoginScreen() {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.content}>
-        <Image
-          source={require("../../../assets/logo.png")}
-          style={styles.logo}
-          resizeMode="contain"
-        />
-
+        <View style={styles.logoGlow}>
+          <Image
+            source={require("../../../assets/logo.png")}
+            style={styles.logo}
+            resizeMode="contain"
+          />
+        </View>
       </View>
 
       {error && (
@@ -40,7 +41,7 @@ export default function LoginScreen() {
           disabled={isLoading}
         >
           {isLoading ? (
-            <ActivityIndicator color="#fff" />
+            <ActivityIndicator color={colors.neutral.bone[50]} />
           ) : (
             <Text style={styles.signInButtonText}>Sign in with Google</Text>
           )}
@@ -63,6 +64,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  logoGlow: {
+    backgroundColor: colors.neutral.bone[100],
+    borderRadius: radii.full,
+    padding: spacing.xxl,
+    opacity: 0.5,
+  },
   logo: {
     width: 280,
     height: 88,
@@ -83,19 +90,20 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     width: "100%",
-    marginBottom: 40,
+    marginBottom: spacing.huge,
   },
   signInButton: {
     backgroundColor: colors.accent[500],
     paddingVertical: spacing.lg,
-    borderRadius: radii.lg,
+    borderRadius: radii.xl,
     alignItems: "center",
+    ...shadows.md,
   },
   signInButtonDisabled: {
     opacity: 0.7,
   },
   signInButtonText: {
-    color: "#fff",
+    color: colors.neutral.bone[50],
     fontWeight: "600",
     fontSize: typography.title.medium.fontSize,
   },

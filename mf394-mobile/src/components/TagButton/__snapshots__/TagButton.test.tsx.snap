@@ -34,10 +34,18 @@ exports[`TagButton matches snapshot - selected 1`] = `
       "backgroundColor": "#eef2f7",
       "borderColor": "#547fab",
       "borderRadius": 16,
-      "borderWidth": 2,
+      "borderWidth": 1,
+      "elevation": 1,
       "opacity": 1,
       "paddingHorizontal": 12,
       "paddingVertical": 8,
+      "shadowColor": "#3f3527",
+      "shadowOffset": {
+        "height": 1,
+        "width": 0,
+      },
+      "shadowOpacity": 0.05,
+      "shadowRadius": 2,
     }
   }
 >
@@ -96,7 +104,7 @@ exports[`TagButton matches snapshot - unselected 1`] = `
       "backgroundColor": "#ece7df",
       "borderColor": "#bbccdd",
       "borderRadius": 16,
-      "borderWidth": 2,
+      "borderWidth": 1,
       "opacity": 1,
       "paddingHorizontal": 12,
       "paddingVertical": 8,

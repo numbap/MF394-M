@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { FontAwesome } from '@expo/vector-icons';
-import { colors, spacing, radii } from '../../theme/theme';
+import { colors, spacing, radii, shadows, typography } from '../../theme/theme';
 
 interface ImageSelectorProps {
   imageUri?: string | null;
@@ -46,7 +46,7 @@ export function ImageSelector({
     <View style={styles.container}>
       <TouchableOpacity
         testID="image-selector-container"
-        style={styles.imageContainer}
+        style={[styles.imageContainer, imageUri && styles.imageContainerWithImage]}
         onPress={handlePickImage}
         onLongPress={handleLongPress}
         delayLongPress={500}
@@ -87,8 +87,9 @@ const styles = StyleSheet.create({
     width: '100%',
     aspectRatio: 1,
     borderWidth: 2,
-    borderColor: colors.semantic.border,
-    borderRadius: radii.lg,
+    borderColor: colors.neutral.bone[200],
+    borderStyle: 'dashed',
+    borderRadius: radii.xl,
     backgroundColor: colors.semantic.surface,
     overflow: 'hidden',
     justifyContent: 'center',
@@ -103,13 +104,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.md,
   },
+  imageContainerWithImage: {
+    borderStyle: 'solid',
+    borderWidth: 1,
+    borderColor: colors.neutral.bone[100],
+    ...shadows.md,
+  },
   uploadLabel: {
-    fontSize: 16,
+    ...typography.body.large,
     fontWeight: '600',
     color: colors.semantic.text,
   },
   uploadSubtext: {
-    fontSize: 14,
+    ...typography.body.medium,
     color: colors.semantic.textSecondary,
   },
 });
