@@ -249,7 +249,7 @@ export default function ListingScreen({ navigation }: any) {
             onPress={() => setIsGalleryView(!isGalleryView)}
           >
             <FontAwesome
-              name={isGalleryView ? "th-list" : "th"}
+              name={isGalleryView ? "address-card" : "th"}
               size={18}
               color={colors.semantic.text}
             />
