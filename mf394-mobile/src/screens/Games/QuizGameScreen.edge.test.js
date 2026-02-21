@@ -69,13 +69,10 @@ jest.mock('../../components/QuizCelebration', () => {
   const React = require('react');
   const { View, Text, TouchableOpacity } = require('react-native');
   return {
-    QuizCelebration: ({ visible, score, total, onPlayAgain }) =>
-      visible
-        ? React.createElement(View, { testID: 'quiz-celebration' },
-            React.createElement(Text, null, `Score: ${score}/${total}`),
-            React.createElement(TouchableOpacity, { onPress: onPlayAgain, testID: 'play-again' })
-          )
-        : null,
+    QuizCelebration: ({ onPlayAgain }) =>
+      React.createElement(View, { testID: 'quiz-celebration' },
+        React.createElement(TouchableOpacity, { onPress: onPlayAgain, testID: 'play-again' })
+      ),
   };
 });
 

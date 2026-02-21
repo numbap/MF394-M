@@ -1,12 +1,12 @@
 import React, { useEffect } from "react";
 import {
-  Modal,
   View,
   Text,
   TouchableOpacity,
   StyleSheet,
   Dimensions,
 } from "react-native";
+import { FontAwesome } from "@expo/vector-icons";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -18,9 +18,6 @@ import { colors, spacing, radii, typography, shadows } from "../../theme/theme";
 const { height: screenHeight } = Dimensions.get("window");
 
 interface QuizCelebrationProps {
-  visible: boolean;
-  score: number;
-  total: number;
   onPlayAgain: () => void;
 }
 
@@ -47,24 +44,18 @@ interface ConfettiParticleProps {
   delay: number;
   duration: number;
   color: string;
-  trigger: boolean;
 }
 
-function ConfettiParticle({ left, size, delay, duration, color, trigger }: ConfettiParticleProps) {
+function ConfettiParticle({ left, size, delay, duration, color }: ConfettiParticleProps) {
   const translateY = useSharedValue(-20);
   const opacity = useSharedValue(1);
 
   useEffect(() => {
-    if (trigger) {
-      translateY.value = -20;
-      opacity.value = 1;
-      translateY.value = withDelay(delay, withTiming(screenHeight + 20, { duration }));
-      opacity.value = withDelay(delay + duration * 0.7, withTiming(0, { duration: duration * 0.3 }));
-    } else {
-      translateY.value = -20;
-      opacity.value = 1;
-    }
-  }, [trigger]);
+    translateY.value = -20;
+    opacity.value = 1;
+    translateY.value = withDelay(delay, withTiming(screenHeight + 20, { duration }));
+    opacity.value = withDelay(delay + duration * 0.7, withTiming(0, { duration: duration * 0.3 }));
+  }, []);
 
   const animStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }],
@@ -88,47 +79,41 @@ function ConfettiParticle({ left, size, delay, duration, color, trigger }: Confe
   );
 }
 
-export function QuizCelebration({ visible, score, total, onPlayAgain }: QuizCelebrationProps) {
+export function QuizCelebration({ onPlayAgain }: QuizCelebrationProps) {
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="fade"
-      statusBarTranslucent
-    >
-      <View style={styles.backdrop}>
-        {PARTICLE_CONFIGS.map((config, i) => (
-          <ConfettiParticle
-            key={i}
-            left={config.left}
-            size={config.size}
-            delay={config.delay}
-            duration={config.duration}
-            color={config.color}
-            trigger={visible}
-          />
-        ))}
+    <View style={styles.container}>
+      {PARTICLE_CONFIGS.map((config, i) => (
+        <ConfettiParticle
+          key={i}
+          left={config.left}
+          size={config.size}
+          delay={config.delay}
+          duration={config.duration}
+          color={config.color}
+        />
+      ))}
 
-        <View style={styles.card}>
-          <Text style={styles.headline}>Great job!</Text>
-          <Text style={styles.body}>
-            You got {score} out of {total} right!
-          </Text>
-          <TouchableOpacity style={styles.button} onPress={onPlayAgain}>
-            <Text style={styles.buttonText}>Play Again</Text>
-          </TouchableOpacity>
-        </View>
+      <View style={styles.card}>
+        <Text style={styles.headline}>Great job!</Text>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={onPlayAgain}
+          accessibilityLabel="Play again"
+          testID="play-again-button"
+        >
+          <FontAwesome name="refresh" size={24} color={colors.neutral.bone[50]} />
+        </TouchableOpacity>
       </View>
-    </Modal>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  backdrop: {
+  container: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.75)",
     justifyContent: "center",
     alignItems: "center",
+    overflow: "hidden",
   },
   particle: {
     position: "absolute",
@@ -145,23 +130,15 @@ const styles = StyleSheet.create({
   headline: {
     ...typography.headline.medium,
     color: colors.semantic.text,
-    marginBottom: spacing.md,
-    textAlign: "center",
-  },
-  body: {
-    ...typography.body.large,
-    color: colors.semantic.textSecondary,
     marginBottom: spacing.xl,
     textAlign: "center",
   },
   button: {
     backgroundColor: colors.primary[500],
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.xl,
-    borderRadius: radii.md,
-  },
-  buttonText: {
-    ...typography.title.small,
-    color: colors.neutral.bone[50],
+    width: 56,
+    height: 56,
+    borderRadius: radii.full,
+    alignItems: "center",
+    justifyContent: "center",
   },
 });

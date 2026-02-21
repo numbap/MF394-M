@@ -45,10 +45,10 @@ export async function getBase64FromUri(uri: string): Promise<Base64Result> {
   if (Platform.OS !== 'web') {
     // Native: use expo-image-manipulator to read file as base64
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const { ImageManipulator } = require('expo-image-manipulator');
-    const result = await ImageManipulator.manipulateAsync(uri, [], {
+    const { manipulateAsync, SaveFormat } = require('expo-image-manipulator');
+    const result = await manipulateAsync(uri, [], {
       compress: 0.9,
-      format: 'jpeg',
+      format: SaveFormat.JPEG,
       base64: true,
     });
     return {

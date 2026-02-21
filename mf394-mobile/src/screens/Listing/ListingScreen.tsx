@@ -16,7 +16,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Pressable,
-  ScrollView,
+  FlatList,
   SafeAreaView,
   ActivityIndicator,
   useWindowDimensions,
@@ -61,8 +61,10 @@ export default function ListingScreen({ navigation }: any) {
   const lastTapTime = useRef<{ [key: string]: number }>({});
   const DOUBLE_TAP_DELAY = 300;
 
-  const TABLET_BREAKPOINT = 768;
-  const isTablet = width >= TABLET_BREAKPOINT;
+  const THUMBNAIL_SIZE = 110;
+  const numColumns = isGalleryView
+    ? Math.max(1, Math.floor((width - spacing.lg * 2) / (THUMBNAIL_SIZE + spacing.md)))
+    : 1;
 
   // Load all contacts + tags from /api/user (single call)
   const { data: userData, isLoading, error } = useGetUserQuery();
@@ -205,129 +207,113 @@ export default function ListingScreen({ navigation }: any) {
     );
   }
 
+  const filterHeader = (
+    <View style={styles.section}>
+      <FilterContainer>
+        <CategoryTagFilter
+          categories={CATEGORIES}
+          selectedCategories={selectedCategories}
+          onCategoryPress={handleCategoryPress}
+          onCategoryLongPress={handleCategoryLongPress}
+          availableTags={availableTags}
+          selectedTags={selectedTags}
+          onTagPress={handleTagPress}
+          onTagLongPress={handleTagLongPress}
+        />
+
+        {/* Action Buttons */}
+        <View style={styles.actionRow}>
+          <View style={styles.buttonGroup}>
+            <TouchableOpacity
+              style={[styles.actionButton, !isOnline && styles.actionButtonDisabled]}
+              onPress={handleAddContact}
+              disabled={!isOnline}
+            >
+              <FontAwesome name="user-plus" size={18} color="#fff" />
+              <Text style={styles.actionButtonText}>Add</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.actionButton, !isOnline && styles.actionButtonDisabled]}
+              onPress={handlePartyMode}
+              disabled={!isOnline}
+            >
+              <FontAwesome name="users" size={18} color="#fff" />
+              <Text style={styles.actionButtonText}>Party</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* View Toggle */}
+          <TouchableOpacity
+            style={styles.viewToggle}
+            onPress={() => setIsGalleryView(!isGalleryView)}
+          >
+            <FontAwesome
+              name={isGalleryView ? "th-list" : "th"}
+              size={18}
+              color={colors.semantic.text}
+            />
+          </TouchableOpacity>
+        </View>
+      </FilterContainer>
+    </View>
+  );
+
+  const statusFooter = selectedCategories.length > 0 ? (
+    <View style={styles.statusBar}>
+      <Text style={styles.statusText}>
+        {filteredContacts.length} of {contacts.length} visible
+      </Text>
+      <View style={styles.progressTrack}>
+        <View
+          style={[
+            styles.progressFill,
+            {
+              width: contacts.length > 0
+                ? `${(filteredContacts.length / contacts.length) * 100}%`
+                : '0%',
+            },
+          ]}
+        />
+      </View>
+    </View>
+  ) : null;
+
+  const emptyState = selectedCategories.length > 0 ? (
+    <View style={styles.emptyState}>
+      <Text style={styles.emptyStateText}>No contacts found</Text>
+    </View>
+  ) : null;
+
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-        {/* Category Filter Header */}
-        <View style={styles.section}>
-          <FilterContainer>
-            <CategoryTagFilter
-              categories={CATEGORIES}
-              selectedCategories={selectedCategories}
-              onCategoryPress={handleCategoryPress}
-              onCategoryLongPress={handleCategoryLongPress}
-              availableTags={availableTags}
-              selectedTags={selectedTags}
-              onTagPress={handleTagPress}
-              onTagLongPress={handleTagLongPress}
-            />
-
-            {/* Action Buttons */}
-            <View style={styles.actionRow}>
-              <View style={styles.buttonGroup}>
-                <TouchableOpacity
-                  style={[styles.actionButton, !isOnline && styles.actionButtonDisabled]}
-                  onPress={handleAddContact}
-                  disabled={!isOnline}
-                >
-                  <FontAwesome name="user-plus" size={18} color="#fff" />
-                  <Text style={styles.actionButtonText}>Add</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={[styles.actionButton, !isOnline && styles.actionButtonDisabled]}
-                  onPress={handlePartyMode}
-                  disabled={!isOnline}
-                >
-                  <FontAwesome name="users" size={18} color="#fff" />
-                  <Text style={styles.actionButtonText}>Party</Text>
-                </TouchableOpacity>
-              </View>
-
-              {/* View Toggle */}
-              <TouchableOpacity
-                style={styles.viewToggle}
-                onPress={() => setIsGalleryView(!isGalleryView)}
-              >
-                <FontAwesome
-                  name={isGalleryView ? "th-list" : "th"}
-                  size={18}
-                  color={colors.semantic.text}
-                />
-              </TouchableOpacity>
-            </View>
-          </FilterContainer>
-        </View>
-
-        {/* Contacts List */}
-        {selectedCategories.length > 0 && (
-          <View style={styles.contactsSection}>
-            {filteredContacts.length === 0 ? (
-              <View style={styles.emptyState}>
-                <Text style={styles.emptyStateText}>No contacts found</Text>
-              </View>
-            ) : isGalleryView ? (
-              <View
-                style={[
-                  styles.thumbnailGrid,
-                  { justifyContent: isTablet ? "flex-start" : "center" },
-                ]}
-              >
-                {filteredContacts.map((contact) => (
-                  <Pressable
-                    key={contact._id}
-                    onPress={() => handleContactPress(contact._id)}
-                    onLongPress={() => handleContactLongPress(contact._id)}
-                    delayLongPress={500}
-                    style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }]}
-                  >
-                    <SummaryThumbnail id={contact._id} name={contact.name} photo={contact.photo} />
-                  </Pressable>
-                ))}
-              </View>
-            ) : (
-              <View
-                style={[styles.cardsList, { justifyContent: isTablet ? "flex-start" : "center" }]}
-              >
-                {filteredContacts.map((contact) => (
-                  <Pressable
-                    key={contact._id}
-                    onPress={() => handleContactPress(contact._id)}
-                    onLongPress={() => handleContactLongPress(contact._id)}
-                    delayLongPress={500}
-                    style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }]}
-                  >
-                    <ContactCard contact={contact} />
-                  </Pressable>
-                ))}
-              </View>
-            )}
-          </View>
+      <FlatList
+        key={isGalleryView ? 'gallery' : 'cards'}
+        data={selectedCategories.length > 0 ? filteredContacts : []}
+        keyExtractor={(item) => item._id}
+        numColumns={numColumns}
+        columnWrapperStyle={isGalleryView && numColumns > 1 ? styles.row : undefined}
+        renderItem={({ item: contact }) => (
+          <Pressable
+            onPress={() => handleContactPress(contact._id)}
+            onLongPress={() => handleContactLongPress(contact._id)}
+            delayLongPress={500}
+            style={({ pressed }) => [
+              isGalleryView ? styles.thumbnailItem : styles.cardItem,
+              { opacity: pressed ? 0.8 : 1 },
+            ]}
+          >
+            {isGalleryView
+              ? <SummaryThumbnail id={contact._id} name={contact.name} photo={contact.photo} />
+              : <ContactCard contact={contact} />}
+          </Pressable>
         )}
-
-        {/* Status Bar */}
-      {selectedCategories.length > 0 && (
-        <View style={styles.statusBar}>
-          <Text style={styles.statusText}>
-            {filteredContacts.length} of {contacts.length} visible
-          </Text>
-          <View style={styles.progressTrack}>
-            <View
-              style={[
-                styles.progressFill,
-                {
-                  width: contacts.length > 0
-                    ? `${(filteredContacts.length / contacts.length) * 100}%`
-                    : '0%',
-                },
-              ]}
-            />
-          </View>
-        </View>
-      )}
-      </ScrollView>
-
-      
+        ListHeaderComponent={filterHeader}
+        ListFooterComponent={statusFooter}
+        ListEmptyComponent={emptyState}
+        contentContainerStyle={styles.listContent}
+        showsVerticalScrollIndicator={false}
+      />
     </SafeAreaView>
   );
 }
@@ -337,8 +323,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.semantic.background,
   },
-  scrollView: {
-    flex: 1,
+  listContent: {
+    paddingBottom: spacing.xl,
   },
   centeredState: {
     flex: 1,
@@ -404,9 +390,17 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.semantic.border,
   },
-  contactsSection: {
+  row: {
     paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.lg,
+    gap: spacing.md,
+    justifyContent: "flex-start",
+  },
+  thumbnailItem: {
+    margin: spacing.xs,
+  },
+  cardItem: {
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
   },
   emptyState: {
     paddingVertical: spacing.xl,
@@ -416,16 +410,6 @@ const styles = StyleSheet.create({
     fontSize: typography.body.large.fontSize,
     color: colors.semantic.textSecondary,
     fontWeight: "500",
-  },
-  thumbnailGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: spacing.md,
-  },
-  cardsList: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: spacing.lg,
   },
   statusBar: {
     borderTopWidth: 1,

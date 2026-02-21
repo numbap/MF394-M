@@ -18,10 +18,11 @@ jest.mock("react-native-reanimated", () => {
   };
 });
 
+jest.mock("@expo/vector-icons", () => ({
+  FontAwesome: "FontAwesome",
+}));
+
 const defaultProps = {
-  visible: true,
-  score: 4,
-  total: 5,
   onPlayAgain: jest.fn(),
 };
 
@@ -30,60 +31,33 @@ describe("QuizCelebration", () => {
     jest.clearAllMocks();
   });
 
-  it("renders when visible is true", () => {
+  it("renders the Great job headline", () => {
     const { getByText } = render(<QuizCelebration {...defaultProps} />);
     expect(getByText("Great job!")).toBeTruthy();
-    expect(getByText("You got 4 out of 5 right!")).toBeTruthy();
-    expect(getByText("Play Again")).toBeTruthy();
   });
 
-  it("does not render content when visible is false", () => {
-    const { queryByText } = render(
-      <QuizCelebration {...defaultProps} visible={false} />
-    );
-    expect(queryByText("Great job!")).toBeNull();
-    expect(queryByText("Play Again")).toBeNull();
+  it("does not render score text", () => {
+    const { queryByText } = render(<QuizCelebration {...defaultProps} />);
+    expect(queryByText(/You got/)).toBeNull();
+    expect(queryByText(/out of/)).toBeNull();
   });
 
-  it("shows the correct score", () => {
-    const { getByText } = render(
-      <QuizCelebration {...defaultProps} score={3} total={5} />
-    );
-    expect(getByText("You got 3 out of 5 right!")).toBeTruthy();
+  it("renders the restart button", () => {
+    const { getByTestId } = render(<QuizCelebration {...defaultProps} />);
+    expect(getByTestId("play-again-button")).toBeTruthy();
   });
 
-  it("shows perfect score", () => {
-    const { getByText } = render(
-      <QuizCelebration {...defaultProps} score={5} total={5} />
-    );
-    expect(getByText("You got 5 out of 5 right!")).toBeTruthy();
-  });
-
-  it("shows zero score", () => {
-    const { getByText } = render(
-      <QuizCelebration {...defaultProps} score={0} total={5} />
-    );
-    expect(getByText("You got 0 out of 5 right!")).toBeTruthy();
-  });
-
-  it("calls onPlayAgain when Play Again button pressed", () => {
+  it("calls onPlayAgain when restart button is pressed", () => {
     const onPlayAgain = jest.fn();
-    const { getByText } = render(
-      <QuizCelebration {...defaultProps} onPlayAgain={onPlayAgain} />
+    const { getByTestId } = render(
+      <QuizCelebration onPlayAgain={onPlayAgain} />
     );
-    fireEvent.press(getByText("Play Again"));
+    fireEvent.press(getByTestId("play-again-button"));
     expect(onPlayAgain).toHaveBeenCalledTimes(1);
   });
 
-  it("matches snapshot when visible", () => {
+  it("matches snapshot", () => {
     const { toJSON } = render(<QuizCelebration {...defaultProps} />);
-    expect(toJSON()).toMatchSnapshot();
-  });
-
-  it("matches snapshot when hidden", () => {
-    const { toJSON } = render(
-      <QuizCelebration {...defaultProps} visible={false} />
-    );
     expect(toJSON()).toMatchSnapshot();
   });
 });

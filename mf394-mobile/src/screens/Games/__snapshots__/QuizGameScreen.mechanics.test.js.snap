@@ -92,7 +92,7 @@ exports[`QuizGameScreen - Mechanics Snapshots matches snapshot for feedback stat
             resizeMode="cover"
             source={
               {
-                "uri": "data:image/jpeg;base64,david",
+                "uri": "data:image/jpeg;base64,bob",
               }
             }
             style={
@@ -177,7 +177,7 @@ exports[`QuizGameScreen - Mechanics Snapshots matches snapshot for feedback stat
                 }
               }
             >
-              Bob
+              Charlie
             </Text>
           </View>
           <View
@@ -232,7 +232,7 @@ exports[`QuizGameScreen - Mechanics Snapshots matches snapshot for feedback stat
                 }
               }
             >
-              Charlie
+              Bob
             </Text>
           </View>
           <View
@@ -499,7 +499,7 @@ exports[`QuizGameScreen - Mechanics Snapshots matches snapshot for feedback stat
             resizeMode="cover"
             source={
               {
-                "uri": "data:image/jpeg;base64,eve",
+                "uri": "data:image/jpeg;base64,charlie",
               }
             }
             style={
@@ -584,62 +584,7 @@ exports[`QuizGameScreen - Mechanics Snapshots matches snapshot for feedback stat
                 }
               }
             >
-              Alice
-            </Text>
-          </View>
-          <View
-            accessibilityState={
-              {
-                "busy": undefined,
-                "checked": undefined,
-                "disabled": false,
-                "expanded": undefined,
-                "selected": undefined,
-              }
-            }
-            accessibilityValue={
-              {
-                "max": undefined,
-                "min": undefined,
-                "now": undefined,
-                "text": undefined,
-              }
-            }
-            accessible={true}
-            collapsable={false}
-            focusable={true}
-            onClick={[Function]}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
-            style={
-              {
-                "alignItems": "center",
-                "backgroundColor": "#ece7df",
-                "borderColor": "#ece7df",
-                "borderRadius": 8,
-                "borderWidth": 2,
-                "opacity": 1,
-                "paddingHorizontal": 16,
-                "paddingVertical": 12,
-              }
-            }
-          >
-            <Text
-              style={
-                {
-                  "color": "#181b1b",
-                  "fontSize": 16,
-                  "fontWeight": "500",
-                  "letterSpacing": 0.15,
-                  "lineHeight": 24,
-                }
-              }
-            >
-              Charlie
+              Eve
             </Text>
           </View>
           <View
@@ -749,7 +694,62 @@ exports[`QuizGameScreen - Mechanics Snapshots matches snapshot for feedback stat
                 }
               }
             >
-              Eve
+              Charlie
+            </Text>
+          </View>
+          <View
+            accessibilityState={
+              {
+                "busy": undefined,
+                "checked": undefined,
+                "disabled": false,
+                "expanded": undefined,
+                "selected": undefined,
+              }
+            }
+            accessibilityValue={
+              {
+                "max": undefined,
+                "min": undefined,
+                "now": undefined,
+                "text": undefined,
+              }
+            }
+            accessible={true}
+            collapsable={false}
+            focusable={true}
+            onClick={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            style={
+              {
+                "alignItems": "center",
+                "backgroundColor": "#ece7df",
+                "borderColor": "#ece7df",
+                "borderRadius": 8,
+                "borderWidth": 2,
+                "opacity": 1,
+                "paddingHorizontal": 16,
+                "paddingVertical": 12,
+              }
+            }
+          >
+            <Text
+              style={
+                {
+                  "color": "#181b1b",
+                  "fontSize": 16,
+                  "fontWeight": "500",
+                  "letterSpacing": 0.15,
+                  "lineHeight": 24,
+                }
+              }
+            >
+              Alice
             </Text>
           </View>
           <View
@@ -906,7 +906,7 @@ exports[`QuizGameScreen - Mechanics Snapshots matches snapshot for initial rende
             resizeMode="cover"
             source={
               {
-                "uri": "data:image/jpeg;base64,eve",
+                "uri": "data:image/jpeg;base64,alice",
               }
             }
             style={
@@ -991,7 +991,7 @@ exports[`QuizGameScreen - Mechanics Snapshots matches snapshot for initial rende
                 }
               }
             >
-              Charlie
+              David
             </Text>
           </View>
           <View
@@ -1047,61 +1047,6 @@ exports[`QuizGameScreen - Mechanics Snapshots matches snapshot for initial rende
               }
             >
               Eve
-            </Text>
-          </View>
-          <View
-            accessibilityState={
-              {
-                "busy": undefined,
-                "checked": undefined,
-                "disabled": false,
-                "expanded": undefined,
-                "selected": undefined,
-              }
-            }
-            accessibilityValue={
-              {
-                "max": undefined,
-                "min": undefined,
-                "now": undefined,
-                "text": undefined,
-              }
-            }
-            accessible={true}
-            collapsable={false}
-            focusable={true}
-            onClick={[Function]}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
-            style={
-              {
-                "alignItems": "center",
-                "backgroundColor": "#ece7df",
-                "borderColor": "#ece7df",
-                "borderRadius": 8,
-                "borderWidth": 2,
-                "opacity": 1,
-                "paddingHorizontal": 16,
-                "paddingVertical": 12,
-              }
-            }
-          >
-            <Text
-              style={
-                {
-                  "color": "#181b1b",
-                  "fontSize": 16,
-                  "fontWeight": "500",
-                  "letterSpacing": 0.15,
-                  "lineHeight": 24,
-                }
-              }
-            >
-              David
             </Text>
           </View>
           <View
@@ -1212,6 +1157,61 @@ exports[`QuizGameScreen - Mechanics Snapshots matches snapshot for initial rende
               }
             >
               Bob
+            </Text>
+          </View>
+          <View
+            accessibilityState={
+              {
+                "busy": undefined,
+                "checked": undefined,
+                "disabled": false,
+                "expanded": undefined,
+                "selected": undefined,
+              }
+            }
+            accessibilityValue={
+              {
+                "max": undefined,
+                "min": undefined,
+                "now": undefined,
+                "text": undefined,
+              }
+            }
+            accessible={true}
+            collapsable={false}
+            focusable={true}
+            onClick={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            style={
+              {
+                "alignItems": "center",
+                "backgroundColor": "#ece7df",
+                "borderColor": "#ece7df",
+                "borderRadius": 8,
+                "borderWidth": 2,
+                "opacity": 1,
+                "paddingHorizontal": 16,
+                "paddingVertical": 12,
+              }
+            }
+          >
+            <Text
+              style={
+                {
+                  "color": "#181b1b",
+                  "fontSize": 16,
+                  "fontWeight": "500",
+                  "letterSpacing": 0.15,
+                  "lineHeight": 24,
+                }
+              }
+            >
+              Charlie
             </Text>
           </View>
         </View>

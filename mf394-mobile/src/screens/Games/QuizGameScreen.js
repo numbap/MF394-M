@@ -428,6 +428,27 @@ export default function QuizGameScreen() {
     );
   }
 
+  // Show celebration inline when quiz is complete
+  if (quizComplete) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <FilterContainer>
+          <CategoryTagFilter
+            categories={CATEGORIES}
+            selectedCategories={selectedCategories}
+            onCategoryPress={handleCategoryPress}
+            onCategoryLongPress={handleCategoryLongPress}
+            availableTags={availableTags}
+            selectedTags={selectedTags}
+            onTagPress={handleTagPress}
+            onTagLongPress={handleTagLongPress}
+          />
+        </FilterContainer>
+        <QuizCelebration onPlayAgain={handlePlayAgain} />
+      </SafeAreaView>
+    );
+  }
+
   const current = getCurrentContact();
 
   // Don't render quiz until options are generated
@@ -492,12 +513,6 @@ export default function QuizGameScreen() {
           </View>
         </View>
       </ScrollView>
-      <QuizCelebration
-        visible={quizComplete}
-        score={score}
-        total={quizContacts.length}
-        onPlayAgain={handlePlayAgain}
-      />
     </SafeAreaView>
   );
 }
