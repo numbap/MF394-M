@@ -69,9 +69,9 @@ export function BulkNamer({ faces, onNamesChange, initialNames, style }: BulkNam
     // <ScrollView style={[styles.container, style]}>
     // {/* Face Grid */}
     <View style={styles.gridContainer}>
-      {rows.map((row, rowIndex) => (
+      {rows.map((row) => (
         <BulkNamerRow
-          key={rowIndex}
+          key={row.map(f => f.id).join('-')}
           row={row}
           names={names}
           onNameChange={handleNameChange}

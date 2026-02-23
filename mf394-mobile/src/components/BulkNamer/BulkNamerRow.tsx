@@ -56,7 +56,7 @@ export function BulkNamerRow({
       {/* Fill empty space in last row */}
       {row.length < itemsPerRow &&
         Array.from({ length: itemsPerRow - row.length }).map((_, i) => (
-          <View key={`empty-${i}`} style={styles.itemContainer} />
+          <View key={`empty-${row[0]?.id}-${i}`} style={styles.itemContainer} />
         ))}
     </View>
   );

@@ -9,7 +9,7 @@
  * - Data loaded from live API via RTK Query
  */
 
-import React, { useEffect, useState, useMemo, useRef } from "react";
+import React, { useEffect, useState, useMemo, useCallback, useRef } from "react";
 import {
   View,
   Text,
@@ -134,35 +134,35 @@ export default function ListingScreen({ navigation }: any) {
     return result;
   }, [contacts, selectedCategories, selectedTags]);
 
-  const handleCategoryPress = (category: string) => {
+  const handleCategoryPress = useCallback((category: string) => {
     dispatch(toggleCategory(category));
-  };
+  }, [dispatch]);
 
-  const handleCategoryLongPress = () => {
+  const handleCategoryLongPress = useCallback(() => {
     if (selectedCategories.length >= CATEGORIES.length / 2) {
       dispatch(setCategories([]));
     } else {
       dispatch(setCategories(CATEGORIES.map((c) => c.value)));
     }
-  };
+  }, [dispatch, selectedCategories.length]);
 
-  const handleTagPress = (tag: string) => {
+  const handleTagPress = useCallback((tag: string) => {
     dispatch(toggleTag(tag));
-  };
+  }, [dispatch]);
 
-  const handleTagLongPress = () => {
+  const handleTagLongPress = useCallback(() => {
     if (selectedTags.length >= availableTags.length / 2) {
       dispatch(setTags([]));
     } else {
       dispatch(setTags([...availableTags]));
     }
-  };
+  }, [dispatch, selectedTags.length, availableTags]);
 
-  const handleContactLongPress = (contactId: string) => {
+  const handleContactLongPress = useCallback((contactId: string) => {
     navigation.navigate("EditContact", { contactId });
-  };
+  }, [navigation]);
 
-  const handleContactPress = (contactId: string) => {
+  const handleContactPress = useCallback((contactId: string) => {
     const now = Date.now();
     const lastTap = lastTapTime.current[contactId] || 0;
 
@@ -172,42 +172,22 @@ export default function ListingScreen({ navigation }: any) {
     } else {
       lastTapTime.current[contactId] = now;
     }
-  };
+  }, [handleContactLongPress]);
 
-  const handleAddContact = () => {
+  const handleAddContact = useCallback(() => {
     if (!isOnline) return;
     navigation.navigate("AddContact");
-  };
+  }, [isOnline, navigation]);
 
-  const handlePartyMode = () => {
+  const handlePartyMode = useCallback(() => {
     if (!isOnline) return;
     navigation.navigate("PartyMode");
-  };
+  }, [isOnline, navigation]);
 
-  if (isLoading) {
-    return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.centeredState}>
-          <ActivityIndicator size="large" color={colors.primary[500]} />
-          <Text style={styles.stateText}>Loading contacts...</Text>
-        </View>
-      </SafeAreaView>
-    );
-  }
-
-  if (error) {
-    console.error('[Contacts] error:', JSON.stringify(error));
-    return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.centeredState}>
-          <Text style={styles.errorText}>Failed to load contacts</Text>
-          <Text style={styles.stateText}>Please check your connection and try again.</Text>
-        </View>
-      </SafeAreaView>
-    );
-  }
-
-  const filterHeader = (
+  // Memoize FlatList header/footer/empty to prevent Android scroll-back bug.
+  // On Android, FlatList re-measures these when their object references change,
+  // which resets scroll position.
+  const filterHeader = useMemo(() => (
     <View style={styles.section}>
       <FilterContainer>
         <CategoryTagFilter
@@ -257,9 +237,11 @@ export default function ListingScreen({ navigation }: any) {
         </View>
       </FilterContainer>
     </View>
-  );
+  ), [selectedCategories, availableTags, selectedTags, isOnline, isGalleryView,
+      handleCategoryPress, handleCategoryLongPress, handleTagPress, handleTagLongPress,
+      handleAddContact, handlePartyMode]);
 
-  const statusFooter = selectedCategories.length > 0 ? (
+  const statusFooter = useMemo(() => selectedCategories.length > 0 ? (
     <View style={styles.statusBar}>
       <Text style={styles.statusText}>
         {filteredContacts.length} of {contacts.length} visible
@@ -277,13 +259,36 @@ export default function ListingScreen({ navigation }: any) {
         />
       </View>
     </View>
-  ) : null;
+  ) : null, [selectedCategories.length, filteredContacts.length, contacts.length]);
 
-  const emptyState = selectedCategories.length > 0 ? (
+  const emptyState = useMemo(() => selectedCategories.length > 0 ? (
     <View style={styles.emptyState}>
       <Text style={styles.emptyStateText}>No contacts found</Text>
     </View>
-  ) : null;
+  ) : null, [selectedCategories.length]);
+
+  if (isLoading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.centeredState}>
+          <ActivityIndicator size="large" color={colors.primary[500]} />
+          <Text style={styles.stateText}>Loading contacts...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  if (error) {
+    console.error('[Contacts] error:', JSON.stringify(error));
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.centeredState}>
+          <Text style={styles.errorText}>Failed to load contacts</Text>
+          <Text style={styles.stateText}>Please check your connection and try again.</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
