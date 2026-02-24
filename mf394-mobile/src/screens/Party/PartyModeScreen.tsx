@@ -13,6 +13,7 @@
 
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, ScrollView, Image } from "react-native";
+import { v4 as uuidv4 } from "uuid";
 import { showAlert } from "../../utils/showAlert";
 import { useNavigation } from "@react-navigation/native";
 import { colors, spacing, radii, typography } from "../../theme/theme";
@@ -26,7 +27,8 @@ import { InfoBox } from "../../components/InfoBox";
 import { Cropper } from "../../components/Cropper";
 import { FullScreenSpinner } from "../../components/FullScreenSpinner";
 import { useFaceDetection } from "../../hooks/useFaceDetection";
-import { useCreateContactMutation } from "../../store/api/contacts.api";
+import { useBulkCreateContactsMutation } from "../../store/api/contacts.api";
+import type { ContactInput } from "../../store/api/contacts.api";
 import { useUploadImageMutation } from "../../store/api/upload.api";
 import { CATEGORIES, DEFAULT_CATEGORY } from "../../constants";
 import { cropFaceWithBounds } from "../../utils/imageCropping";
@@ -52,7 +54,7 @@ export default function PartyModeScreen() {
   }, [step, navigation]);
 
   const { detectFaces } = useFaceDetection();
-  const [createContact] = useCreateContactMutation();
+  const [bulkCreateContacts] = useBulkCreateContactsMutation();
   const [uploadImage] = useUploadImageMutation();
 
   const handleImageSelected = async (uri: string) => {
@@ -70,12 +72,13 @@ export default function PartyModeScreen() {
 
       const processedFaces = await Promise.all(
         faces.map(async (face, index) => {
+          const faceId = face.id || uuidv4();
           try {
             const croppedUri = await cropFaceWithBounds(uri, face.bounds);
-            return { id: `face-${index}`, uri: croppedUri };
+            return { id: faceId, uri: croppedUri };
           } catch (error) {
             console.warn(`[PartyMode] Failed to crop face ${index}:`, error);
-            return { id: `face-${index}`, uri };
+            return { id: faceId, uri };
           }
         })
       );
@@ -97,7 +100,7 @@ export default function PartyModeScreen() {
   };
 
   const handleCropConfirm = async (croppedImageUri: string) => {
-    const singleFace = { id: "face-0", uri: croppedImageUri };
+    const singleFace = { id: uuidv4(), uri: croppedImageUri };
     setDetectedFaces([singleFace]);
     setStep("naming");
   };
@@ -116,12 +119,12 @@ export default function PartyModeScreen() {
     setIsSaving(true);
     setSaveError(null);
 
-    const results: string[] = [];
     const errors: string[] = [];
 
+    // Upload all photos first
+    const contactInputs: ContactInput[] = [];
     for (const namedFace of namedFaces) {
       try {
-        // Upload photo to S3
         const uploadResult = await uploadImage({
           uri: namedFace.faceUri,
           type: "contact-photo",
@@ -132,31 +135,39 @@ export default function PartyModeScreen() {
         }
         const photoUrl = uploadResult.data?.url || "";
 
-        // Create contact via API
-        const createResult = await createContact({
+        contactInputs.push({
           name: namedFace.name.trim(),
           category: category as any,
           groups: tags,
           photo: photoUrl,
         });
-        if ('error' in createResult) {
-          throw new Error("Create failed");
-        }
-
-        results.push(namedFace.name);
       } catch (error) {
         errors.push(namedFace.name);
-        console.error(`Failed to save contact "${namedFace.name}":`, error);
+        console.error(`Failed to upload photo for "${namedFace.name}":`, error);
+      }
+    }
+
+    // Bulk create all contacts in one mutation (single cache invalidation)
+    if (contactInputs.length > 0) {
+      try {
+        const bulkResult = await bulkCreateContacts(contactInputs);
+        if ('error' in bulkResult) {
+          throw new Error("Bulk create failed");
+        }
+      } catch (error) {
+        errors.push(...contactInputs.map((c) => c.name));
+        console.error("Failed to bulk create contacts:", error);
       }
     }
 
     setIsSaving(false);
 
-    if (results.length > 0 && errors.length === 0) {
+    const successCount = contactInputs.length - errors.filter((e) => contactInputs.some((c) => c.name === e)).length;
+    if (errors.length === 0 && contactInputs.length > 0) {
       navigation.navigate("Listing" as never, { category, tags } as never);
-    } else if (results.length > 0 && errors.length > 0) {
+    } else if (contactInputs.length > 0 && errors.length > 0) {
       setSaveError(
-        `${results.length} contacts saved. Failed: ${errors.join(", ")}. Tap Save to retry.`
+        `Some contacts saved. Failed: ${errors.join(", ")}. Tap Save to retry.`
       );
     } else {
       setSaveError("Failed to save contacts. Please check your connection and try again.");

@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { Image, Platform } from "react-native";
+import { v4 as uuidv4 } from "uuid";
 import { FACE_DETECTION_MIN_CONFIDENCE } from "../utils/constants";
 
 let ExpoFaceDetector;
@@ -185,8 +186,8 @@ export function useFaceDetection() {
             });
 
             if (result.faces && result.faces.length > 0) {
-              detectedFaces = result.faces.map((face, index) => ({
-                id: `face-${index}`,
+              detectedFaces = result.faces.map((face) => ({
+                id: uuidv4(),
                 uri: imageUri,
                 bounds: face.bounds,
                 confidence: 1, // expo-face-detector doesn't expose a confidence score
@@ -458,7 +459,7 @@ export function extractFacesFromDetections(img, detections, imageUri) {
 
       // Convert detection box to bounds format for consistency
       faces.push({
-        id: `face-${i}`,
+        id: uuidv4(),
         uri: imageUri,
         bounds: {
           origin: { x: cropX, y: cropY },

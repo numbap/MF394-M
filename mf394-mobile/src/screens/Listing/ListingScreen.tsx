@@ -9,7 +9,7 @@
  * - Data loaded from live API via RTK Query
  */
 
-import React, { useEffect, useState, useMemo, useRef } from "react";
+import React, { useEffect, useState, useMemo, useRef, useCallback } from "react";
 import {
   View,
   Text,
@@ -19,6 +19,7 @@ import {
   FlatList,
   SafeAreaView,
   ActivityIndicator,
+  Platform,
   useWindowDimensions,
 } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
@@ -62,9 +63,20 @@ export default function ListingScreen({ navigation }: any) {
   const DOUBLE_TAP_DELAY = 300;
 
   const THUMBNAIL_SIZE = 110;
-  const numColumns = isGalleryView
+  const computedColumns = isGalleryView
     ? Math.max(1, Math.floor((width - spacing.lg * 2) / (THUMBNAIL_SIZE + spacing.xxs)))
     : 1;
+
+  // Stabilize numColumns with a ref — only update when isGalleryView actually toggles.
+  // On Android, useWindowDimensions fires on soft keyboard, status bar, or system UI changes,
+  // which would remount the FlatList (destroying scroll position) if numColumns changed.
+  const numColumnsRef = useRef(computedColumns);
+  const prevIsGalleryRef = useRef(isGalleryView);
+  if (prevIsGalleryRef.current !== isGalleryView) {
+    numColumnsRef.current = computedColumns;
+    prevIsGalleryRef.current = isGalleryView;
+  }
+  const numColumns = numColumnsRef.current;
 
   // Load all contacts + tags from /api/user (single call)
   const { data: userData, isLoading, error } = useGetUserQuery();
@@ -292,6 +304,7 @@ export default function ListingScreen({ navigation }: any) {
         data={selectedCategories.length > 0 ? filteredContacts : []}
         keyExtractor={(item) => item._id}
         numColumns={numColumns}
+        removeClippedSubviews={Platform.OS !== 'android'}
         columnWrapperStyle={isGalleryView && numColumns > 1 ? styles.row : undefined}
         renderItem={({ item: contact }) => (
           <Pressable

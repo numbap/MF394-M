@@ -141,7 +141,7 @@ describe('QuizGameScreen - Mechanics', () => {
       });
 
       await waitFor(() => {
-        expect(getByText(/You need at least 5 contacts with photos/i)).toBeTruthy();
+        expect(getByText(/You need at least 5 contacts with photos or hints/i)).toBeTruthy();
       });
     });
 

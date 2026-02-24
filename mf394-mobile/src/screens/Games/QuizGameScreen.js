@@ -204,8 +204,10 @@ export default function QuizGameScreen() {
       result = result.filter((c) => c.groups?.some((tag) => tagSet.has(tag)));
     }
 
-    // Filter to only contacts with photos
-    result = result.filter((c) => c.photo && c.photo.trim().length > 0);
+    // Filter to contacts with photos or hints
+    result = result.filter((c) =>
+      (c.photo && c.photo.trim().length > 0) || (c.hint && c.hint.trim().length > 0)
+    );
 
     return result;
   }, [allContacts, selectedCategories, selectedTags]);
@@ -432,10 +434,10 @@ export default function QuizGameScreen() {
           </FilterContainer>
           <View style={styles.emptyContainer}>
             <Text style={styles.emptyText}>
-              Only {quizContacts.length} found. Minimum 5 contacts with photos required.
+              Only {quizContacts.length} found. Minimum 5 contacts with photos or hints required.
             </Text>
             <Text style={styles.emptySubtext}>
-              You need at least 5 contacts with photos to play the quiz. Try selecting more
+              You need at least 5 contacts with photos or hints to play the quiz. Try selecting more
               categories or tags.
             </Text>
           </View>
@@ -501,13 +503,18 @@ export default function QuizGameScreen() {
             </Text>
           </View>
 
-          <Animated.View style={[styles.imageBox, animatedImageStyle]}>
+          <Animated.View style={[styles.imageBox, current.photo ? null : styles.hintBox, animatedImageStyle]}>
             {current.photo ? (
               <Image
                 source={{ uri: current.photo }}
                 style={styles.contactImage}
                 resizeMode="cover"
               />
+            ) : current.hint ? (
+              <View style={styles.hintCard}>
+                <Text style={styles.hintLabel}>Hint</Text>
+                <Text style={styles.hintText}>{current.hint}</Text>
+              </View>
             ) : (
               <Text style={styles.noImageText}>No Photo</Text>
             )}
@@ -595,6 +602,32 @@ const styles = StyleSheet.create({
   contactImage: {
     width: "100%",
     height: "100%",
+  },
+  hintBox: {
+    backgroundColor: colors.primary[50],
+    borderWidth: 2,
+    borderColor: colors.primary[200],
+    borderStyle: "dashed",
+  },
+  hintCard: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: spacing.lg,
+  },
+  hintLabel: {
+    ...typography.body.small,
+    fontWeight: "600",
+    color: colors.primary[600],
+    textTransform: "uppercase",
+    letterSpacing: 1,
+    marginBottom: spacing.sm,
+  },
+  hintText: {
+    ...typography.body.large,
+    color: colors.primary[700],
+    textAlign: "center",
+    fontStyle: "italic",
   },
   noImageText: {
     ...typography.body.medium,

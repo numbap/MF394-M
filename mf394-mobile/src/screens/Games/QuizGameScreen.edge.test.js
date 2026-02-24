@@ -121,7 +121,7 @@ describe('QuizGameScreen - Edge Cases', () => {
       });
 
       await waitFor(() => {
-        expect(getByText(/You need at least 5 contacts with photos/i)).toBeTruthy();
+        expect(getByText(/You need at least 5 contacts with photos or hints/i)).toBeTruthy();
       });
     });
 
@@ -132,7 +132,7 @@ describe('QuizGameScreen - Edge Cases', () => {
       });
 
       await waitFor(() => {
-        expect(getByText(/You need at least 5 contacts with photos/i)).toBeTruthy();
+        expect(getByText(/You need at least 5 contacts with photos or hints/i)).toBeTruthy();
       });
     });
 
@@ -228,6 +228,54 @@ describe('QuizGameScreen - Edge Cases', () => {
       // Image should be rendered
       const image = UNSAFE_getByType(require('react-native').Image);
       expect(image).toBeTruthy();
+    });
+  });
+
+  describe('Hint-Only Contacts', () => {
+    it('includes hint-only contacts in the quiz pool', async () => {
+      mockUseGetUserQuery.mockReturnValue({
+        data: { contacts: QUIZ_CONTACTS.hintOnly },
+        isLoading: false,
+      });
+
+      const { getByText } = renderWithRedux(<QuizGameScreen />, {
+        preloadedState: createQuizStoreState(QUIZ_CONTACTS.hintOnly, FILTER_STATES.singleCategory),
+      });
+
+      await waitFor(() => {
+        expect(getByText(/1 of 5/)).toBeTruthy();
+      });
+    });
+
+    it('renders hint card for hint-only contacts', async () => {
+      mockUseGetUserQuery.mockReturnValue({
+        data: { contacts: QUIZ_CONTACTS.hintOnly },
+        isLoading: false,
+      });
+
+      const { getByText } = renderWithRedux(<QuizGameScreen />, {
+        preloadedState: createQuizStoreState(QUIZ_CONTACTS.hintOnly, FILTER_STATES.singleCategory),
+      });
+
+      await waitFor(() => {
+        expect(getByText('Hint')).toBeTruthy();
+        expect(getByText('Works at the coffee shop')).toBeTruthy();
+      });
+    });
+
+    it('includes mixed photo and hint contacts in quiz pool', async () => {
+      mockUseGetUserQuery.mockReturnValue({
+        data: { contacts: QUIZ_CONTACTS.mixedPhotoAndHint },
+        isLoading: false,
+      });
+
+      const { getByText } = renderWithRedux(<QuizGameScreen />, {
+        preloadedState: createQuizStoreState(QUIZ_CONTACTS.mixedPhotoAndHint, FILTER_STATES.singleCategory),
+      });
+
+      await waitFor(() => {
+        expect(getByText(/1 of 7/)).toBeTruthy();
+      });
     });
   });
 

@@ -62,6 +62,26 @@ export const QUIZ_CONTACTS = {
     createMockContact({ _id: '8', name: 'Henry', photo: 'data:image/jpeg;base64,henry' }),
   ],
 
+  // Contacts with only hints (no photos) — for testing hint-based quiz questions
+  hintOnly: [
+    createMockContact({ _id: '1', name: 'Alice', photo: '', hint: 'Works at the coffee shop' }),
+    createMockContact({ _id: '2', name: 'Bob', photo: '', hint: 'Has a red bicycle' }),
+    createMockContact({ _id: '3', name: 'Charlie', photo: '', hint: 'Plays guitar on weekends' }),
+    createMockContact({ _id: '4', name: 'David', photo: '', hint: 'Tall with glasses' }),
+    createMockContact({ _id: '5', name: 'Eve', photo: '', hint: 'Always wears a hat' }),
+  ],
+
+  // Mixed: some with photos, some with only hints
+  mixedPhotoAndHint: [
+    createMockContact({ _id: '1', name: 'Alice', photo: 'data:image/jpeg;base64,alice' }),
+    createMockContact({ _id: '2', name: 'Bob', photo: '', hint: 'Has a red bicycle' }),
+    createMockContact({ _id: '3', name: 'Charlie', photo: 'data:image/jpeg;base64,charlie' }),
+    createMockContact({ _id: '4', name: 'David', photo: '', hint: 'Tall with glasses' }),
+    createMockContact({ _id: '5', name: 'Eve', photo: 'data:image/jpeg;base64,eve' }),
+    createMockContact({ _id: '6', name: 'Frank', photo: 'data:image/jpeg;base64,frank' }),
+    createMockContact({ _id: '7', name: 'Grace', photo: '', hint: 'Curly hair, big smile' }),
+  ],
+
   // All contacts in single category
   singleCategory: [
     createMockContact({ _id: '1', name: 'Alice', category: 'friends-family' }),

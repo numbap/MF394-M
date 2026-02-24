@@ -239,7 +239,7 @@ describe('QuizGameScreen - Filters', () => {
       fireEvent.press(getByTestId('category-friends-family'));
 
       await waitFor(() => {
-        expect(getByText(/Not enough contacts with photos/i)).toBeTruthy();
+        expect(getByText(/Not enough contacts with photos or hints/i)).toBeTruthy();
       });
     });
   });
@@ -296,7 +296,7 @@ describe('QuizGameScreen - Filters', () => {
       // Should filter to only Sports-tagged contacts
       // Since we have 3 with Sports tag, should show empty state (<5 contacts)
       await waitFor(() => {
-        expect(getByText(/Not enough contacts with photos/i)).toBeTruthy();
+        expect(getByText(/Not enough contacts with photos or hints/i)).toBeTruthy();
       });
     });
 
@@ -406,7 +406,7 @@ describe('QuizGameScreen - Filters', () => {
       // Should only show 1 contact (friends-family AND Sports)
       // This should trigger empty state
       await waitFor(() => {
-        expect(getByText(/Not enough contacts with photos/i)).toBeTruthy();
+        expect(getByText(/Not enough contacts with photos or hints/i)).toBeTruthy();
       });
     });
 
@@ -431,7 +431,7 @@ describe('QuizGameScreen - Filters', () => {
       // Should show 4 contacts (2 Sports + 2 Music)
       // Still < 5, so empty state
       await waitFor(() => {
-        expect(getByText(/Not enough contacts with photos/i)).toBeTruthy();
+        expect(getByText(/Not enough contacts with photos or hints/i)).toBeTruthy();
       });
     });
 
@@ -538,7 +538,7 @@ describe('QuizGameScreen - Filters', () => {
       });
 
       await waitFor(() => {
-        expect(getByText(/Not enough contacts with photos/i)).toBeTruthy();
+        expect(getByText(/Not enough contacts with photos or hints/i)).toBeTruthy();
       });
     });
 
@@ -550,7 +550,7 @@ describe('QuizGameScreen - Filters', () => {
       });
 
       await waitFor(() => {
-        expect(getByText(/Not enough contacts with photos/i)).toBeTruthy();
+        expect(getByText(/Not enough contacts with photos or hints/i)).toBeTruthy();
       });
     });
   });
@@ -587,7 +587,7 @@ describe('QuizGameScreen - Filters', () => {
 
       // friends-family + Sports/Music tags → only 2 contacts match → empty state
       await waitFor(() => {
-        expect(tree.getByText(/Not enough contacts with photos/i)).toBeTruthy();
+        expect(tree.getByText(/Not enough contacts with photos or hints/i)).toBeTruthy();
       });
 
       expect(tree.toJSON()).toMatchSnapshot();

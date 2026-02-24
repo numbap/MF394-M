@@ -8,7 +8,7 @@ module.exports = {
     "^@react-native-community/netinfo$": "<rootDir>/__tests__/mocks/netinfo.mock.js",
   },
   transformIgnorePatterns: [
-    "node_modules/(?!((jest-)?react-native|@react-native(-community)?|@react-native-google-signin)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg)",
+    "node_modules/(?!((jest-)?react-native|@react-native(-community)?|@react-native-google-signin)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg|uuid)",
   ],
   collectCoverageFrom: [
     "src/**/*.{js,jsx,ts,tsx}",

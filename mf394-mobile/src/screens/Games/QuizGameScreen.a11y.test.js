@@ -273,7 +273,7 @@ describe('QuizGameScreen - Accessibility', () => {
       });
 
       await waitFor(() => {
-        expect(getByText(/You need at least 5 contacts with photos/i)).toBeTruthy();
+        expect(getByText(/You need at least 5 contacts with photos or hints/i)).toBeTruthy();
       });
     });
 
@@ -284,7 +284,7 @@ describe('QuizGameScreen - Accessibility', () => {
       });
 
       await waitFor(() => {
-        const emptyText = getByText(/You need at least 5 contacts with photos/i);
+        const emptyText = getByText(/You need at least 5 contacts with photos or hints/i);
         expect(emptyText).toBeTruthy();
       });
     });
@@ -352,7 +352,7 @@ describe('QuizGameScreen - Accessibility', () => {
       });
 
       await waitFor(() => {
-        expect(getByText(/You need at least 5 contacts with photos/i)).toBeTruthy();
+        expect(getByText(/You need at least 5 contacts with photos or hints/i)).toBeTruthy();
         expect(getByText(/Try selecting more categories or tags/i)).toBeTruthy();
       });
     });

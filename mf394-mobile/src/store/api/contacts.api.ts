@@ -118,6 +118,28 @@ export const contactsApi = createApi({
       invalidatesTags: ['Contact', 'User'],
     }),
 
+    // Bulk create contacts — creates sequentially but only invalidates cache once at the end.
+    // Prevents mid-loop refetches that corrupt the cache during rapid bulk uploads.
+    bulkCreateContacts: builder.mutation<Contact[], ContactInput[]>({
+      async queryFn(contacts, _api, _extra, baseQuery) {
+        const results: Contact[] = [];
+        for (const data of contacts) {
+          const result = await baseQuery({
+            url: '/contacts',
+            method: 'PUT',
+            body: { contact: transformToAPI(data) },
+          });
+          if (result.error) {
+            return { error: result.error };
+          }
+          const response = result.data as { message: string; contact: APIContact };
+          results.push(transformFromAPI(response.contact));
+        }
+        return { data: results };
+      },
+      invalidatesTags: ['Contact', 'User'],
+    }),
+
     // Delete contact (query param, not path param)
     deleteContact: builder.mutation<void, string>({
       query: (id) => ({
@@ -133,6 +155,7 @@ export const {
   useGetUserQuery,
   useGetContactByIdQuery,
   useCreateContactMutation,
+  useBulkCreateContactsMutation,
   useUpdateContactMutation,
   useDeleteContactMutation,
 } = contactsApi;

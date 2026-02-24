@@ -145,7 +145,7 @@ describe('QuizGameScreen - Integration', () => {
       });
 
       await waitFor(() => {
-        expect(getByText(/Not enough contacts with photos/i)).toBeTruthy();
+        expect(getByText(/Not enough contacts with photos or hints/i)).toBeTruthy();
       });
     });
   });

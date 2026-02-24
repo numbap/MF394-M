@@ -326,7 +326,7 @@ describe('Face Detection Logic', () => {
       const faces = extractFacesFromDetections(mockImage, [mockDetection], 'uri');
 
       expect(faces).toHaveLength(1);
-      expect(faces[0]).toHaveProperty('id', 'face-0');
+      expect(faces[0].id).toBeTruthy();
       expect(faces[0]).toHaveProperty('uri', 'uri');
       expect(faces[0]).toHaveProperty('confidence', 0.95);
       expect(faces[0].bounds).toHaveProperty('origin');
@@ -344,9 +344,11 @@ describe('Face Detection Logic', () => {
       const faces = extractFacesFromDetections(mockImage, mockDetections, 'uri');
 
       expect(faces).toHaveLength(3);
-      expect(faces[0].id).toBe('face-0');
-      expect(faces[1].id).toBe('face-1');
-      expect(faces[2].id).toBe('face-2');
+      // IDs are UUIDs — verify they exist and are unique
+      expect(faces[0].id).toBeTruthy();
+      expect(faces[1].id).toBeTruthy();
+      expect(faces[2].id).toBeTruthy();
+      expect(new Set([faces[0].id, faces[1].id, faces[2].id]).size).toBe(3);
     });
 
     it('should filter out invalid detections', () => {

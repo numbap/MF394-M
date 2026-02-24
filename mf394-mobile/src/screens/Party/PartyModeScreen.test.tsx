@@ -23,11 +23,11 @@ import tagsReducer from '../../store/slices/tags.slice';
 import contactsReducer from '../../store/slices/contacts.slice';
 
 // RTK Query mutation mocks
-const mockCreateContact = jest.fn();
+const mockBulkCreateContacts = jest.fn();
 const mockUploadImage = jest.fn();
 
 jest.mock('../../store/api/contacts.api', () => ({
-  useCreateContactMutation: () => [mockCreateContact, { isLoading: false }],
+  useBulkCreateContactsMutation: () => [mockBulkCreateContacts, { isLoading: false }],
 }));
 
 jest.mock('../../store/api/upload.api', () => ({
@@ -248,7 +248,7 @@ const setupTwoFacesNamed = async (getByTestId: any) => {
 describe('PartyModeScreen', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    mockCreateContact.mockResolvedValue({ data: { _id: 'new-id' } });
+    mockBulkCreateContacts.mockResolvedValue({ data: [{ _id: 'new-id-1' }, { _id: 'new-id-2' }] });
     mockUploadImage.mockResolvedValue({ data: { url: 'https://s3.example.com/face.jpg' } });
   });
 
@@ -305,7 +305,8 @@ describe('PartyModeScreen', () => {
       fireEvent.press(getByTestId('save-contacts'));
 
       await waitFor(() => {
-        expect(mockCreateContact).toHaveBeenCalledTimes(2);
+        // Bulk mutation called once with array of contacts
+        expect(mockBulkCreateContacts).toHaveBeenCalledTimes(1);
         expect(mockNavigate).toHaveBeenCalledWith('Listing', expect.any(Object));
       });
     });
@@ -313,31 +314,26 @@ describe('PartyModeScreen', () => {
     it('only invokes save once even if button pressed multiple times', async () => {
       let resolveFirst: (value: any) => void;
       const firstCall = new Promise((resolve) => { resolveFirst = resolve; });
-      mockCreateContact
-        .mockReturnValueOnce(firstCall)
-        .mockResolvedValue({ data: { _id: 'id-2' } });
+      mockBulkCreateContacts.mockReturnValueOnce(firstCall);
 
       const { getByTestId } = renderWithProvider(<PartyModeScreen />);
       await setupTwoFacesNamed(getByTestId);
 
       fireEvent.press(getByTestId('save-contacts'));
 
-      // Resolve first contact
-      resolveFirst!({ data: { _id: 'id-1' } });
+      // Resolve bulk create
+      resolveFirst!({ data: [{ _id: 'id-1' }, { _id: 'id-2' }] });
 
       await waitFor(() => {
-        // mockCreateContact called for the two named faces (not more)
-        expect(mockCreateContact.mock.calls.length).toBeLessThanOrEqual(2);
+        // Bulk mutation called at most once
+        expect(mockBulkCreateContacts.mock.calls.length).toBeLessThanOrEqual(1);
       });
     });
   });
 
   describe('handleSave - failure scenarios', () => {
-    it('does NOT navigate on partial failure - shows error message', async () => {
-      // First contact succeeds, second fails
-      mockCreateContact
-        .mockResolvedValueOnce({ data: { _id: 'id-1' } })
-        .mockResolvedValueOnce({ error: { message: 'Failed' } });
+    it('does NOT navigate on full failure from bulk create - shows error', async () => {
+      mockBulkCreateContacts.mockResolvedValue({ error: { message: 'All failed' } });
 
       const { getByTestId } = renderWithProvider(<PartyModeScreen />);
       await setupTwoFacesNamed(getByTestId);
@@ -346,12 +342,11 @@ describe('PartyModeScreen', () => {
 
       await waitFor(() => {
         expect(mockNavigate).not.toHaveBeenCalled();
-        expect(mockCreateContact).toHaveBeenCalledTimes(2);
       });
     });
 
-    it('does NOT navigate on full failure - shows error', async () => {
-      mockCreateContact.mockResolvedValue({ error: { message: 'All failed' } });
+    it('does NOT navigate on upload failure - shows error', async () => {
+      mockUploadImage.mockResolvedValue({ error: { message: 'Upload failed' } });
 
       const { getByTestId } = renderWithProvider(<PartyModeScreen />);
       await setupTwoFacesNamed(getByTestId);
