@@ -35,19 +35,21 @@ jest.mock("@env", () => ({
   AUTH_MOCK: "true",
 }));
 
-// Mock expo-av
-jest.mock('expo-av', () => ({
-  Audio: {
-    setAudioModeAsync: jest.fn(() => Promise.resolve()),
-    Sound: {
-      createAsync: jest.fn(() =>
-        Promise.resolve({
-          sound: {
-            setOnPlaybackStatusUpdate: jest.fn(),
-            unloadAsync: jest.fn(),
-          },
-        })
-      ),
-    },
-  },
+// Mock expo-audio (replaced expo-av in SDK 54)
+jest.mock('expo-audio', () => ({
+  createAudioPlayer: jest.fn(() => ({
+    seekTo: jest.fn(),
+    play: jest.fn(),
+    remove: jest.fn(),
+  })),
+  setAudioModeAsync: jest.fn(() => Promise.resolve()),
+}));
+
+// Mock expo-haptics
+jest.mock('expo-haptics', () => ({
+  impactAsync: jest.fn(() => Promise.resolve()),
+  notificationAsync: jest.fn(() => Promise.resolve()),
+  selectionAsync: jest.fn(() => Promise.resolve()),
+  ImpactFeedbackStyle: { Light: 'light', Medium: 'medium', Heavy: 'heavy' },
+  NotificationFeedbackType: { Success: 'success', Warning: 'warning', Error: 'error' },
 }));

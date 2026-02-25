@@ -5,16 +5,7 @@ import { colors, spacing, typography, radii } from "../../theme/theme";
 export default function HomeScreen({ navigation }) {
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Welcome to Face Memorizer</Text>
-
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>📋 Features</Text>
-        <Text style={styles.featureItem}>✅ Contact management</Text>
-        <Text style={styles.featureItem}>✅ Face detection</Text>
-        <Text style={styles.featureItem}>✅ Photo upload to S3</Text>
-        <Text style={styles.featureItem}>✅ Quiz game</Text>
-        <Text style={styles.featureItem}>✅ Statistics tracking</Text>
-      </View>
+      <Text style={styles.title}>Welcome to UmmYou</Text>
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>🚀 Next Steps</Text>
@@ -29,15 +20,6 @@ export default function HomeScreen({ navigation }) {
         </TouchableOpacity>
       </View>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>📝 Status</Text>
-        <Text style={styles.statusText}>
-          Application: ✅ Running{"\n"}
-          Redux State: ✅ Connected{"\n"}
-          Theme: ✅ Applied{"\n"}
-          Components: ✅ Ready
-        </Text>
-      </View>
     </ScrollView>
   );
 }

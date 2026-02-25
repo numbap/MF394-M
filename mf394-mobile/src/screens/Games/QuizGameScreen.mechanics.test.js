@@ -108,7 +108,7 @@ describe('QuizGameScreen - Mechanics', () => {
       });
 
       await waitFor(() => {
-        expect(getByText('Who is this?')).toBeTruthy();
+        expect(getByText(/\d+ of \d+/)).toBeTruthy();
       });
 
       // Verify shuffle was called (Math.random used)
@@ -123,7 +123,7 @@ describe('QuizGameScreen - Mechanics', () => {
       });
 
       await waitFor(() => {
-        expect(getByText('Who is this?')).toBeTruthy();
+        expect(getByText(/\d+ of \d+/)).toBeTruthy();
       });
 
       // Verify all 5 names are rendered as options
@@ -152,7 +152,7 @@ describe('QuizGameScreen - Mechanics', () => {
       });
 
       await waitFor(() => {
-        expect(getByText('Who is this?')).toBeTruthy();
+        expect(getByText(/\d+ of \d+/)).toBeTruthy();
       });
 
       // Contacts WITH photos should be in options
@@ -184,7 +184,7 @@ describe('QuizGameScreen - Mechanics', () => {
       });
 
       await waitFor(() => {
-        expect(getByText('Who is this?')).toBeTruthy();
+        expect(getByText(/\d+ of \d+/)).toBeTruthy();
       });
 
       // Verify Math.random was called for shuffling options
@@ -199,7 +199,7 @@ describe('QuizGameScreen - Mechanics', () => {
       });
 
       await waitFor(() => {
-        expect(getByText('Who is this?')).toBeTruthy();
+        expect(getByText(/\d+ of \d+/)).toBeTruthy();
       });
 
       // One of the 5 options MUST be the correct answer
@@ -228,7 +228,7 @@ describe('QuizGameScreen - Mechanics', () => {
       });
 
       await waitFor(() => {
-        expect(getByText('Who is this?')).toBeTruthy();
+        expect(getByText(/\d+ of \d+/)).toBeTruthy();
       });
 
       // All 5 contacts should be used as options
@@ -247,11 +247,11 @@ describe('QuizGameScreen - Mechanics', () => {
       });
 
       await waitFor(() => {
-        expect(getByText('Who is this?')).toBeTruthy();
+        expect(getByText(/\d+ of \d+/)).toBeTruthy();
       });
 
       // Get the question text to know which contact we're looking at
-      const progressText = getByText(/Question 1 of 5/);
+      const progressText = getByText(/1 of 5/);
       expect(progressText).toBeTruthy();
 
       // Click any option (we'll verify feedback appears)
@@ -270,7 +270,7 @@ describe('QuizGameScreen - Mechanics', () => {
       });
 
       await waitFor(() => {
-        expect(getByText('Who is this?')).toBeTruthy();
+        expect(getByText(/\d+ of \d+/)).toBeTruthy();
       });
 
       const aliceButton = getByText('Alice');
@@ -289,7 +289,7 @@ describe('QuizGameScreen - Mechanics', () => {
       });
 
       await waitFor(() => {
-        expect(getByText('Who is this?')).toBeTruthy();
+        expect(getByText(/\d+ of \d+/)).toBeTruthy();
       });
 
       const aliceButton = getByText('Alice');
@@ -309,7 +309,7 @@ describe('QuizGameScreen - Mechanics', () => {
       });
 
       await waitFor(() => {
-        expect(getByText('Question 1 of 5')).toBeTruthy();
+        expect(getByText('1 of 5')).toBeTruthy();
       });
 
       const aliceButton = getByText('Alice');
@@ -325,7 +325,7 @@ describe('QuizGameScreen - Mechanics', () => {
 
       // Should advance to question 2
       await waitFor(() => {
-        expect(getByText(/Question 2 of 5/)).toBeTruthy();
+        expect(getByText(/2 of 5/)).toBeTruthy();
       });
     });
 
@@ -335,7 +335,7 @@ describe('QuizGameScreen - Mechanics', () => {
       });
 
       await waitFor(() => {
-        expect(getByText('Question 1 of 5')).toBeTruthy();
+        expect(getByText('1 of 5')).toBeTruthy();
       });
 
       const aliceButton = getByText('Alice');
@@ -350,11 +350,11 @@ describe('QuizGameScreen - Mechanics', () => {
       });
 
       await waitFor(() => {
-        expect(getByText(/Question 2 of 5/)).toBeTruthy();
+        expect(getByText(/2 of 5/)).toBeTruthy();
       });
 
       // Feedback should be cleared (we can verify by checking question number changed)
-      expect(getByText(/Question 2 of 5/)).toBeTruthy();
+      expect(getByText(/2 of 5/)).toBeTruthy();
     });
   });
 
@@ -366,7 +366,7 @@ describe('QuizGameScreen - Mechanics', () => {
       });
 
       await waitFor(() => {
-        expect(getByText('Who is this?')).toBeTruthy();
+        expect(getByText(/\d+ of \d+/)).toBeTruthy();
       });
 
       // Click a wrong answer (we need to know which is correct first)
@@ -386,7 +386,7 @@ describe('QuizGameScreen - Mechanics', () => {
       });
 
       await waitFor(() => {
-        expect(getByText('Who is this?')).toBeTruthy();
+        expect(getByText(/\d+ of \d+/)).toBeTruthy();
       });
 
       const bobButton = getByText('Bob');
@@ -405,7 +405,7 @@ describe('QuizGameScreen - Mechanics', () => {
       });
 
       await waitFor(() => {
-        expect(getByText('Who is this?')).toBeTruthy();
+        expect(getByText(/\d+ of \d+/)).toBeTruthy();
       });
 
       const bobButton = getByText('Bob');
@@ -425,7 +425,7 @@ describe('QuizGameScreen - Mechanics', () => {
       });
 
       await waitFor(() => {
-        expect(getByText('Question 1 of 5')).toBeTruthy();
+        expect(getByText('1 of 5')).toBeTruthy();
       });
 
       const bobButton = getByText('Bob');
@@ -441,7 +441,7 @@ describe('QuizGameScreen - Mechanics', () => {
 
       // Should still be on question 1
       await waitFor(() => {
-        expect(getByText(/Question 1 of 5/)).toBeTruthy();
+        expect(getByText(/1 of 5/)).toBeTruthy();
       });
     });
 
@@ -451,7 +451,7 @@ describe('QuizGameScreen - Mechanics', () => {
       });
 
       await waitFor(() => {
-        expect(getByText('Question 1 of 5')).toBeTruthy();
+        expect(getByText('1 of 5')).toBeTruthy();
       });
 
       const bobButton = getByText('Bob');
@@ -467,7 +467,7 @@ describe('QuizGameScreen - Mechanics', () => {
 
       // Feedback should clear but still on same question
       await waitFor(() => {
-        expect(getByText(/Question 1 of 5/)).toBeTruthy();
+        expect(getByText(/1 of 5/)).toBeTruthy();
       });
     });
 
@@ -477,7 +477,7 @@ describe('QuizGameScreen - Mechanics', () => {
       });
 
       await waitFor(() => {
-        expect(getByText('Question 1 of 5')).toBeTruthy();
+        expect(getByText('1 of 5')).toBeTruthy();
       });
 
       const bobButton = getByText('Bob');
@@ -511,7 +511,7 @@ describe('QuizGameScreen - Mechanics', () => {
       });
 
       await waitFor(() => {
-        expect(getByText('Question 1 of 5')).toBeTruthy();
+        expect(getByText('1 of 5')).toBeTruthy();
       });
 
       // Answer all 5 questions correctly
@@ -537,7 +537,7 @@ describe('QuizGameScreen - Mechanics', () => {
       });
 
       await waitFor(() => {
-        expect(getByText('Question 1 of 5')).toBeTruthy();
+        expect(getByText('1 of 5')).toBeTruthy();
       });
 
       // Answer all 5 questions correctly
@@ -562,7 +562,7 @@ describe('QuizGameScreen - Mechanics', () => {
       });
 
       await waitFor(() => {
-        expect(getByText('Question 1 of 5')).toBeTruthy();
+        expect(getByText('1 of 5')).toBeTruthy();
       });
 
       // Complete quiz
@@ -588,8 +588,7 @@ describe('QuizGameScreen - Mechanics', () => {
 
       // Should return to quiz
       await waitFor(() => {
-        expect(getByText('Who is this?')).toBeTruthy();
-        expect(getByText('Question 1 of 5')).toBeTruthy();
+        expect(getByText('1 of 5')).toBeTruthy();
       });
     });
   });
@@ -601,7 +600,7 @@ describe('QuizGameScreen - Mechanics', () => {
       });
 
       await waitFor(() => {
-        expect(getByText('Who is this?')).toBeTruthy();
+        expect(getByText(/\d+ of \d+/)).toBeTruthy();
       });
 
       const aliceButton = getByText('Alice');
@@ -617,7 +616,7 @@ describe('QuizGameScreen - Mechanics', () => {
       });
 
       // Should still be on question 1 (second click ignored)
-      expect(getByText(/Question 1 of 5/)).toBeTruthy();
+      expect(getByText(/1 of 5/)).toBeTruthy();
     });
 
     it('re-enables buttons after feedback clears', async () => {
@@ -626,7 +625,7 @@ describe('QuizGameScreen - Mechanics', () => {
       });
 
       await waitFor(() => {
-        expect(getByText('Question 1 of 5')).toBeTruthy();
+        expect(getByText('1 of 5')).toBeTruthy();
       });
 
       const bobButton = getByText('Bob');
@@ -657,7 +656,7 @@ describe('QuizGameScreen - Mechanics', () => {
       });
 
       await waitFor(() => {
-        expect(getByText('Question 1 of 5')).toBeTruthy();
+        expect(getByText('1 of 5')).toBeTruthy();
       });
 
       const aliceButton = getByText('Alice');
@@ -674,10 +673,10 @@ describe('QuizGameScreen - Mechanics', () => {
       });
 
       await waitFor(() => {
-        const questionText = getByText(/Question \d of 5/);
+        const questionText = getByText(/\d of 5/);
         expect(questionText).toBeTruthy();
         // Should be question 2 (not 3)
-        expect(getByText(/Question 2 of 5/)).toBeTruthy();
+        expect(getByText(/2 of 5/)).toBeTruthy();
       });
     });
   });
@@ -689,7 +688,7 @@ describe('QuizGameScreen - Mechanics', () => {
       });
 
       await waitFor(() => {
-        expect(tree.getByText('Who is this?')).toBeTruthy();
+        expect(tree.getByText(/\d+ of \d+/)).toBeTruthy();
       });
 
       expect(tree.toJSON()).toMatchSnapshot();
@@ -701,7 +700,7 @@ describe('QuizGameScreen - Mechanics', () => {
       });
 
       await waitFor(() => {
-        expect(getByText('Who is this?')).toBeTruthy();
+        expect(getByText(/\d+ of \d+/)).toBeTruthy();
       });
 
       const aliceButton = getByText('Alice');
@@ -719,7 +718,7 @@ describe('QuizGameScreen - Mechanics', () => {
       });
 
       await waitFor(() => {
-        expect(getByText('Who is this?')).toBeTruthy();
+        expect(getByText(/\d+ of \d+/)).toBeTruthy();
       });
 
       const bobButton = getByText('Bob');

@@ -84,8 +84,8 @@ export function CategoryTagFilter({
               size={24}
               color={
                 selectedCategories.includes(cat.value)
-                  ? colors.secondary[500]
-                  : colors.semantic.textSecondary
+                  ? colors.primary[600]
+                  : colors.semantic.border
               }
             />
           </Pressable>
@@ -153,8 +153,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.semantic.surface,
   },
   categoryButtonSelected: {
-    borderColor: colors.secondary[500],
-    backgroundColor: colors.secondary[50],
+    borderColor: colors.primary[500],
+    backgroundColor: colors.secondary[200],
   },
   tagsSection: {
     marginTop: spacing.lg,

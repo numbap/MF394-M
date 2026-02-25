@@ -174,11 +174,15 @@ describe('imageCropping utilities', () => {
       delete (global as any).window;
       delete (global as any).document;
 
-      mockManipulateAsync.mockResolvedValue({
-        uri: 'file:///cropped-image.jpg',
-        width: 200,
-        height: 200,
-      });
+      // manipulateAsync is called twice: first as a no-op probe for dimensions,
+      // then for the actual crop. Mock both calls.
+      mockManipulateAsync
+        .mockResolvedValueOnce({ width: 4000, height: 3000 }) // probe
+        .mockResolvedValueOnce({
+          uri: 'file:///cropped-image.jpg',
+          width: 200,
+          height: 200,
+        }); // crop
     });
 
     it('calls ImageManipulator when Platform.OS is not web', async () => {
@@ -191,7 +195,11 @@ describe('imageCropping utilities', () => {
 
       const result = await cropFaceWithBounds(imageUri, bounds, padding);
 
-      expect(mockManipulateAsync).toHaveBeenCalledWith(
+      // First call: dimension probe (no-op)
+      expect(mockManipulateAsync).toHaveBeenNthCalledWith(1, imageUri, []);
+      // Second call: actual crop — bounds used directly (no PixelRatio division)
+      expect(mockManipulateAsync).toHaveBeenNthCalledWith(
+        2,
         imageUri,
         [
           {
@@ -218,7 +226,9 @@ describe('imageCropping utilities', () => {
 
       await cropFaceWithBounds(imageUri, bounds, padding);
 
-      expect(mockManipulateAsync).toHaveBeenCalledWith(
+      // Second call is the crop (first is probe)
+      expect(mockManipulateAsync).toHaveBeenNthCalledWith(
+        2,
         imageUri,
         expect.arrayContaining([
           expect.objectContaining({
@@ -234,19 +244,24 @@ describe('imageCropping utilities', () => {
       );
     });
 
-    it('caps crop dimensions at 800px', async () => {
-      const imageUri = 'file:///large-image.jpg';
+    it('clamps crop to image boundary from probe dimensions', async () => {
+      mockManipulateAsync.mockReset();
+      mockManipulateAsync
+        .mockResolvedValueOnce({ width: 800, height: 600 }) // probe — small image
+        .mockResolvedValueOnce({ uri: 'file:///cropped.jpg', width: 200, height: 200 });
+
+      const imageUri = 'file:///small-image.jpg';
       const bounds = {
-        origin: { x: 0, y: 0 },
-        size: { width: 1000, height: 1200 },
+        origin: { x: 700, y: 500 },
+        size: { width: 200, height: 200 },
       };
-      const padding = 20;
 
-      await cropFaceWithBounds(imageUri, bounds, padding);
+      await cropFaceWithBounds(imageUri, bounds, 20);
 
-      const cropCall = mockManipulateAsync.mock.calls[0][1][0].crop;
-      expect(cropCall.width).toBeLessThanOrEqual(800);
-      expect(cropCall.height).toBeLessThanOrEqual(800);
+      const cropCall = mockManipulateAsync.mock.calls[1][1][0].crop;
+      // Origin + size should not exceed image dimensions
+      expect(cropCall.originX + cropCall.width).toBeLessThanOrEqual(800);
+      expect(cropCall.originY + cropCall.height).toBeLessThanOrEqual(600);
     });
 
     it('handles negative origin by clamping to 0', async () => {
@@ -259,52 +274,15 @@ describe('imageCropping utilities', () => {
 
       await cropFaceWithBounds(imageUri, bounds, padding);
 
-      const cropCall = mockManipulateAsync.mock.calls[0][1][0].crop;
+      // Second call is the crop
+      const cropCall = mockManipulateAsync.mock.calls[1][1][0].crop;
       expect(cropCall.originX).toBeGreaterThanOrEqual(0);
       expect(cropCall.originY).toBeGreaterThanOrEqual(0);
     });
 
-    it('falls back to web cropping if native fails', async () => {
+    it('returns original URI if native crop fails', async () => {
+      mockManipulateAsync.mockReset();
       mockManipulateAsync.mockRejectedValue(new Error('Native crop failed'));
-
-      // Mock window.Image for fallback
-      const mockImage = {
-        src: '',
-        width: 800,
-        height: 600,
-        onload: null as any,
-        onerror: null as any,
-        crossOrigin: '',
-      };
-
-      (global as any).window = {
-        Image: jest.fn(() => mockImage),
-      };
-
-      const mockCanvas = {
-        width: 0,
-        height: 0,
-        getContext: jest.fn(() => ({
-          drawImage: jest.fn(),
-        })),
-        toDataURL: jest.fn(() => 'data:image/jpeg;base64,fallbackCrop'),
-      };
-
-      (global as any).document = {
-        createElement: jest.fn(() => mockCanvas),
-      };
-
-      // Mock URL for blob handling
-      (global as any).URL = {
-        createObjectURL: jest.fn(() => 'blob:mock-url'),
-        revokeObjectURL: jest.fn(),
-      };
-
-      setTimeout(() => {
-        if (mockImage.onload) {
-          mockImage.onload(new Event('load'));
-        }
-      }, 0);
 
       const imageUri = 'file:///test.jpg';
       const bounds = {
@@ -315,20 +293,20 @@ describe('imageCropping utilities', () => {
       const result = await cropFaceWithBounds(imageUri, bounds, 20);
 
       expect(mockManipulateAsync).toHaveBeenCalled();
-      expect(result).toBe('data:image/jpeg;base64,fallbackCrop');
-
-      delete (global as any).window;
-      delete (global as any).document;
-      delete (global as any).URL;
+      // Falls back to returning the original URI
+      expect(result).toBe(imageUri);
     });
 
     it('returns manipulated image URI on success', async () => {
       const expectedUri = 'file:///cropped-result.jpg';
-      mockManipulateAsync.mockResolvedValue({
-        uri: expectedUri,
-        width: 150,
-        height: 150,
-      });
+      mockManipulateAsync.mockReset();
+      mockManipulateAsync
+        .mockResolvedValueOnce({ width: 2000, height: 1500 }) // probe
+        .mockResolvedValueOnce({
+          uri: expectedUri,
+          width: 150,
+          height: 150,
+        });
 
       const imageUri = 'file:///original.jpg';
       const bounds = {

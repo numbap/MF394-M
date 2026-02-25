@@ -94,7 +94,7 @@ describe('QuizGameScreen - Accessibility', () => {
       });
 
       await waitFor(() => {
-        expect(getByText('Who is this?')).toBeTruthy();
+        expect(getByText(/\d+ of \d+/)).toBeTruthy();
       });
     });
 
@@ -115,8 +115,7 @@ describe('QuizGameScreen - Accessibility', () => {
       });
 
       await waitFor(() => {
-        const questionText = getByText('Who is this?');
-        expect(questionText).toBeTruthy();
+        expect(getByText(/\d+ of \d+/)).toBeTruthy();
       });
     });
 
@@ -137,7 +136,7 @@ describe('QuizGameScreen - Accessibility', () => {
       });
 
       await waitFor(() => {
-        const progressText = getByText(/Question \d+ of \d+/);
+        const progressText = getByText(/\d+ of \d+/);
         expect(progressText).toBeTruthy();
       });
     });
@@ -176,7 +175,7 @@ describe('QuizGameScreen - Accessibility', () => {
       });
 
       await waitFor(() => {
-        expect(getByText('Who is this?')).toBeTruthy();
+        expect(getByText(/\d+ of \d+/)).toBeTruthy();
       });
 
       // After clicking correct answer, buttons should be disabled
@@ -191,7 +190,7 @@ describe('QuizGameScreen - Accessibility', () => {
       });
 
       await waitFor(() => {
-        expect(getByText('Who is this?')).toBeTruthy();
+        expect(getByText(/\d+ of \d+/)).toBeTruthy();
       });
 
       // Answer buttons should be accessible with proper text
@@ -207,7 +206,7 @@ describe('QuizGameScreen - Accessibility', () => {
       });
 
       await waitFor(() => {
-        expect(getByText('Who is this?')).toBeTruthy();
+        expect(getByText(/\d+ of \d+/)).toBeTruthy();
       });
 
       // Note: We can't easily test accessibilityLiveRegion in RNTL,
@@ -221,7 +220,7 @@ describe('QuizGameScreen - Accessibility', () => {
       });
 
       await waitFor(() => {
-        expect(getByText('Who is this?')).toBeTruthy();
+        expect(getByText(/\d+ of \d+/)).toBeTruthy();
       });
 
       // Verify buttons exist for interaction
@@ -234,11 +233,11 @@ describe('QuizGameScreen - Accessibility', () => {
       });
 
       await waitFor(() => {
-        expect(getByText('Who is this?')).toBeTruthy();
+        expect(getByText(/\d+ of \d+/)).toBeTruthy();
       });
 
       // Verify quiz container exists
-      expect(getByText(/Question \d+ of \d+/)).toBeTruthy();
+      expect(getByText(/\d+ of \d+/)).toBeTruthy();
     });
   });
 
@@ -317,7 +316,7 @@ describe('QuizGameScreen - Accessibility', () => {
       });
 
       await waitFor(() => {
-        expect(getByText('Question 1 of 5')).toBeTruthy();
+        expect(getByText('1 of 5')).toBeTruthy();
       });
     });
 
@@ -327,7 +326,7 @@ describe('QuizGameScreen - Accessibility', () => {
       });
 
       await waitFor(() => {
-        const progressText = getByText(/Question 1 of \d+/);
+        const progressText = getByText(/1 of \d+/);
         expect(progressText).toBeTruthy();
       });
     });
@@ -365,7 +364,7 @@ describe('QuizGameScreen - Accessibility', () => {
       });
 
       await waitFor(() => {
-        expect(tree.getByText('Who is this?')).toBeTruthy();
+        expect(tree.getByText(/\d+ of \d+/)).toBeTruthy();
       });
 
       expect(tree.toJSON()).toMatchSnapshot();

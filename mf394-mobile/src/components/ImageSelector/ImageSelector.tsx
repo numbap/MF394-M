@@ -5,8 +5,10 @@ import {
   TouchableOpacity,
   Text,
   StyleSheet,
+  Platform,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import { Paths, copyAsync } from 'expo-file-system';
 import { FontAwesome } from '@expo/vector-icons';
 import { colors, spacing, radii } from '../../theme/theme';
 
@@ -25,14 +27,25 @@ export function ImageSelector({
 }: ImageSelectorProps) {
   const handlePickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: 'images',
       allowsEditing: false,
       aspect: [1, 1],
       quality: 1,
     });
 
     if (!result.canceled && result.assets[0]) {
-      onImageSelected(result.assets[0].uri);
+      let uri = result.assets[0].uri;
+      // On Android, the Photo Picker returns content:// URIs that may expire after
+      // the picker activity closes. expo-face-detector and expo-image-manipulator
+      // also require file:// URIs. Copy to cache to get a stable file:// URI.
+      if (Platform.OS === 'android' && uri.startsWith('content://')) {
+        const ext = result.assets[0].mimeType?.split('/')[1] || 'jpg';
+        const cacheDir = Paths.cache.uri;
+        const dest = `${cacheDir.endsWith('/') ? cacheDir : cacheDir + '/'}picked-${Date.now()}.${ext}`;
+        await copyAsync({ from: uri, to: dest });
+        uri = dest;
+      }
+      onImageSelected(uri);
     }
   };
 

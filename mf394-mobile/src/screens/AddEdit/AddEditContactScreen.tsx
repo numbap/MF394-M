@@ -112,7 +112,14 @@ export default function AddEditContactScreen() {
 
     try {
       const result = await detectFaces(uri);
-      const { faces, isRealDetection } = result;
+      const { faces, isRealDetection, nativeError } = result as any;
+
+      // Show the raw native error as a toast so it's visible without Metro logs
+      if (nativeError) {
+        setToastMessage(`Face detection error: ${nativeError}`);
+        setToastVariant("error");
+        setShowToast(true);
+      }
 
       if (isRealDetection && faces && faces.length > 0) {
         const croppedFaces = await Promise.all(

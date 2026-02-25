@@ -17,11 +17,11 @@ import {
   TouchableOpacity,
   Pressable,
   FlatList,
-  SafeAreaView,
   ActivityIndicator,
   Platform,
   useWindowDimensions,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useSelector, useDispatch } from "react-redux";
 import { useRoute } from "@react-navigation/native";
 import { FontAwesome } from "@expo/vector-icons";
@@ -58,6 +58,7 @@ export default function ListingScreen({ navigation }: any) {
   const routeParams = route.params as { category?: string; tags?: string[] } | undefined;
 
   const [isGalleryView, setIsGalleryView] = useState(false);
+  const [statusBarHeight, setStatusBarHeight] = useState(0);
 
   const lastTapTime = useRef<{ [key: string]: number }>({});
   const DOUBLE_TAP_DELAY = 300;
@@ -271,8 +272,11 @@ export default function ListingScreen({ navigation }: any) {
     </View>
   );
 
-  const statusFooter = selectedCategories.length > 0 ? (
-    <View style={styles.statusBar}>
+  const statusBarEl = selectedCategories.length > 0 ? (
+    <View
+      style={styles.statusBar}
+      onLayout={(e) => setStatusBarHeight(e.nativeEvent.layout.height)}
+    >
       <Text style={styles.statusText}>
         {filteredContacts.length} of {contacts.length} visible
       </Text>
@@ -317,14 +321,20 @@ export default function ListingScreen({ navigation }: any) {
             ]}
           >
             {isGalleryView
-              ? <SummaryThumbnail id={contact._id} name={contact.name} photo={contact.photo} />
+              ? <SummaryThumbnail id={contact._id} name={contact.name} photo={contact.photo} hint={contact.hint} />
               : <ContactCard contact={contact} />}
           </Pressable>
         )}
         ListHeaderComponent={filterHeader}
-        ListFooterComponent={statusFooter}
         ListEmptyComponent={emptyState}
-        contentContainerStyle={styles.listContent}
+        ListFooterComponent={
+          selectedCategories.length > 0 ? (
+            <View style={{ flex: 1, justifyContent: 'flex-end', minHeight: statusBarHeight }}>
+              {statusBarEl}
+            </View>
+          ) : null
+        }
+        contentContainerStyle={[styles.listContent, { flexGrow: 1 }]}
         showsVerticalScrollIndicator={false}
       />
     </SafeAreaView>
@@ -337,7 +347,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.semantic.background,
   },
   listContent: {
-    paddingBottom: spacing.xl,
     paddingHorizontal: spacing.lg,
   },
   centeredState: {
@@ -425,8 +434,6 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   statusBar: {
-    marginHorizontal: -spacing.lg,
-    marginBottom: -spacing.xl,
     borderTopWidth: 1,
     borderTopColor: colors.semantic.border,
     paddingVertical: spacing.md,

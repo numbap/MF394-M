@@ -180,7 +180,7 @@ describe('QuizGameScreen - Filters', () => {
 
       // Should show quiz (friends-family has enough contacts)
       await waitFor(() => {
-        expect(getByText('Who is this?')).toBeTruthy();
+        expect(getByText(/\d+ of \d+/)).toBeTruthy();
       });
     });
 
@@ -239,7 +239,7 @@ describe('QuizGameScreen - Filters', () => {
       fireEvent.press(getByTestId('category-friends-family'));
 
       await waitFor(() => {
-        expect(getByText(/Not enough contacts with photos or hints/i)).toBeTruthy();
+        expect(getByText(/Minimum 5 contacts with photos or hints/i)).toBeTruthy();
       });
     });
   });
@@ -258,7 +258,7 @@ describe('QuizGameScreen - Filters', () => {
       // Note: Tags are rendered in TagsSection, not in CategoryTagFilter mock
       // We verify by checking the quiz can load
       await waitFor(() => {
-        expect(queryByText('Who is this?')).toBeTruthy();
+        expect(queryByText(/\d+ of \d+/)).toBeTruthy();
       });
     });
 
@@ -296,7 +296,7 @@ describe('QuizGameScreen - Filters', () => {
       // Should filter to only Sports-tagged contacts
       // Since we have 3 with Sports tag, should show empty state (<5 contacts)
       await waitFor(() => {
-        expect(getByText(/Not enough contacts with photos or hints/i)).toBeTruthy();
+        expect(getByText(/Minimum 5 contacts with photos or hints/i)).toBeTruthy();
       });
     });
 
@@ -406,7 +406,7 @@ describe('QuizGameScreen - Filters', () => {
       // Should only show 1 contact (friends-family AND Sports)
       // This should trigger empty state
       await waitFor(() => {
-        expect(getByText(/Not enough contacts with photos or hints/i)).toBeTruthy();
+        expect(getByText(/Minimum 5 contacts with photos or hints/i)).toBeTruthy();
       });
     });
 
@@ -431,7 +431,7 @@ describe('QuizGameScreen - Filters', () => {
       // Should show 4 contacts (2 Sports + 2 Music)
       // Still < 5, so empty state
       await waitFor(() => {
-        expect(getByText(/Not enough contacts with photos or hints/i)).toBeTruthy();
+        expect(getByText(/Minimum 5 contacts with photos or hints/i)).toBeTruthy();
       });
     });
 
@@ -441,7 +441,7 @@ describe('QuizGameScreen - Filters', () => {
       });
 
       await waitFor(() => {
-        expect(getByText('Who is this?')).toBeTruthy();
+        expect(getByText(/\d+ of \d+/)).toBeTruthy();
       });
 
       // Change filter to different category
@@ -485,7 +485,7 @@ describe('QuizGameScreen - Filters', () => {
       });
 
       await waitFor(() => {
-        expect(getByText(/Question 1 of/)).toBeTruthy();
+        expect(getByText(/1 of/)).toBeTruthy();
       });
 
       // Change filter mid-game
@@ -493,7 +493,7 @@ describe('QuizGameScreen - Filters', () => {
 
       // Should reset to question 1 (with new pool)
       await waitFor(() => {
-        expect(getByText(/Question 1 of/)).toBeTruthy();
+        expect(getByText(/1 of/)).toBeTruthy();
       });
     });
   });
@@ -522,7 +522,7 @@ describe('QuizGameScreen - Filters', () => {
       });
 
       await waitFor(() => {
-        expect(getByText('Who is this?')).toBeTruthy();
+        expect(getByText(/\d+ of \d+/)).toBeTruthy();
       });
     });
 
@@ -538,7 +538,7 @@ describe('QuizGameScreen - Filters', () => {
       });
 
       await waitFor(() => {
-        expect(getByText(/Not enough contacts with photos or hints/i)).toBeTruthy();
+        expect(getByText(/Minimum 5 contacts with photos or hints/i)).toBeTruthy();
       });
     });
 
@@ -550,7 +550,7 @@ describe('QuizGameScreen - Filters', () => {
       });
 
       await waitFor(() => {
-        expect(getByText(/Not enough contacts with photos or hints/i)).toBeTruthy();
+        expect(getByText(/Minimum 5 contacts with photos or hints/i)).toBeTruthy();
       });
     });
   });
@@ -574,7 +574,7 @@ describe('QuizGameScreen - Filters', () => {
       });
 
       await waitFor(() => {
-        expect(tree.getByText('Who is this?')).toBeTruthy();
+        expect(tree.getByText(/\d+ of \d+/)).toBeTruthy();
       });
 
       expect(tree.toJSON()).toMatchSnapshot();
@@ -587,7 +587,7 @@ describe('QuizGameScreen - Filters', () => {
 
       // friends-family + Sports/Music tags → only 2 contacts match → empty state
       await waitFor(() => {
-        expect(tree.getByText(/Not enough contacts with photos or hints/i)).toBeTruthy();
+        expect(tree.getByText(/Minimum 5 contacts with photos or hints/i)).toBeTruthy();
       });
 
       expect(tree.toJSON()).toMatchSnapshot();

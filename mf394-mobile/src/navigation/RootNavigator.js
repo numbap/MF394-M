@@ -111,7 +111,7 @@ function AuthenticatedStack() {
 
 function HomeStack() {
   return (
-    <Stack.Navigator
+      <Stack.Navigator
       screenOptions={{
         headerShown: true,
         headerStyle: {
@@ -127,7 +127,8 @@ function HomeStack() {
       <Stack.Screen
         name="Listing"
         component={ListingScreen}
-        options={{ title: "Contacts" }}
+        options={{ title: "Contacts", headerShown: false }}
+        
       />
       <Stack.Screen
         name="AddContact"
@@ -161,7 +162,7 @@ function GamesStack() {
   return (
     <Stack.Navigator
       screenOptions={{
-        headerShown: true,
+        headerShown: false,
         headerStyle: {
           backgroundColor: colors.semantic.background,
         },
@@ -174,7 +175,7 @@ function GamesStack() {
       <Stack.Screen
         name="Quiz"
         component={QuizGameScreen}
-        options={{ title: "Quiz Game" }}
+        options={{ title: "Quiz Game", headerShown: false  }}
       />
     </Stack.Navigator>
   );

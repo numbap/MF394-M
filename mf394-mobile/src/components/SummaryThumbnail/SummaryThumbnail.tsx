@@ -21,6 +21,7 @@ export interface SummaryThumbnailProps {
   id: string;
   name: string;
   photo?: string;
+  hint?: string;
   onPress?: () => void;
   style?: ViewStyle;
 }
@@ -29,6 +30,7 @@ export function SummaryThumbnail({
   id,
   name,
   photo,
+  hint,
   onPress,
   style,
 }: SummaryThumbnailProps) {
@@ -36,6 +38,11 @@ export function SummaryThumbnail({
   const flipAnimation = useRef(new Animated.Value(0)).current;
 
   const handlePress = () => {
+    if (!photo && !hint) {
+      onPress?.();
+      return;
+    }
+
     const toValue = isFlipped ? 0 : 1;
 
     Animated.timing(flipAnimation, {
@@ -73,10 +80,11 @@ export function SummaryThumbnail({
       onPress={handlePress}
       style={[styles.container, style]}
     >
-      {/* Front side - Photo */}
+      {/* Front side - Photo or Hint */}
       <Animated.View
         style={[
           styles.card,
+          !photo && styles.cardFrontNoPhoto,
           {
             transform: [{ rotateY: frontInterpolate }],
             opacity: frontOpacity,
@@ -90,8 +98,10 @@ export function SummaryThumbnail({
             resizeMode="cover"
           />
         ) : (
-          <View style={[styles.photoPlaceholder, { backgroundColor: colors.neutral.iron[100] }]}>
-            <Text style={styles.placeholderText}>👤</Text>
+          <View style={styles.hintContainer}>
+            <Text style={styles.hintText} numberOfLines={4}>
+              {hint}
+            </Text>
           </View>
         )}
       </Animated.View>
@@ -134,20 +144,11 @@ const styles = StyleSheet.create({
     ...shadows.sm,
   },
   cardBack: {
-    backgroundColor: colors.primary[500],
+    backgroundColor: colors.primary[800],
   },
   photo: {
     width: '100%',
     height: '100%',
-  },
-  photoPlaceholder: {
-    width: '100%',
-    height: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  placeholderText: {
-    fontSize: 32,
   },
   nameContainer: {
     width: '100%',
@@ -158,6 +159,24 @@ const styles = StyleSheet.create({
   },
   nameText: {
     color: '#fff',
+    fontSize: 12,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  cardFrontNoPhoto: {
+    backgroundColor: colors.neutral.bone[50],
+    borderWidth: 2,
+    borderColor: '#000',
+  },
+  hintContainer: {
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: spacing.sm,
+  },
+  hintText: {
+    color: '#000',
     fontSize: 12,
     fontWeight: '600',
     textAlign: 'center',

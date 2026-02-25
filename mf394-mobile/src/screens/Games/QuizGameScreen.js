@@ -7,9 +7,9 @@ import {
   ActivityIndicator,
   Image,
   ScrollView,
-  SafeAreaView,
   Platform,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import * as Haptics from "expo-haptics";
 import { useSelector, useDispatch } from "react-redux";
 import { useGetUserQuery } from "../../store/api/contacts.api";
@@ -20,7 +20,7 @@ import Animated, {
   withSequence,
   withTiming,
 } from "react-native-reanimated";
-import { Audio } from "expo-av";
+import { createAudioPlayer, setAudioModeAsync } from "expo-audio";
 import shuffle from "../../utils/shuffle";
 import { colors, spacing, radii, typography } from "../../theme/theme";
 import {
@@ -98,31 +98,28 @@ export default function QuizGameScreen() {
     return () => {
       // Cleanup sounds
       if (correctSoundRef.current) {
-        correctSoundRef.current.unloadAsync();
+        correctSoundRef.current.remove();
       }
       if (incorrectSoundRef.current) {
-        incorrectSoundRef.current.unloadAsync();
+        incorrectSoundRef.current.remove();
       }
     };
   }, []);
 
   const loadSounds = async () => {
     try {
-      await Audio.setAudioModeAsync({
+      await setAudioModeAsync({
         playsInSilentModeIOS: true,
-        staysActiveInBackground: false,
+        shouldPlayInBackground: false,
       });
 
       if (Platform.OS !== 'web') {
-        const { sound: correctSound } = await Audio.Sound.createAsync(
+        correctSoundRef.current = createAudioPlayer(
           require('../../../assets/sounds/correct.wav')
         );
-        correctSoundRef.current = correctSound;
-
-        const { sound: incorrectSound } = await Audio.Sound.createAsync(
+        incorrectSoundRef.current = createAudioPlayer(
           require('../../../assets/sounds/incorrect.wav')
         );
-        incorrectSoundRef.current = incorrectSound;
       }
     } catch (error) {
       console.error("Error loading sounds:", error);
@@ -163,7 +160,8 @@ export default function QuizGameScreen() {
         // Native: play sound + haptics (iOS/Android)
         const soundRef = isCorrect ? correctSoundRef : incorrectSoundRef;
         if (soundRef.current) {
-          await soundRef.current.replayAsync();
+          soundRef.current.seekTo(0);
+          soundRef.current.play();
         }
         if (isCorrect) {
           await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);

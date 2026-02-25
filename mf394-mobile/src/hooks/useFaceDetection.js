@@ -1,6 +1,9 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { Image, Platform } from "react-native";
-import { v4 as uuidv4 } from "uuid";
+// uuidv4 relies on crypto.getRandomValues() which is unavailable in Hermes on Android.
+// Use a Math.random()-based generator which is safe in all JS environments.
+const generateId = () =>
+  `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 11)}`;
 import { FACE_DETECTION_MIN_CONFIDENCE } from "../utils/constants";
 
 let ExpoFaceDetector;
@@ -148,7 +151,10 @@ export function useFaceDetection() {
       setError(null);
 
       try {
-        // Get actual image dimensions first
+        // Get image dimensions for logging. Note: on Android, Image.getSize may
+        // return pre-EXIF-rotation dimensions (e.g. 4000x3000 for a portrait photo).
+        // This is fine here since these values are only used for informational logging;
+        // the actual crop in imageCropping.ts uses manipulateAsync to get post-EXIF dims.
         const { width, height } = await new Promise((resolve, reject) => {
           Image.getSize(
             imageUri,
@@ -156,9 +162,11 @@ export function useFaceDetection() {
             reject
           );
         });
+        console.log(`[useFaceDetection] Image.getSize: ${width}x${height}`);
 
         let detectedFaces = [];
         let isRealDetection = false;
+        let nativeError = null;
 
         // Use face-api on web
         if (isWebPlatform && faceapi && modelsLoaded) {
@@ -180,14 +188,19 @@ export function useFaceDetection() {
         if (detectedFaces.length === 0 && ExpoFaceDetector && Platform.OS !== "web") {
           try {
             const result = await ExpoFaceDetector.detectFacesAsync(imageUri, {
-              mode: ExpoFaceDetector.FaceDetectorMode.fast,
+              // accurate mode is required for still photos; fast is designed for
+              // camera frame streams and commonly misses faces in high-res JPEGs.
+              mode: ExpoFaceDetector.FaceDetectorMode.accurate,
               detectLandmarks: ExpoFaceDetector.FaceDetectorLandmarks.none,
               runClassifications: ExpoFaceDetector.FaceDetectorClassifications.none,
             });
 
             if (result.faces && result.faces.length > 0) {
+              result.faces.forEach((face, i) => {
+                console.log(`[useFaceDetection] Face ${i}: origin=(${face.bounds.origin.x.toFixed(0)}, ${face.bounds.origin.y.toFixed(0)}) size=${face.bounds.size.width.toFixed(0)}x${face.bounds.size.height.toFixed(0)} — image=${width}x${height}`);
+              });
               detectedFaces = result.faces.map((face) => ({
-                id: uuidv4(),
+                id: generateId(),
                 uri: imageUri,
                 bounds: face.bounds,
                 confidence: 1, // expo-face-detector doesn't expose a confidence score
@@ -195,7 +208,13 @@ export function useFaceDetection() {
               isRealDetection = true;
             }
           } catch (nativeErr) {
-            console.warn("Native face detection failed:", nativeErr.message);
+            nativeError = nativeErr.message ?? String(nativeErr);
+            console.error(
+              "Native face detection failed:",
+              nativeErr.message,
+              "\nURI:", imageUri?.substring(0, 120),
+              "\nError:", nativeErr,
+            );
           }
         }
 
@@ -213,7 +232,7 @@ export function useFaceDetection() {
         if (isMountedRef.current) {
           setFaces(detectedFaces);
         }
-        return { faces: detectedFaces, isRealDetection };
+        return { faces: detectedFaces, isRealDetection, nativeError };
       } catch (err) {
         console.error("Face detection error:", err);
         if (isMountedRef.current) {
@@ -459,7 +478,7 @@ export function extractFacesFromDetections(img, detections, imageUri) {
 
       // Convert detection box to bounds format for consistency
       faces.push({
-        id: uuidv4(),
+        id: generateId(),
         uri: imageUri,
         bounds: {
           origin: { x: cropX, y: cropY },

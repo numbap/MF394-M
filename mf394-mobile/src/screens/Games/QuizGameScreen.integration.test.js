@@ -88,7 +88,7 @@ describe('QuizGameScreen - Integration', () => {
       });
 
       await waitFor(() => {
-        expect(getByText('Who is this?')).toBeTruthy();
+        expect(getByText(/\d+ of \d+/)).toBeTruthy();
       });
 
       // Verify contacts from Redux are rendered
@@ -134,7 +134,7 @@ describe('QuizGameScreen - Integration', () => {
 
       // Component should react and show quiz
       await waitFor(() => {
-        expect(getByText('Who is this?')).toBeTruthy();
+        expect(getByText(/\d+ of \d+/)).toBeTruthy();
       });
     });
 
@@ -145,7 +145,7 @@ describe('QuizGameScreen - Integration', () => {
       });
 
       await waitFor(() => {
-        expect(getByText(/Not enough contacts with photos or hints/i)).toBeTruthy();
+        expect(getByText(/Minimum 5 contacts with photos or hints/i)).toBeTruthy();
       });
     });
   });
@@ -226,7 +226,7 @@ describe('QuizGameScreen - Integration', () => {
       });
 
       await waitFor(() => {
-        expect(getByText('Who is this?')).toBeTruthy();
+        expect(getByText(/\d+ of \d+/)).toBeTruthy();
       });
 
       // FilterContainer exists and quiz is visible
@@ -252,7 +252,7 @@ describe('QuizGameScreen - Integration', () => {
 
       // Step 3: Play (quiz loads)
       await waitFor(() => {
-        expect(getByText('Who is this?')).toBeTruthy();
+        expect(getByText(/\d+ of \d+/)).toBeTruthy();
       });
 
       // Step 4: Answer
@@ -267,7 +267,7 @@ describe('QuizGameScreen - Integration', () => {
       });
 
       await waitFor(() => {
-        expect(getByText(/Question 2 of 5/)).toBeTruthy();
+        expect(getByText(/2 of 5/)).toBeTruthy();
       });
     });
 
@@ -278,7 +278,7 @@ describe('QuizGameScreen - Integration', () => {
 
       // Start quiz
       await waitFor(() => {
-        expect(getByText('Question 1 of')).toBeTruthy();
+        expect(getByText(/\d+ of \d+/)).toBeTruthy();
       });
 
       // Answer first question
@@ -292,7 +292,7 @@ describe('QuizGameScreen - Integration', () => {
       });
 
       await waitFor(() => {
-        expect(getByText(/Question 2 of/)).toBeTruthy();
+        expect(getByText(/2 of/)).toBeTruthy();
       });
 
       // Change filter mid-quiz
@@ -302,7 +302,7 @@ describe('QuizGameScreen - Integration', () => {
 
       // Quiz should reset to question 1 with new pool
       await waitFor(() => {
-        expect(getByText(/Question 1 of/)).toBeTruthy();
+        expect(getByText(/1 of/)).toBeTruthy();
       });
     });
 
@@ -312,11 +312,11 @@ describe('QuizGameScreen - Integration', () => {
       });
 
       await waitFor(() => {
-        expect(getByText('Who is this?')).toBeTruthy();
+        expect(getByText(/\d+ of \d+/)).toBeTruthy();
       });
 
       // Quiz state persists (question number, contacts, etc.)
-      expect(getByText('Question 1 of 5')).toBeTruthy();
+      expect(getByText('1 of 5')).toBeTruthy();
     });
   });
 
@@ -371,13 +371,13 @@ describe('QuizGameScreen - Integration', () => {
       });
 
       await waitFor(() => {
-        expect(getByText('Question 1 of 5')).toBeTruthy();
+        expect(getByText('1 of 5')).toBeTruthy();
       });
 
       // Answer all 5 questions
       for (let i = 1; i <= 5; i++) {
         await waitFor(() => {
-          expect(getByText(`Question ${i} of 5`)).toBeTruthy();
+          expect(getByText(`${i} of 5`)).toBeTruthy();
         });
 
         // Click any answer (Alice is always an option)
@@ -404,7 +404,7 @@ describe('QuizGameScreen - Integration', () => {
       });
 
       await waitFor(() => {
-        expect(getByText('Question 1 of 5')).toBeTruthy();
+        expect(getByText('1 of 5')).toBeTruthy();
       });
 
       // Wrong answer
@@ -420,7 +420,7 @@ describe('QuizGameScreen - Integration', () => {
 
       // Should still be on question 1
       await waitFor(() => {
-        expect(getByText('Question 1 of 5')).toBeTruthy();
+        expect(getByText('1 of 5')).toBeTruthy();
       });
 
       // Correct answer
@@ -436,7 +436,7 @@ describe('QuizGameScreen - Integration', () => {
 
       // Should advance to question 2
       await waitFor(() => {
-        expect(getByText('Question 2 of 5')).toBeTruthy();
+        expect(getByText('2 of 5')).toBeTruthy();
       });
     });
   });
@@ -448,7 +448,7 @@ describe('QuizGameScreen - Integration', () => {
       });
 
       await waitFor(() => {
-        expect(getByText('Who is this?')).toBeTruthy();
+        expect(getByText(/\d+ of \d+/)).toBeTruthy();
       });
 
       // Verify initial state
@@ -518,7 +518,7 @@ describe('QuizGameScreen - Integration', () => {
 
       // Quiz should still load
       await waitFor(() => {
-        expect(getByText('Who is this?')).toBeTruthy();
+        expect(getByText(/\d+ of \d+/)).toBeTruthy();
       });
     });
   });
@@ -530,7 +530,7 @@ describe('QuizGameScreen - Integration', () => {
       });
 
       await waitFor(() => {
-        expect(tree.getByText('Who is this?')).toBeTruthy();
+        expect(tree.getByText(/\d+ of \d+/)).toBeTruthy();
       });
 
       expect(tree.toJSON()).toMatchSnapshot();

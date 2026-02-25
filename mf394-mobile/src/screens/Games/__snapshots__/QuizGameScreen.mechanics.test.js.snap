@@ -1,7 +1,15 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`QuizGameScreen - Mechanics Snapshots matches snapshot for feedback state (correct) 1`] = `
-<RCTSafeAreaView
+<RNCSafeAreaView
+  edges={
+    {
+      "bottom": "additive",
+      "left": "additive",
+      "right": "additive",
+      "top": "additive",
+    }
+  }
   style={
     {
       "backgroundColor": "#f5f3ef",
@@ -56,7 +64,6 @@ exports[`QuizGameScreen - Mechanics Snapshots matches snapshot for feedback stat
               }
             }
           >
-            Question 
             1
              of 
             5
@@ -75,820 +82,7 @@ exports[`QuizGameScreen - Mechanics Snapshots matches snapshot for feedback stat
                 "overflow": "hidden",
                 "width": 250,
               },
-              {
-                "transform": [
-                  {
-                    "scale": 1,
-                  },
-                  {
-                    "translateX": 0,
-                  },
-                ],
-              },
-            ]
-          }
-        >
-          <Image
-            resizeMode="cover"
-            source={
-              {
-                "uri": "data:image/jpeg;base64,bob",
-              }
-            }
-            style={
-              {
-                "height": "100%",
-                "width": "100%",
-              }
-            }
-          />
-        </View>
-        <Text
-          style={
-            {
-              "color": "#181b1b",
-              "fontSize": 18,
-              "fontWeight": "600",
-              "letterSpacing": 0.1,
-              "lineHeight": 24,
-              "marginBottom": 16,
-            }
-          }
-        >
-          Who is this?
-        </Text>
-        <View
-          style={
-            {
-              "gap": 12,
-              "width": "100%",
-            }
-          }
-        >
-          <View
-            accessibilityState={
-              {
-                "busy": undefined,
-                "checked": undefined,
-                "disabled": false,
-                "expanded": undefined,
-                "selected": undefined,
-              }
-            }
-            accessibilityValue={
-              {
-                "max": undefined,
-                "min": undefined,
-                "now": undefined,
-                "text": undefined,
-              }
-            }
-            accessible={true}
-            collapsable={false}
-            focusable={true}
-            onClick={[Function]}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
-            style={
-              {
-                "alignItems": "center",
-                "backgroundColor": "#ece7df",
-                "borderColor": "#ece7df",
-                "borderRadius": 8,
-                "borderWidth": 2,
-                "opacity": 1,
-                "paddingHorizontal": 16,
-                "paddingVertical": 12,
-              }
-            }
-          >
-            <Text
-              style={
-                {
-                  "color": "#181b1b",
-                  "fontSize": 16,
-                  "fontWeight": "500",
-                  "letterSpacing": 0.15,
-                  "lineHeight": 24,
-                }
-              }
-            >
-              Charlie
-            </Text>
-          </View>
-          <View
-            accessibilityState={
-              {
-                "busy": undefined,
-                "checked": undefined,
-                "disabled": false,
-                "expanded": undefined,
-                "selected": undefined,
-              }
-            }
-            accessibilityValue={
-              {
-                "max": undefined,
-                "min": undefined,
-                "now": undefined,
-                "text": undefined,
-              }
-            }
-            accessible={true}
-            collapsable={false}
-            focusable={true}
-            onClick={[Function]}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
-            style={
-              {
-                "alignItems": "center",
-                "backgroundColor": "#ece7df",
-                "borderColor": "#ece7df",
-                "borderRadius": 8,
-                "borderWidth": 2,
-                "opacity": 1,
-                "paddingHorizontal": 16,
-                "paddingVertical": 12,
-              }
-            }
-          >
-            <Text
-              style={
-                {
-                  "color": "#181b1b",
-                  "fontSize": 16,
-                  "fontWeight": "500",
-                  "letterSpacing": 0.15,
-                  "lineHeight": 24,
-                }
-              }
-            >
-              Bob
-            </Text>
-          </View>
-          <View
-            accessibilityState={
-              {
-                "busy": undefined,
-                "checked": undefined,
-                "disabled": false,
-                "expanded": undefined,
-                "selected": undefined,
-              }
-            }
-            accessibilityValue={
-              {
-                "max": undefined,
-                "min": undefined,
-                "now": undefined,
-                "text": undefined,
-              }
-            }
-            accessible={true}
-            collapsable={false}
-            focusable={true}
-            onClick={[Function]}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
-            style={
-              {
-                "alignItems": "center",
-                "backgroundColor": "#ece7df",
-                "borderColor": "#ece7df",
-                "borderRadius": 8,
-                "borderWidth": 2,
-                "opacity": 1,
-                "paddingHorizontal": 16,
-                "paddingVertical": 12,
-              }
-            }
-          >
-            <Text
-              style={
-                {
-                  "color": "#181b1b",
-                  "fontSize": 16,
-                  "fontWeight": "500",
-                  "letterSpacing": 0.15,
-                  "lineHeight": 24,
-                }
-              }
-            >
-              Eve
-            </Text>
-          </View>
-          <View
-            accessibilityState={
-              {
-                "busy": undefined,
-                "checked": undefined,
-                "disabled": false,
-                "expanded": undefined,
-                "selected": undefined,
-              }
-            }
-            accessibilityValue={
-              {
-                "max": undefined,
-                "min": undefined,
-                "now": undefined,
-                "text": undefined,
-              }
-            }
-            accessible={true}
-            collapsable={false}
-            focusable={true}
-            onClick={[Function]}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
-            style={
-              {
-                "alignItems": "center",
-                "backgroundColor": "#dc2626",
-                "borderColor": "#dc2626",
-                "borderRadius": 8,
-                "borderWidth": 2,
-                "opacity": 1,
-                "paddingHorizontal": 16,
-                "paddingVertical": 12,
-              }
-            }
-          >
-            <Text
-              style={
-                {
-                  "color": "#181b1b",
-                  "fontSize": 16,
-                  "fontWeight": "500",
-                  "letterSpacing": 0.15,
-                  "lineHeight": 24,
-                }
-              }
-            >
-              Alice
-            </Text>
-          </View>
-          <View
-            accessibilityState={
-              {
-                "busy": undefined,
-                "checked": undefined,
-                "disabled": false,
-                "expanded": undefined,
-                "selected": undefined,
-              }
-            }
-            accessibilityValue={
-              {
-                "max": undefined,
-                "min": undefined,
-                "now": undefined,
-                "text": undefined,
-              }
-            }
-            accessible={true}
-            collapsable={false}
-            focusable={true}
-            onClick={[Function]}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
-            style={
-              {
-                "alignItems": "center",
-                "backgroundColor": "#ece7df",
-                "borderColor": "#ece7df",
-                "borderRadius": 8,
-                "borderWidth": 2,
-                "opacity": 1,
-                "paddingHorizontal": 16,
-                "paddingVertical": 12,
-              }
-            }
-          >
-            <Text
-              style={
-                {
-                  "color": "#181b1b",
-                  "fontSize": 16,
-                  "fontWeight": "500",
-                  "letterSpacing": 0.15,
-                  "lineHeight": 24,
-                }
-              }
-            >
-              David
-            </Text>
-          </View>
-        </View>
-      </View>
-    </View>
-  </RCTScrollView>
-</RCTSafeAreaView>
-`;
-
-exports[`QuizGameScreen - Mechanics Snapshots matches snapshot for feedback state (incorrect) 1`] = `
-<RCTSafeAreaView
-  style={
-    {
-      "backgroundColor": "#f5f3ef",
-      "flex": 1,
-    }
-  }
->
-  <RCTScrollView
-    contentContainerStyle={
-      {
-        "flexGrow": 1,
-      }
-    }
-    style={
-      {
-        "flex": 1,
-      }
-    }
-  >
-    <View>
-      <View
-        testID="category-tag-filter"
-      />
-      <View
-        style={
-          {
-            "alignItems": "center",
-            "flex": 1,
-            "justifyContent": "center",
-            "paddingHorizontal": 16,
-            "paddingVertical": 20,
-          }
-        }
-      >
-        <View
-          style={
-            {
-              "marginBottom": 16,
-              "width": "100%",
-            }
-          }
-        >
-          <Text
-            style={
-              {
-                "color": "#181b1b",
-                "fontSize": 16,
-                "fontWeight": "600",
-                "letterSpacing": 0.15,
-                "lineHeight": 24,
-                "textAlign": "center",
-              }
-            }
-          >
-            Question 
-            1
-             of 
-            5
-          </Text>
-        </View>
-        <View
-          style={
-            [
-              {
-                "alignItems": "center",
-                "backgroundColor": "#ece7df",
-                "borderRadius": 12,
-                "height": 250,
-                "justifyContent": "center",
-                "marginBottom": 20,
-                "overflow": "hidden",
-                "width": 250,
-              },
-              {
-                "transform": [
-                  {
-                    "scale": 1,
-                  },
-                  {
-                    "translateX": 0,
-                  },
-                ],
-              },
-            ]
-          }
-        >
-          <Image
-            resizeMode="cover"
-            source={
-              {
-                "uri": "data:image/jpeg;base64,charlie",
-              }
-            }
-            style={
-              {
-                "height": "100%",
-                "width": "100%",
-              }
-            }
-          />
-        </View>
-        <Text
-          style={
-            {
-              "color": "#181b1b",
-              "fontSize": 18,
-              "fontWeight": "600",
-              "letterSpacing": 0.1,
-              "lineHeight": 24,
-              "marginBottom": 16,
-            }
-          }
-        >
-          Who is this?
-        </Text>
-        <View
-          style={
-            {
-              "gap": 12,
-              "width": "100%",
-            }
-          }
-        >
-          <View
-            accessibilityState={
-              {
-                "busy": undefined,
-                "checked": undefined,
-                "disabled": false,
-                "expanded": undefined,
-                "selected": undefined,
-              }
-            }
-            accessibilityValue={
-              {
-                "max": undefined,
-                "min": undefined,
-                "now": undefined,
-                "text": undefined,
-              }
-            }
-            accessible={true}
-            collapsable={false}
-            focusable={true}
-            onClick={[Function]}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
-            style={
-              {
-                "alignItems": "center",
-                "backgroundColor": "#ece7df",
-                "borderColor": "#ece7df",
-                "borderRadius": 8,
-                "borderWidth": 2,
-                "opacity": 1,
-                "paddingHorizontal": 16,
-                "paddingVertical": 12,
-              }
-            }
-          >
-            <Text
-              style={
-                {
-                  "color": "#181b1b",
-                  "fontSize": 16,
-                  "fontWeight": "500",
-                  "letterSpacing": 0.15,
-                  "lineHeight": 24,
-                }
-              }
-            >
-              Eve
-            </Text>
-          </View>
-          <View
-            accessibilityState={
-              {
-                "busy": undefined,
-                "checked": undefined,
-                "disabled": false,
-                "expanded": undefined,
-                "selected": undefined,
-              }
-            }
-            accessibilityValue={
-              {
-                "max": undefined,
-                "min": undefined,
-                "now": undefined,
-                "text": undefined,
-              }
-            }
-            accessible={true}
-            collapsable={false}
-            focusable={true}
-            onClick={[Function]}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
-            style={
-              {
-                "alignItems": "center",
-                "backgroundColor": "#dc2626",
-                "borderColor": "#dc2626",
-                "borderRadius": 8,
-                "borderWidth": 2,
-                "opacity": 1,
-                "paddingHorizontal": 16,
-                "paddingVertical": 12,
-              }
-            }
-          >
-            <Text
-              style={
-                {
-                  "color": "#181b1b",
-                  "fontSize": 16,
-                  "fontWeight": "500",
-                  "letterSpacing": 0.15,
-                  "lineHeight": 24,
-                }
-              }
-            >
-              Bob
-            </Text>
-          </View>
-          <View
-            accessibilityState={
-              {
-                "busy": undefined,
-                "checked": undefined,
-                "disabled": false,
-                "expanded": undefined,
-                "selected": undefined,
-              }
-            }
-            accessibilityValue={
-              {
-                "max": undefined,
-                "min": undefined,
-                "now": undefined,
-                "text": undefined,
-              }
-            }
-            accessible={true}
-            collapsable={false}
-            focusable={true}
-            onClick={[Function]}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
-            style={
-              {
-                "alignItems": "center",
-                "backgroundColor": "#ece7df",
-                "borderColor": "#ece7df",
-                "borderRadius": 8,
-                "borderWidth": 2,
-                "opacity": 1,
-                "paddingHorizontal": 16,
-                "paddingVertical": 12,
-              }
-            }
-          >
-            <Text
-              style={
-                {
-                  "color": "#181b1b",
-                  "fontSize": 16,
-                  "fontWeight": "500",
-                  "letterSpacing": 0.15,
-                  "lineHeight": 24,
-                }
-              }
-            >
-              Charlie
-            </Text>
-          </View>
-          <View
-            accessibilityState={
-              {
-                "busy": undefined,
-                "checked": undefined,
-                "disabled": false,
-                "expanded": undefined,
-                "selected": undefined,
-              }
-            }
-            accessibilityValue={
-              {
-                "max": undefined,
-                "min": undefined,
-                "now": undefined,
-                "text": undefined,
-              }
-            }
-            accessible={true}
-            collapsable={false}
-            focusable={true}
-            onClick={[Function]}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
-            style={
-              {
-                "alignItems": "center",
-                "backgroundColor": "#ece7df",
-                "borderColor": "#ece7df",
-                "borderRadius": 8,
-                "borderWidth": 2,
-                "opacity": 1,
-                "paddingHorizontal": 16,
-                "paddingVertical": 12,
-              }
-            }
-          >
-            <Text
-              style={
-                {
-                  "color": "#181b1b",
-                  "fontSize": 16,
-                  "fontWeight": "500",
-                  "letterSpacing": 0.15,
-                  "lineHeight": 24,
-                }
-              }
-            >
-              Alice
-            </Text>
-          </View>
-          <View
-            accessibilityState={
-              {
-                "busy": undefined,
-                "checked": undefined,
-                "disabled": false,
-                "expanded": undefined,
-                "selected": undefined,
-              }
-            }
-            accessibilityValue={
-              {
-                "max": undefined,
-                "min": undefined,
-                "now": undefined,
-                "text": undefined,
-              }
-            }
-            accessible={true}
-            collapsable={false}
-            focusable={true}
-            onClick={[Function]}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
-            style={
-              {
-                "alignItems": "center",
-                "backgroundColor": "#ece7df",
-                "borderColor": "#ece7df",
-                "borderRadius": 8,
-                "borderWidth": 2,
-                "opacity": 1,
-                "paddingHorizontal": 16,
-                "paddingVertical": 12,
-              }
-            }
-          >
-            <Text
-              style={
-                {
-                  "color": "#181b1b",
-                  "fontSize": 16,
-                  "fontWeight": "500",
-                  "letterSpacing": 0.15,
-                  "lineHeight": 24,
-                }
-              }
-            >
-              David
-            </Text>
-          </View>
-        </View>
-      </View>
-    </View>
-  </RCTScrollView>
-</RCTSafeAreaView>
-`;
-
-exports[`QuizGameScreen - Mechanics Snapshots matches snapshot for initial render with 5 contacts 1`] = `
-<RCTSafeAreaView
-  style={
-    {
-      "backgroundColor": "#f5f3ef",
-      "flex": 1,
-    }
-  }
->
-  <RCTScrollView
-    contentContainerStyle={
-      {
-        "flexGrow": 1,
-      }
-    }
-    style={
-      {
-        "flex": 1,
-      }
-    }
-  >
-    <View>
-      <View
-        testID="category-tag-filter"
-      />
-      <View
-        style={
-          {
-            "alignItems": "center",
-            "flex": 1,
-            "justifyContent": "center",
-            "paddingHorizontal": 16,
-            "paddingVertical": 20,
-          }
-        }
-      >
-        <View
-          style={
-            {
-              "marginBottom": 16,
-              "width": "100%",
-            }
-          }
-        >
-          <Text
-            style={
-              {
-                "color": "#181b1b",
-                "fontSize": 16,
-                "fontWeight": "600",
-                "letterSpacing": 0.15,
-                "lineHeight": 24,
-                "textAlign": "center",
-              }
-            }
-          >
-            Question 
-            1
-             of 
-            5
-          </Text>
-        </View>
-        <View
-          style={
-            [
-              {
-                "alignItems": "center",
-                "backgroundColor": "#ece7df",
-                "borderRadius": 12,
-                "height": 250,
-                "justifyContent": "center",
-                "marginBottom": 20,
-                "overflow": "hidden",
-                "width": 250,
-              },
+              null,
               {
                 "transform": [
                   {
@@ -917,20 +111,6 @@ exports[`QuizGameScreen - Mechanics Snapshots matches snapshot for initial rende
             }
           />
         </View>
-        <Text
-          style={
-            {
-              "color": "#181b1b",
-              "fontSize": 18,
-              "fontWeight": "600",
-              "letterSpacing": 0.1,
-              "lineHeight": 24,
-              "marginBottom": 16,
-            }
-          }
-        >
-          Who is this?
-        </Text>
         <View
           style={
             {
@@ -939,6 +119,462 @@ exports[`QuizGameScreen - Mechanics Snapshots matches snapshot for initial rende
             }
           }
         >
+          <View
+            accessibilityState={
+              {
+                "busy": undefined,
+                "checked": undefined,
+                "disabled": true,
+                "expanded": undefined,
+                "selected": undefined,
+              }
+            }
+            accessibilityValue={
+              {
+                "max": undefined,
+                "min": undefined,
+                "now": undefined,
+                "text": undefined,
+              }
+            }
+            accessible={true}
+            collapsable={false}
+            focusable={false}
+            onClick={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            style={
+              {
+                "alignItems": "center",
+                "backgroundColor": "#ece7df",
+                "borderColor": "#ece7df",
+                "borderRadius": 8,
+                "borderWidth": 2,
+                "opacity": 1,
+                "paddingHorizontal": 16,
+                "paddingVertical": 12,
+              }
+            }
+          >
+            <Text
+              style={
+                {
+                  "color": "#181b1b",
+                  "fontSize": 16,
+                  "fontWeight": "500",
+                  "letterSpacing": 0.15,
+                  "lineHeight": 24,
+                }
+              }
+            >
+              Bob
+            </Text>
+          </View>
+          <View
+            accessibilityState={
+              {
+                "busy": undefined,
+                "checked": undefined,
+                "disabled": true,
+                "expanded": undefined,
+                "selected": undefined,
+              }
+            }
+            accessibilityValue={
+              {
+                "max": undefined,
+                "min": undefined,
+                "now": undefined,
+                "text": undefined,
+              }
+            }
+            accessible={true}
+            collapsable={false}
+            focusable={false}
+            onClick={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            style={
+              {
+                "alignItems": "center",
+                "backgroundColor": "#ece7df",
+                "borderColor": "#ece7df",
+                "borderRadius": 8,
+                "borderWidth": 2,
+                "opacity": 1,
+                "paddingHorizontal": 16,
+                "paddingVertical": 12,
+              }
+            }
+          >
+            <Text
+              style={
+                {
+                  "color": "#181b1b",
+                  "fontSize": 16,
+                  "fontWeight": "500",
+                  "letterSpacing": 0.15,
+                  "lineHeight": 24,
+                }
+              }
+            >
+              David
+            </Text>
+          </View>
+          <View
+            accessibilityState={
+              {
+                "busy": undefined,
+                "checked": undefined,
+                "disabled": true,
+                "expanded": undefined,
+                "selected": undefined,
+              }
+            }
+            accessibilityValue={
+              {
+                "max": undefined,
+                "min": undefined,
+                "now": undefined,
+                "text": undefined,
+              }
+            }
+            accessible={true}
+            collapsable={false}
+            focusable={false}
+            onClick={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            style={
+              {
+                "alignItems": "center",
+                "backgroundColor": "#10b981",
+                "borderColor": "#10b981",
+                "borderRadius": 8,
+                "borderWidth": 2,
+                "opacity": 1,
+                "paddingHorizontal": 16,
+                "paddingVertical": 12,
+              }
+            }
+          >
+            <Text
+              style={
+                {
+                  "color": "#181b1b",
+                  "fontSize": 16,
+                  "fontWeight": "500",
+                  "letterSpacing": 0.15,
+                  "lineHeight": 24,
+                }
+              }
+            >
+              Alice
+            </Text>
+          </View>
+          <View
+            accessibilityState={
+              {
+                "busy": undefined,
+                "checked": undefined,
+                "disabled": true,
+                "expanded": undefined,
+                "selected": undefined,
+              }
+            }
+            accessibilityValue={
+              {
+                "max": undefined,
+                "min": undefined,
+                "now": undefined,
+                "text": undefined,
+              }
+            }
+            accessible={true}
+            collapsable={false}
+            focusable={false}
+            onClick={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            style={
+              {
+                "alignItems": "center",
+                "backgroundColor": "#ece7df",
+                "borderColor": "#ece7df",
+                "borderRadius": 8,
+                "borderWidth": 2,
+                "opacity": 1,
+                "paddingHorizontal": 16,
+                "paddingVertical": 12,
+              }
+            }
+          >
+            <Text
+              style={
+                {
+                  "color": "#181b1b",
+                  "fontSize": 16,
+                  "fontWeight": "500",
+                  "letterSpacing": 0.15,
+                  "lineHeight": 24,
+                }
+              }
+            >
+              Charlie
+            </Text>
+          </View>
+          <View
+            accessibilityState={
+              {
+                "busy": undefined,
+                "checked": undefined,
+                "disabled": true,
+                "expanded": undefined,
+                "selected": undefined,
+              }
+            }
+            accessibilityValue={
+              {
+                "max": undefined,
+                "min": undefined,
+                "now": undefined,
+                "text": undefined,
+              }
+            }
+            accessible={true}
+            collapsable={false}
+            focusable={false}
+            onClick={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            style={
+              {
+                "alignItems": "center",
+                "backgroundColor": "#ece7df",
+                "borderColor": "#ece7df",
+                "borderRadius": 8,
+                "borderWidth": 2,
+                "opacity": 1,
+                "paddingHorizontal": 16,
+                "paddingVertical": 12,
+              }
+            }
+          >
+            <Text
+              style={
+                {
+                  "color": "#181b1b",
+                  "fontSize": 16,
+                  "fontWeight": "500",
+                  "letterSpacing": 0.15,
+                  "lineHeight": 24,
+                }
+              }
+            >
+              Eve
+            </Text>
+          </View>
+        </View>
+      </View>
+    </View>
+  </RCTScrollView>
+</RNCSafeAreaView>
+`;
+
+exports[`QuizGameScreen - Mechanics Snapshots matches snapshot for feedback state (incorrect) 1`] = `
+<RNCSafeAreaView
+  edges={
+    {
+      "bottom": "additive",
+      "left": "additive",
+      "right": "additive",
+      "top": "additive",
+    }
+  }
+  style={
+    {
+      "backgroundColor": "#f5f3ef",
+      "flex": 1,
+    }
+  }
+>
+  <RCTScrollView
+    contentContainerStyle={
+      {
+        "flexGrow": 1,
+      }
+    }
+    style={
+      {
+        "flex": 1,
+      }
+    }
+  >
+    <View>
+      <View
+        testID="category-tag-filter"
+      />
+      <View
+        style={
+          {
+            "alignItems": "center",
+            "flex": 1,
+            "justifyContent": "center",
+            "paddingHorizontal": 16,
+            "paddingVertical": 20,
+          }
+        }
+      >
+        <View
+          style={
+            {
+              "marginBottom": 16,
+              "width": "100%",
+            }
+          }
+        >
+          <Text
+            style={
+              {
+                "color": "#181b1b",
+                "fontSize": 16,
+                "fontWeight": "600",
+                "letterSpacing": 0.15,
+                "lineHeight": 24,
+                "textAlign": "center",
+              }
+            }
+          >
+            1
+             of 
+            5
+          </Text>
+        </View>
+        <View
+          style={
+            [
+              {
+                "alignItems": "center",
+                "backgroundColor": "#ece7df",
+                "borderRadius": 12,
+                "height": 250,
+                "justifyContent": "center",
+                "marginBottom": 20,
+                "overflow": "hidden",
+                "width": 250,
+              },
+              null,
+              {
+                "transform": [
+                  {
+                    "scale": 1,
+                  },
+                  {
+                    "translateX": 0,
+                  },
+                ],
+              },
+            ]
+          }
+        >
+          <Image
+            resizeMode="cover"
+            source={
+              {
+                "uri": "data:image/jpeg;base64,alice",
+              }
+            }
+            style={
+              {
+                "height": "100%",
+                "width": "100%",
+              }
+            }
+          />
+        </View>
+        <View
+          style={
+            {
+              "gap": 12,
+              "width": "100%",
+            }
+          }
+        >
+          <View
+            accessibilityState={
+              {
+                "busy": undefined,
+                "checked": undefined,
+                "disabled": false,
+                "expanded": undefined,
+                "selected": undefined,
+              }
+            }
+            accessibilityValue={
+              {
+                "max": undefined,
+                "min": undefined,
+                "now": undefined,
+                "text": undefined,
+              }
+            }
+            accessible={true}
+            collapsable={false}
+            focusable={true}
+            onClick={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            style={
+              {
+                "alignItems": "center",
+                "backgroundColor": "#dc2626",
+                "borderColor": "#dc2626",
+                "borderRadius": 8,
+                "borderWidth": 2,
+                "opacity": 1,
+                "paddingHorizontal": 16,
+                "paddingVertical": 12,
+              }
+            }
+          >
+            <Text
+              style={
+                {
+                  "color": "#181b1b",
+                  "fontSize": 16,
+                  "fontWeight": "500",
+                  "letterSpacing": 0.15,
+                  "lineHeight": 24,
+                }
+              }
+            >
+              Bob
+            </Text>
+          </View>
           <View
             accessibilityState={
               {
@@ -1046,7 +682,7 @@ exports[`QuizGameScreen - Mechanics Snapshots matches snapshot for initial rende
                 }
               }
             >
-              Eve
+              Alice
             </Text>
           </View>
           <View
@@ -1101,7 +737,243 @@ exports[`QuizGameScreen - Mechanics Snapshots matches snapshot for initial rende
                 }
               }
             >
-              Alice
+              Charlie
+            </Text>
+          </View>
+          <View
+            accessibilityState={
+              {
+                "busy": undefined,
+                "checked": undefined,
+                "disabled": false,
+                "expanded": undefined,
+                "selected": undefined,
+              }
+            }
+            accessibilityValue={
+              {
+                "max": undefined,
+                "min": undefined,
+                "now": undefined,
+                "text": undefined,
+              }
+            }
+            accessible={true}
+            collapsable={false}
+            focusable={true}
+            onClick={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            style={
+              {
+                "alignItems": "center",
+                "backgroundColor": "#ece7df",
+                "borderColor": "#ece7df",
+                "borderRadius": 8,
+                "borderWidth": 2,
+                "opacity": 1,
+                "paddingHorizontal": 16,
+                "paddingVertical": 12,
+              }
+            }
+          >
+            <Text
+              style={
+                {
+                  "color": "#181b1b",
+                  "fontSize": 16,
+                  "fontWeight": "500",
+                  "letterSpacing": 0.15,
+                  "lineHeight": 24,
+                }
+              }
+            >
+              Eve
+            </Text>
+          </View>
+        </View>
+      </View>
+    </View>
+  </RCTScrollView>
+</RNCSafeAreaView>
+`;
+
+exports[`QuizGameScreen - Mechanics Snapshots matches snapshot for initial render with 5 contacts 1`] = `
+<RNCSafeAreaView
+  edges={
+    {
+      "bottom": "additive",
+      "left": "additive",
+      "right": "additive",
+      "top": "additive",
+    }
+  }
+  style={
+    {
+      "backgroundColor": "#f5f3ef",
+      "flex": 1,
+    }
+  }
+>
+  <RCTScrollView
+    contentContainerStyle={
+      {
+        "flexGrow": 1,
+      }
+    }
+    style={
+      {
+        "flex": 1,
+      }
+    }
+  >
+    <View>
+      <View
+        testID="category-tag-filter"
+      />
+      <View
+        style={
+          {
+            "alignItems": "center",
+            "flex": 1,
+            "justifyContent": "center",
+            "paddingHorizontal": 16,
+            "paddingVertical": 20,
+          }
+        }
+      >
+        <View
+          style={
+            {
+              "marginBottom": 16,
+              "width": "100%",
+            }
+          }
+        >
+          <Text
+            style={
+              {
+                "color": "#181b1b",
+                "fontSize": 16,
+                "fontWeight": "600",
+                "letterSpacing": 0.15,
+                "lineHeight": 24,
+                "textAlign": "center",
+              }
+            }
+          >
+            1
+             of 
+            5
+          </Text>
+        </View>
+        <View
+          style={
+            [
+              {
+                "alignItems": "center",
+                "backgroundColor": "#ece7df",
+                "borderRadius": 12,
+                "height": 250,
+                "justifyContent": "center",
+                "marginBottom": 20,
+                "overflow": "hidden",
+                "width": 250,
+              },
+              null,
+              {
+                "transform": [
+                  {
+                    "scale": 1,
+                  },
+                  {
+                    "translateX": 0,
+                  },
+                ],
+              },
+            ]
+          }
+        >
+          <Image
+            resizeMode="cover"
+            source={
+              {
+                "uri": "data:image/jpeg;base64,david",
+              }
+            }
+            style={
+              {
+                "height": "100%",
+                "width": "100%",
+              }
+            }
+          />
+        </View>
+        <View
+          style={
+            {
+              "gap": 12,
+              "width": "100%",
+            }
+          }
+        >
+          <View
+            accessibilityState={
+              {
+                "busy": undefined,
+                "checked": undefined,
+                "disabled": false,
+                "expanded": undefined,
+                "selected": undefined,
+              }
+            }
+            accessibilityValue={
+              {
+                "max": undefined,
+                "min": undefined,
+                "now": undefined,
+                "text": undefined,
+              }
+            }
+            accessible={true}
+            collapsable={false}
+            focusable={true}
+            onClick={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            style={
+              {
+                "alignItems": "center",
+                "backgroundColor": "#ece7df",
+                "borderColor": "#ece7df",
+                "borderRadius": 8,
+                "borderWidth": 2,
+                "opacity": 1,
+                "paddingHorizontal": 16,
+                "paddingVertical": 12,
+              }
+            }
+          >
+            <Text
+              style={
+                {
+                  "color": "#181b1b",
+                  "fontSize": 16,
+                  "fontWeight": "500",
+                  "letterSpacing": 0.15,
+                  "lineHeight": 24,
+                }
+              }
+            >
+              Eve
             </Text>
           </View>
           <View
@@ -1214,9 +1086,119 @@ exports[`QuizGameScreen - Mechanics Snapshots matches snapshot for initial rende
               Charlie
             </Text>
           </View>
+          <View
+            accessibilityState={
+              {
+                "busy": undefined,
+                "checked": undefined,
+                "disabled": false,
+                "expanded": undefined,
+                "selected": undefined,
+              }
+            }
+            accessibilityValue={
+              {
+                "max": undefined,
+                "min": undefined,
+                "now": undefined,
+                "text": undefined,
+              }
+            }
+            accessible={true}
+            collapsable={false}
+            focusable={true}
+            onClick={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            style={
+              {
+                "alignItems": "center",
+                "backgroundColor": "#ece7df",
+                "borderColor": "#ece7df",
+                "borderRadius": 8,
+                "borderWidth": 2,
+                "opacity": 1,
+                "paddingHorizontal": 16,
+                "paddingVertical": 12,
+              }
+            }
+          >
+            <Text
+              style={
+                {
+                  "color": "#181b1b",
+                  "fontSize": 16,
+                  "fontWeight": "500",
+                  "letterSpacing": 0.15,
+                  "lineHeight": 24,
+                }
+              }
+            >
+              Alice
+            </Text>
+          </View>
+          <View
+            accessibilityState={
+              {
+                "busy": undefined,
+                "checked": undefined,
+                "disabled": false,
+                "expanded": undefined,
+                "selected": undefined,
+              }
+            }
+            accessibilityValue={
+              {
+                "max": undefined,
+                "min": undefined,
+                "now": undefined,
+                "text": undefined,
+              }
+            }
+            accessible={true}
+            collapsable={false}
+            focusable={true}
+            onClick={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            style={
+              {
+                "alignItems": "center",
+                "backgroundColor": "#ece7df",
+                "borderColor": "#ece7df",
+                "borderRadius": 8,
+                "borderWidth": 2,
+                "opacity": 1,
+                "paddingHorizontal": 16,
+                "paddingVertical": 12,
+              }
+            }
+          >
+            <Text
+              style={
+                {
+                  "color": "#181b1b",
+                  "fontSize": 16,
+                  "fontWeight": "500",
+                  "letterSpacing": 0.15,
+                  "lineHeight": 24,
+                }
+              }
+            >
+              David
+            </Text>
+          </View>
         </View>
       </View>
     </View>
   </RCTScrollView>
-</RCTSafeAreaView>
+</RNCSafeAreaView>
 `;

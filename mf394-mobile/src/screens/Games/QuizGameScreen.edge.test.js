@@ -109,8 +109,7 @@ describe('QuizGameScreen - Edge Cases', () => {
       });
 
       await waitFor(() => {
-        expect(getByText('Who is this?')).toBeTruthy();
-        expect(getByText('Question 1 of 5')).toBeTruthy();
+        expect(getByText('1 of 5')).toBeTruthy();
       });
     });
 
@@ -143,11 +142,11 @@ describe('QuizGameScreen - Edge Cases', () => {
       });
 
       await waitFor(() => {
-        expect(getByText('Who is this?')).toBeTruthy();
+        expect(getByText(/\d+ of \d+/)).toBeTruthy();
       });
 
       // Should show quiz with question count matching pool size
-      const progressText = getByText(/Question 1 of/);
+      const progressText = getByText(/1 of/);
       expect(progressText).toBeTruthy();
     });
   });
@@ -169,7 +168,7 @@ describe('QuizGameScreen - Edge Cases', () => {
       });
 
       await waitFor(() => {
-        expect(getByText('Who is this?')).toBeTruthy();
+        expect(getByText(/\d+ of \d+/)).toBeTruthy();
       });
 
       // Bob (null photo) should not appear in quiz
@@ -192,7 +191,7 @@ describe('QuizGameScreen - Edge Cases', () => {
       });
 
       await waitFor(() => {
-        expect(getByText('Who is this?')).toBeTruthy();
+        expect(getByText(/\d+ of \d+/)).toBeTruthy();
       });
     });
 
@@ -212,7 +211,7 @@ describe('QuizGameScreen - Edge Cases', () => {
       });
 
       await waitFor(() => {
-        expect(getByText('Who is this?')).toBeTruthy();
+        expect(getByText(/\d+ of \d+/)).toBeTruthy();
       });
     });
 
@@ -222,7 +221,7 @@ describe('QuizGameScreen - Edge Cases', () => {
       });
 
       await waitFor(() => {
-        expect(getByText('Who is this?')).toBeTruthy();
+        expect(getByText(/\d+ of \d+/)).toBeTruthy();
       });
 
       // Image should be rendered
@@ -286,7 +285,7 @@ describe('QuizGameScreen - Edge Cases', () => {
       });
 
       await waitFor(() => {
-        expect(getByText('Question 1 of 5')).toBeTruthy();
+        expect(getByText('1 of 5')).toBeTruthy();
       });
 
       // With identity shuffle, contacts stay in fixture order: Alice is Q1's correct answer.
@@ -305,7 +304,7 @@ describe('QuizGameScreen - Edge Cases', () => {
 
       // Should only advance once
       await waitFor(() => {
-        expect(getByText(/Question 2 of 5/)).toBeTruthy();
+        expect(getByText(/2 of 5/)).toBeTruthy();
       });
     });
 
@@ -315,7 +314,7 @@ describe('QuizGameScreen - Edge Cases', () => {
       });
 
       await waitFor(() => {
-        expect(getByText('Who is this?')).toBeTruthy();
+        expect(getByText(/\d+ of \d+/)).toBeTruthy();
       });
 
       // Rapid filter changes
@@ -338,7 +337,7 @@ describe('QuizGameScreen - Edge Cases', () => {
       });
 
       await waitFor(() => {
-        expect(getByText('Question 1 of 5')).toBeTruthy();
+        expect(getByText('1 of 5')).toBeTruthy();
       });
 
       const aliceButton = getByText('Alice');
@@ -361,7 +360,7 @@ describe('QuizGameScreen - Edge Cases', () => {
 
       // Should still advance correctly (second click ignored)
       await waitFor(() => {
-        expect(getByText(/Question 2 of 5/)).toBeTruthy();
+        expect(getByText(/2 of 5/)).toBeTruthy();
       });
     });
   });
@@ -373,7 +372,7 @@ describe('QuizGameScreen - Edge Cases', () => {
       });
 
       await waitFor(() => {
-        expect(getByText('Question 1 of 5')).toBeTruthy();
+        expect(getByText('1 of 5')).toBeTruthy();
       });
 
       const aliceButton = getByText('Alice');
@@ -399,7 +398,7 @@ describe('QuizGameScreen - Edge Cases', () => {
       });
 
       await waitFor(() => {
-        expect(getByText('Question 1 of 5')).toBeTruthy();
+        expect(getByText('1 of 5')).toBeTruthy();
       });
 
       // With identity shuffle, Alice is Q1's correct answer.
@@ -420,7 +419,7 @@ describe('QuizGameScreen - Edge Cases', () => {
 
       // Should advance only once
       await waitFor(() => {
-        expect(getByText(/Question 2 of 5/)).toBeTruthy();
+        expect(getByText(/2 of 5/)).toBeTruthy();
       });
     });
   });
@@ -441,12 +440,12 @@ describe('QuizGameScreen - Edge Cases', () => {
       });
 
       await waitFor(() => {
-        expect(getByText('Who is this?')).toBeTruthy();
+        expect(getByText(/\d+ of \d+/)).toBeTruthy();
       });
 
       // Should handle duplicate names in options generation
       // Quiz should still load
-      expect(getByText('Question 1 of 5')).toBeTruthy();
+      expect(getByText('1 of 5')).toBeTruthy();
     });
 
     it('handles deterministic Math.random', async () => {
@@ -459,11 +458,11 @@ describe('QuizGameScreen - Edge Cases', () => {
       });
 
       await waitFor(() => {
-        expect(getByText('Who is this?')).toBeTruthy();
+        expect(getByText(/\d+ of \d+/)).toBeTruthy();
       });
 
       // Quiz should load correctly without hanging
-      expect(getByText('Question 1 of 5')).toBeTruthy();
+      expect(getByText('1 of 5')).toBeTruthy();
 
       mathRandomSpy.mockRestore();
     });
@@ -476,7 +475,7 @@ describe('QuizGameScreen - Edge Cases', () => {
       });
 
       await waitFor(() => {
-        expect(getByText('Question 1 of 5')).toBeTruthy();
+        expect(getByText('1 of 5')).toBeTruthy();
       });
 
       // With identity shuffle contacts stay in fixture order: Alice, Bob, Charlie, David, Eve.
@@ -506,7 +505,7 @@ describe('QuizGameScreen - Edge Cases', () => {
       });
 
       await waitFor(() => {
-        expect(getByText('Who is this?')).toBeTruthy();
+        expect(getByText(/\d+ of \d+/)).toBeTruthy();
       });
 
       // Change filter to reduce pool
@@ -527,7 +526,7 @@ describe('QuizGameScreen - Edge Cases', () => {
       });
 
       await waitFor(() => {
-        expect(getByText('Who is this?')).toBeTruthy();
+        expect(getByText(/\d+ of \d+/)).toBeTruthy();
       });
 
       // Add more categories to grow pool
@@ -537,7 +536,7 @@ describe('QuizGameScreen - Edge Cases', () => {
 
       // Quiz should reset with larger pool
       await waitFor(() => {
-        expect(getByText(/Question 1 of/)).toBeTruthy();
+        expect(getByText(/1 of/)).toBeTruthy();
       });
     });
   });
@@ -643,7 +642,7 @@ describe('QuizGameScreen - Edge Cases', () => {
       });
 
       await waitFor(() => {
-        expect(getByText('Who is this?')).toBeTruthy();
+        expect(getByText(/\d+ of \d+/)).toBeTruthy();
       });
 
       const aliceButton = getByText('Alice');
@@ -672,7 +671,7 @@ describe('QuizGameScreen - Edge Cases', () => {
       });
 
       await waitFor(() => {
-        expect(getByText('Who is this?')).toBeTruthy();
+        expect(getByText(/\d+ of \d+/)).toBeTruthy();
       });
 
       const aliceButton = getByText('Alice');
@@ -693,7 +692,7 @@ describe('QuizGameScreen - Edge Cases', () => {
       });
 
       await waitFor(() => {
-        expect(getByText('Question 1 of 5')).toBeTruthy();
+        expect(getByText('1 of 5')).toBeTruthy();
       });
 
       // Rapid wrong answers (multiple haptic calls)
@@ -732,11 +731,11 @@ describe('QuizGameScreen - Edge Cases', () => {
       });
 
       await waitFor(() => {
-        expect(getByText('Who is this?')).toBeTruthy();
+        expect(getByText(/\d+ of \d+/)).toBeTruthy();
       });
 
       // Should handle large pool
-      expect(getByText(/Question 1 of/)).toBeTruthy();
+      expect(getByText(/1 of/)).toBeTruthy();
     });
 
     it('handles contact with very long name', async () => {
@@ -752,7 +751,7 @@ describe('QuizGameScreen - Edge Cases', () => {
       });
 
       await waitFor(() => {
-        expect(getByText('Who is this?')).toBeTruthy();
+        expect(getByText(/\d+ of \d+/)).toBeTruthy();
       });
 
       // Should render long name
@@ -772,7 +771,7 @@ describe('QuizGameScreen - Edge Cases', () => {
       });
 
       await waitFor(() => {
-        expect(getByText('Who is this?')).toBeTruthy();
+        expect(getByText(/\d+ of \d+/)).toBeTruthy();
       });
 
       // Should handle special characters

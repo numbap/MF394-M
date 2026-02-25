@@ -19,29 +19,54 @@ export type FaceBounds = {
 export async function cropFaceWithBounds(
   imageUri: string,
   bounds: FaceBounds,
-  padding: number = 20
+  padding?: number
 ): Promise<string> {
+  // Default to 50% of the larger face dimension so the crop always shows
+  // comfortable context around the face regardless of image resolution.
+  // The old fixed 20px was negligible on high-res photos (e.g. 5% of a 400px face).
+  const effectivePadding = padding ?? Math.round(
+    Math.max(bounds.size.width, bounds.size.height) * 0.5
+  );
+
   if (Platform.OS === 'web') {
-    return await cropFaceWebWithBounds(imageUri, bounds, padding);
+    return await cropFaceWebWithBounds(imageUri, bounds, effectivePadding);
   } else {
-    // For native, use ImageManipulator
     try {
       const { manipulateAsync, SaveFormat } = require('expo-image-manipulator');
-      const cropRegion = {
-        originX: Math.max(0, bounds.origin.x - padding),
-        originY: Math.max(0, bounds.origin.y - padding),
-        width: Math.min(bounds.size.width + padding * 2, 800),
-        height: Math.min(bounds.size.height + padding * 2, 800),
-      };
+
+      // Use a no-op manipulateAsync call to get post-EXIF dimensions.
+      // Image.getSize on Android returns raw file dimensions ignoring EXIF rotation,
+      // but manipulateAsync applies EXIF — so this gives us the true oriented size.
+      const probe = await manipulateAsync(imageUri, []);
+      const imgW = probe.width;
+      const imgH = probe.height;
+
+      // expo-face-detector (ML Kit) returns bounds in image-pixel coordinates —
+      // the same space that manipulateAsync uses. No PixelRatio conversion needed.
+      const originX = Math.max(0, Math.round(bounds.origin.x - effectivePadding));
+      const originY = Math.max(0, Math.round(bounds.origin.y - effectivePadding));
+      const cropWidth = Math.min(
+        Math.round(bounds.size.width + effectivePadding * 2),
+        imgW - originX,
+      );
+      const cropHeight = Math.min(
+        Math.round(bounds.size.height + effectivePadding * 2),
+        imgH - originY,
+      );
+
+      console.log(`[cropFaceWithBounds] fileSize=${imgW}x${imgH} bounds=(${bounds.origin.x.toFixed(0)},${bounds.origin.y.toFixed(0)} ${bounds.size.width.toFixed(0)}x${bounds.size.height.toFixed(0)}) pad=${effectivePadding} => crop=(${originX},${originY} ${cropWidth}x${cropHeight})`);
+
       const result = await manipulateAsync(
         imageUri,
-        [{ crop: cropRegion }],
+        [{ crop: { originX, originY, width: Math.max(1, cropWidth), height: Math.max(1, cropHeight) } }],
         { compress: 0.9, format: SaveFormat.JPEG }
       );
+      console.log(`[cropFaceWithBounds] result: ${result.width}x${result.height}`);
       return result.uri;
     } catch (err) {
       console.error('Native crop failed:', err);
-      return await cropFaceWebWithBounds(imageUri, bounds, padding);
+      // DOM canvas APIs are not available on Android native — return original URI as fallback.
+      return imageUri;
     }
   }
 }

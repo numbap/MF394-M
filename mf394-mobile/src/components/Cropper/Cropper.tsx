@@ -11,7 +11,7 @@
  * - Returns base64 string for cropped image
  */
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   View,
   Text,
@@ -290,7 +290,8 @@ function WebCropper({ imageUri, onCropConfirm, onCancel }: CropperProps) {
 
 // Mobile implementation with custom cropper
 function MobileCropper({ imageUri, onCropConfirm, onCancel, style }: CropperProps) {
-  const [zoom, setZoom] = useState(2); // Default 200%
+  const [zoom, setZoom] = useState(1);
+  const [minZoom, setMinZoom] = useState(0.1);
   const [offsetX, setOffsetX] = useState(0);
   const [offsetY, setOffsetY] = useState(0);
   const [imageDimensions, setImageDimensions] = useState({ width: 0, height: 0 });
@@ -308,7 +309,36 @@ function MobileCropper({ imageUri, onCropConfirm, onCancel, style }: CropperProp
 
   // Refs to mirror state for use inside PanResponder (avoids stale closures)
   const imageDimensionsRef = useRef({ width: 0, height: 0 });
-  const zoomRef = useRef(2);
+  const zoomRef = useRef(1);
+  // minZoomRef needed because PanResponder callbacks close over the initial value
+  const minZoomRef = useRef(0.1);
+
+  // Use a no-op manipulateAsync call to get post-EXIF dimensions.
+  // Image.getSize on Android returns raw file dimensions ignoring EXIF rotation
+  // (e.g. 4000x3000 for a portrait photo stored landscape with EXIF rotation=90),
+  // but manipulateAsync applies EXIF — giving us the true oriented size that
+  // matches what the <Image> component displays and what crop operations use.
+  useEffect(() => {
+    let cancelled = false;
+    const { manipulateAsync } = require("expo-image-manipulator");
+    manipulateAsync(imageUri, []).then((probe: { width: number; height: number }) => {
+      if (cancelled) return;
+      const w = probe.width;
+      const h = probe.height;
+      console.log(`[MobileCropper] manipulateAsync probe: w=${w} h=${h} CANVAS_SIZE=${CANVAS_SIZE}`);
+      setImageDimensions({ width: w, height: h });
+      imageDimensionsRef.current = { width: w, height: h };
+      // Minimum zoom that fits the entire image inside the canvas square.
+      const fitZoom = Math.min(CANVAS_SIZE / w, CANVAS_SIZE / h);
+      setMinZoom(fitZoom);
+      minZoomRef.current = fitZoom;
+      setZoom(fitZoom);
+      zoomRef.current = fitZoom;
+    }).catch((err: any) => {
+      if (!cancelled) console.warn('MobileCropper: failed to probe image size', err);
+    });
+    return () => { cancelled = true; };
+  }, [imageUri]);
 
   // Calculate distance between two touch points
   const getDistance = (touches: any[]) => {
@@ -344,7 +374,7 @@ function MobileCropper({ imageUri, onCropConfirm, onCancel, style }: CropperProp
             const scale = currentDistance / initialDistance.current;
             const newZoom = initialZoom.current * scale;
             // Clamp zoom to valid range
-            const clampedZoom = Math.max(0.5, Math.min(3, newZoom));
+            const clampedZoom = Math.max(minZoomRef.current, Math.min(3, newZoom));
             setZoom(clampedZoom);
             zoomRef.current = clampedZoom;
           }
@@ -373,12 +403,12 @@ function MobileCropper({ imageUri, onCropConfirm, onCancel, style }: CropperProp
     })
   ).current;
 
-  const handleImageLoad = (e: any) => {
-    const w = e.nativeEvent.source.width;
-    const h = e.nativeEvent.source.height;
-    setImageDimensions({ width: w, height: h });
-    imageDimensionsRef.current = { width: w, height: h };
-    // Image is centered via left/top CSS; offsetX/Y = 0 means no additional translation
+  const handleImageLoad = (_e: any) => {
+    // Dimensions and zoom are set exclusively by Image.getSize in the useEffect.
+    // We do NOT read e.nativeEvent.source here because on Android the dimensions
+    // it reports can differ from the source-pixel dimensions (e.g. different
+    // scale than Image.getSize, or pre-/post-EXIF-rotation) which would corrupt
+    // the crop math. Only reset pan offsets when the image finishes loading.
     setOffsetX(0);
     offsetXRef.current = 0;
     setOffsetY(0);
@@ -410,27 +440,52 @@ function MobileCropper({ imageUri, onCropConfirm, onCancel, style }: CropperProp
     try {
       const { manipulateAsync, SaveFormat } = require("expo-image-manipulator");
 
-      const scaledWidth = imageDimensions.width * zoom;
-      const scaledHeight = imageDimensions.height * zoom;
+      // Use refs, not state — state can be stale inside an async callback.
+      const { width: imgW, height: imgH } = imageDimensionsRef.current;
+      const z = zoomRef.current;
+      const ox = offsetXRef.current;
+      const oy = offsetYRef.current;
 
-      const sourceX = Math.max(0, (scaledWidth / 2 - CANVAS_SIZE / 2 - offsetX) / zoom);
-      const sourceY = Math.max(0, (scaledHeight / 2 - CANVAS_SIZE / 2 - offsetY) / zoom);
+      console.log(`[MobileCropper] cropImageNative: imgW=${imgW} imgH=${imgH} zoom=${z.toFixed(4)} ox=${ox.toFixed(1)} oy=${oy.toFixed(1)} CANVAS_SIZE=${CANVAS_SIZE}`);
+
+      const scaledWidth = imgW * z;
+      const scaledHeight = imgH * z;
+
+      // Raw crop origin in source-image coordinates
+      const rawOriginX = (scaledWidth / 2 - CANVAS_SIZE / 2 - ox) / z;
+      const rawOriginY = (scaledHeight / 2 - CANVAS_SIZE / 2 - oy) / z;
+
+      // Clamp origin so it stays inside the image
+      const originX = Math.max(0, Math.min(Math.round(rawOriginX), imgW - 1));
+      const originY = Math.max(0, Math.min(Math.round(rawOriginY), imgH - 1));
+
+      // Clamp size so origin + size never exceeds the image boundary.
+      // Without this, zooming out to "fit" level produces CANVAS_SIZE/zoom > imageDimension
+      // which throws "Invalid crop operation" from expo-image-manipulator.
+      const rawSize = CANVAS_SIZE / z;
+      const cropWidth = Math.min(Math.round(rawSize), imgW - originX);
+      const cropHeight = Math.min(Math.round(rawSize), imgH - originY);
+
+      // Image.getSize returns actual file pixel dimensions. expo-image-manipulator uses
+      // the same file pixel coordinate space. No PixelRatio conversion is needed here.
+      console.log(`[MobileCropper] crop region: originX=${originX} originY=${originY} w=${cropWidth} h=${cropHeight} (file=${imgW}x${imgH})`);
 
       const result = await manipulateAsync(
         imageUri,
         [
           {
             crop: {
-              originX: Math.round(sourceX),
-              originY: Math.round(sourceY),
-              width: Math.round(CANVAS_SIZE / zoom),
-              height: Math.round(CANVAS_SIZE / zoom),
+              originX,
+              originY,
+              width: Math.max(1, cropWidth),
+              height: Math.max(1, cropHeight),
             },
           },
         ],
         { compress: 0.9, format: SaveFormat.JPEG, base64: true }
       );
 
+      console.log(`[MobileCropper] result: ${result.width}x${result.height}`);
       return `data:image/jpeg;base64,${result.base64}`;
     } catch (error) {
       console.error("Native crop failed:", error);
@@ -471,7 +526,7 @@ function MobileCropper({ imageUri, onCropConfirm, onCancel, style }: CropperProp
         <SliderComponent
           value={zoom}
           onValueChange={handleZoomChange}
-          minimumValue={0.5}
+          minimumValue={minZoom}
           maximumValue={3}
           step={0.05}
           containerWidth={DEVICE_WIDTH - spacing.lg * 2}
