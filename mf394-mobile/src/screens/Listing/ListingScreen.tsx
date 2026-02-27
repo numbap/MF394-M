@@ -9,7 +9,7 @@
  * - Data loaded from live API via RTK Query
  */
 
-import React, { useEffect, useState, useMemo, useRef, useCallback } from "react";
+import React, { useEffect, useState, useMemo, useRef } from "react";
 import {
   View,
   Text,
@@ -64,20 +64,13 @@ export default function ListingScreen({ navigation }: any) {
   const DOUBLE_TAP_DELAY = 300;
 
   const THUMBNAIL_SIZE = 110;
-  const computedColumns = isGalleryView
-    ? Math.max(1, Math.floor((width - spacing.lg * 2) / (THUMBNAIL_SIZE + spacing.xxs)))
-    : 1;
+  const CARD_WIDTH = 180;
+  const CARD_GAP = spacing.sm;
 
-  // Stabilize numColumns with a ref — only update when isGalleryView actually toggles.
-  // On Android, useWindowDimensions fires on soft keyboard, status bar, or system UI changes,
-  // which would remount the FlatList (destroying scroll position) if numColumns changed.
-  const numColumnsRef = useRef(computedColumns);
-  const prevIsGalleryRef = useRef(isGalleryView);
-  if (prevIsGalleryRef.current !== isGalleryView) {
-    numColumnsRef.current = computedColumns;
-    prevIsGalleryRef.current = isGalleryView;
-  }
-  const numColumns = numColumnsRef.current;
+  const galleryColumns = Math.max(1, Math.floor((width - spacing.lg * 2) / (THUMBNAIL_SIZE + spacing.xxs)));
+  const cardColumns = Math.max(1, Math.floor(width / (CARD_WIDTH + CARD_GAP)));
+
+  const numColumns = isGalleryView ? galleryColumns : cardColumns;
 
   // Load all contacts + tags from /api/user (single call)
   const { data: userData, isLoading, error } = useGetUserQuery();
@@ -199,7 +192,7 @@ export default function ListingScreen({ navigation }: any) {
 
   if (isLoading) {
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
         <View style={styles.centeredState}>
           <ActivityIndicator size="large" color={colors.primary[500]} />
           <Text style={styles.stateText}>Loading contacts...</Text>
@@ -211,7 +204,7 @@ export default function ListingScreen({ navigation }: any) {
   if (error) {
     console.error('[Contacts] error:', JSON.stringify(error));
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
         <View style={styles.centeredState}>
           <Text style={styles.errorText}>Failed to load contacts</Text>
           <Text style={styles.stateText}>Please check your connection and try again.</Text>
@@ -278,7 +271,7 @@ export default function ListingScreen({ navigation }: any) {
       onLayout={(e) => setStatusBarHeight(e.nativeEvent.layout.height)}
     >
       <Text style={styles.statusText}>
-        {filteredContacts.length} of {contacts.length} visible
+        {filteredContacts.length} of {contacts.length}
       </Text>
       <View style={styles.progressTrack}>
         <View
@@ -302,14 +295,14 @@ export default function ListingScreen({ navigation }: any) {
   ) : null;
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
       <FlatList
-        key={isGalleryView ? 'gallery' : 'cards'}
+        key={isGalleryView ? `gallery-${numColumns}` : `cards-${numColumns}`}
         data={selectedCategories.length > 0 ? filteredContacts : []}
         keyExtractor={(item) => item._id}
         numColumns={numColumns}
         removeClippedSubviews={Platform.OS !== 'android'}
-        columnWrapperStyle={isGalleryView && numColumns > 1 ? styles.row : undefined}
+        columnWrapperStyle={numColumns > 1 ? (isGalleryView ? styles.galleryRow : styles.cardRow) : undefined}
         renderItem={({ item: contact }) => (
           <Pressable
             onPress={() => handleContactPress(contact._id)}
@@ -347,7 +340,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.semantic.background,
   },
   listContent: {
-    paddingHorizontal: spacing.lg,
+    paddingHorizontal: 0,
   },
   centeredState: {
     flex: 1,
@@ -413,8 +406,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.semantic.border,
   },
-  row: {
+  galleryRow: {
     gap: spacing.xxs,
+    justifyContent: "center",
+  },
+  cardRow: {
+    gap: spacing.sm,
     justifyContent: "center",
   },
   thumbnailItem: {
@@ -447,7 +444,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   progressTrack: {
-    height: 4,
+    height: 6,
     borderRadius: radii.full,
     backgroundColor: colors.neutral.iron[100],
     overflow: "hidden",

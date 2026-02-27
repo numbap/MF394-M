@@ -325,7 +325,6 @@ function MobileCropper({ imageUri, onCropConfirm, onCancel, style }: CropperProp
       if (cancelled) return;
       const w = probe.width;
       const h = probe.height;
-      console.log(`[MobileCropper] manipulateAsync probe: w=${w} h=${h} CANVAS_SIZE=${CANVAS_SIZE}`);
       setImageDimensions({ width: w, height: h });
       imageDimensionsRef.current = { width: w, height: h };
       // Minimum zoom that fits the entire image inside the canvas square.
@@ -446,7 +445,6 @@ function MobileCropper({ imageUri, onCropConfirm, onCancel, style }: CropperProp
       const ox = offsetXRef.current;
       const oy = offsetYRef.current;
 
-      console.log(`[MobileCropper] cropImageNative: imgW=${imgW} imgH=${imgH} zoom=${z.toFixed(4)} ox=${ox.toFixed(1)} oy=${oy.toFixed(1)} CANVAS_SIZE=${CANVAS_SIZE}`);
 
       const scaledWidth = imgW * z;
       const scaledHeight = imgH * z;
@@ -468,7 +466,6 @@ function MobileCropper({ imageUri, onCropConfirm, onCancel, style }: CropperProp
 
       // Image.getSize returns actual file pixel dimensions. expo-image-manipulator uses
       // the same file pixel coordinate space. No PixelRatio conversion is needed here.
-      console.log(`[MobileCropper] crop region: originX=${originX} originY=${originY} w=${cropWidth} h=${cropHeight} (file=${imgW}x${imgH})`);
 
       const result = await manipulateAsync(
         imageUri,
@@ -481,11 +478,17 @@ function MobileCropper({ imageUri, onCropConfirm, onCancel, style }: CropperProp
               height: Math.max(1, cropHeight),
             },
           },
+          // Cap output so large zoomed-out crops don't produce oversized upload payloads
+          cropWidth > cropHeight
+            ? { resize: { width: 800 } }
+            : { resize: { height: 800 } },
         ],
-        { compress: 0.9, format: SaveFormat.JPEG, base64: true }
+        { compress: 0.85, format: SaveFormat.JPEG, base64: true }
       );
 
-      console.log(`[MobileCropper] result: ${result.width}x${result.height}`);
+      if (!result.base64) {
+        throw new Error('Crop produced no image data');
+      }
       return `data:image/jpeg;base64,${result.base64}`;
     } catch (error) {
       console.error("Native crop failed:", error);

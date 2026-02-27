@@ -54,14 +54,11 @@ export async function cropFaceWithBounds(
         imgH - originY,
       );
 
-      console.log(`[cropFaceWithBounds] fileSize=${imgW}x${imgH} bounds=(${bounds.origin.x.toFixed(0)},${bounds.origin.y.toFixed(0)} ${bounds.size.width.toFixed(0)}x${bounds.size.height.toFixed(0)}) pad=${effectivePadding} => crop=(${originX},${originY} ${cropWidth}x${cropHeight})`);
-
       const result = await manipulateAsync(
         imageUri,
         [{ crop: { originX, originY, width: Math.max(1, cropWidth), height: Math.max(1, cropHeight) } }],
         { compress: 0.9, format: SaveFormat.JPEG }
       );
-      console.log(`[cropFaceWithBounds] result: ${result.width}x${result.height}`);
       return result.uri;
     } catch (err) {
       console.error('Native crop failed:', err);

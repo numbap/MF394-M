@@ -32,7 +32,13 @@ jest.mock("@env", () => ({
   API_BASE_URL: "https://ummyou.com/api",
   API_TIMEOUT: "30000",
   FACE_DETECTION_MIN_CONFIDENCE: "0.5",
-  AUTH_MOCK: "true",
+}));
+
+// Mock expo-secure-store
+jest.mock('expo-secure-store', () => ({
+  getItemAsync: jest.fn(() => Promise.resolve(null)),
+  setItemAsync: jest.fn(() => Promise.resolve()),
+  deleteItemAsync: jest.fn(() => Promise.resolve()),
 }));
 
 // Mock expo-audio (replaced expo-av in SDK 54)

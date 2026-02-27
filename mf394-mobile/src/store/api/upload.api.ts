@@ -36,7 +36,11 @@ interface Base64Result {
 export async function getBase64FromUri(uri: string): Promise<Base64Result> {
   // Data URL (web canvas output) — extract base64 directly, no network call needed
   if (uri.startsWith('data:')) {
-    const [header, base64] = uri.split(',');
+    const commaIdx = uri.indexOf(',');
+    if (commaIdx === -1) throw new Error('Invalid data URI: missing comma separator');
+    const header = uri.slice(0, commaIdx);
+    const base64 = uri.slice(commaIdx + 1);
+    if (!base64) throw new Error('Invalid data URI: empty base64 content');
     const mimeType = header.match(/data:(.*?);/)?.[1] || 'image/jpeg';
     const ext = mimeType.split('/')[1] || 'jpg';
     return { base64, mimeType, fileName: `upload.${ext}` };
@@ -108,6 +112,7 @@ export const uploadApi = createApi({
 
           return result as any;
         } catch (error: any) {
+          console.error('[uploadImage] failed:', error?.message, error);
           return { error: { status: 'CUSTOM_ERROR', error: error.message } };
         }
       },

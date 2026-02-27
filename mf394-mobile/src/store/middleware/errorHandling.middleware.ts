@@ -9,7 +9,7 @@ import { isRejectedWithValue } from '@reduxjs/toolkit';
 import type { Middleware } from '@reduxjs/toolkit';
 import { addToast } from '../slices/ui.slice';
 import { loginFailure, logout } from '../slices/auth.slice';
-import { v4 as uuidv4 } from 'uuid';
+import { generateId } from '../../utils/generateId';
 
 /**
  * Log a warning and show user-friendly toast on every error.
@@ -55,7 +55,7 @@ export const errorHandlingMiddleware: Middleware = (storeAPI) => (next) => (acti
     // Dispatch toast notification
     storeAPI.dispatch(
       addToast({
-        id: uuidv4(),
+        id: generateId(),
         type: 'error',
         message,
         duration: 5000,

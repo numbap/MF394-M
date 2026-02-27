@@ -52,6 +52,8 @@ PODS:
     - React-Core
   - ExpoAsset (12.0.12):
     - ExpoModulesCore
+  - ExpoAudio (1.1.1):
+    - ExpoModulesCore
   - ExpoCrypto (15.0.8):
     - ExpoModulesCore
   - ExpoFileSystem (19.0.21):
@@ -93,6 +95,8 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
+  - ExpoSecureStore (55.0.8):
+    - ExpoModulesCore
   - ExpoWebBrowser (15.0.10):
     - ExpoModulesCore
   - FBLazyVector (0.81.5)
@@ -2133,6 +2137,7 @@ DEPENDENCIES:
   - Expo (from `../node_modules/expo`)
   - "ExpoAdapterGoogleSignIn (from `../node_modules/@react-native-google-signin/google-signin/expo/ios`)"
   - ExpoAsset (from `../node_modules/expo-asset/ios`)
+  - ExpoAudio (from `../node_modules/expo-audio/ios`)
   - ExpoCrypto (from `../node_modules/expo-crypto/ios`)
   - ExpoFileSystem (from `../node_modules/expo-file-system/ios`)
   - ExpoFont (from `../node_modules/expo-font/ios`)
@@ -2142,6 +2147,7 @@ DEPENDENCIES:
   - ExpoKeepAwake (from `../node_modules/expo-keep-awake/ios`)
   - ExpoLinking (from `../node_modules/expo-linking/ios`)
   - ExpoModulesCore (from `../node_modules/expo-modules-core`)
+  - ExpoSecureStore (from `../node_modules/expo-secure-store/ios`)
   - ExpoWebBrowser (from `../node_modules/expo-web-browser/ios`)
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
   - hermes-engine (from `../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec`)
@@ -2259,6 +2265,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-google-signin/google-signin/expo/ios"
   ExpoAsset:
     :path: "../node_modules/expo-asset/ios"
+  ExpoAudio:
+    :path: "../node_modules/expo-audio/ios"
   ExpoCrypto:
     :path: "../node_modules/expo-crypto/ios"
   ExpoFileSystem:
@@ -2277,6 +2285,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/expo-linking/ios"
   ExpoModulesCore:
     :path: "../node_modules/expo-modules-core"
+  ExpoSecureStore:
+    :path: "../node_modules/expo-secure-store/ios"
   ExpoWebBrowser:
     :path: "../node_modules/expo-web-browser/ios"
   FBLazyVector:
@@ -2441,6 +2451,7 @@ SPEC CHECKSUMS:
   Expo: aadbcc8c6c14ff3105a9154f1683cb1424ff0d2a
   ExpoAdapterGoogleSignIn: 1bb340ad9e15b840ba9ca123450ab8e02a12f194
   ExpoAsset: f867e55ceb428aab99e1e8c082b5aee7c159ea18
+  ExpoAudio: e4cfe3a2f3317b8487460685385a9867a07fb4fb
   ExpoCrypto: b6105ebaa15d6b38a811e71e43b52cd934945322
   ExpoFileSystem: 858a44267a3e6e9057e0888ad7c7cfbf55d52063
   ExpoFont: f543ce20a228dd702813668b1a07b46f51878d47
@@ -2450,6 +2461,7 @@ SPEC CHECKSUMS:
   ExpoKeepAwake: 55f75eca6499bb9e4231ebad6f3e9cb8f99c0296
   ExpoLinking: 8f0aaf69aa56f832913030503b6263dc6f647f37
   ExpoModulesCore: f3da4f1ab5a8375d0beafab763739dbee8446583
+  ExpoSecureStore: ebb13e5e590b1e62ec530bd0cfe1a3e7f1867e26
   ExpoWebBrowser: 17b064c621789e41d4816c95c93f429b84971f52
   FBLazyVector: e95a291ad2dadb88e42b06e0c5fb8262de53ec12
   GoogleDataTransport: 6c09b596d841063d76d4288cc2d2f42cc36e1e2a

@@ -50,7 +50,7 @@ export function BulkNamer({ faces, onNamesChange, initialNames, style }: BulkNam
       .map((face) => ({
         id: face.id,
         faceUri: face.uri,
-        name: updatedNames[face.id].trim(),
+        name: updatedNames[face.id],
       }));
 
     onNamesChange(namedFaces);

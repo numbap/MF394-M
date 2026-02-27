@@ -1,10 +1,7 @@
 import React, { createContext, useEffect, useState } from "react";
 import axios from "axios";
 import { tokenStorage } from "../utils/secureStore";
-
-// Temporarily hardcoded environment variables
-const GOOGLE_OAUTH_CLIENT_ID_iOS = "522498015179-g0htpel9384on5ubq0ofmlvsa9r2pqvl.apps.googleusercontent.com";
-const API_BASE_URL = "https://ummyou.com";
+import { GOOGLE_OAUTH_CLIENT_ID_iOS, GOOGLE_OAUTH_WEB_CLIENT_ID, API_BASE_URL } from "../utils/constants";
 
 // Conditionally import GoogleSignIn only on native platforms
 let GoogleSignIn = null;
@@ -59,7 +56,6 @@ export function AuthProvider({ children }) {
     signIn: async () => {
       try {
         setIsLoading(true);
-        console.log("signIn called");
 
         if (!GoogleSignIn?.signIn) {
           // Mock sign-in for web/testing
@@ -70,12 +66,10 @@ export function AuthProvider({ children }) {
             email: "test@example.com",
             photo: null,
           };
-          console.log("Setting mock user:", mockUser);
           setUser(mockUser);
           // Store mock token
           await tokenStorage.setToken("mock-access-token");
           setError(null);
-          console.log("Mock authentication complete");
           return;
         }
 

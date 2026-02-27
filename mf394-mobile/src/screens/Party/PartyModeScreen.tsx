@@ -13,7 +13,7 @@
 
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, ScrollView, Image } from "react-native";
-import { v4 as uuidv4 } from "uuid";
+import { generateId } from "../../utils/generateId";
 import { showAlert } from "../../utils/showAlert";
 import { useNavigation } from "@react-navigation/native";
 import { colors, spacing, radii, typography } from "../../theme/theme";
@@ -72,7 +72,7 @@ export default function PartyModeScreen() {
 
       const processedFaces = await Promise.all(
         faces.map(async (face, index) => {
-          const faceId = face.id || uuidv4();
+          const faceId = face.id || generateId();
           try {
             const croppedUri = await cropFaceWithBounds(uri, face.bounds);
             return { id: faceId, uri: croppedUri };
@@ -100,7 +100,7 @@ export default function PartyModeScreen() {
   };
 
   const handleCropConfirm = async (croppedImageUri: string) => {
-    const singleFace = { id: uuidv4(), uri: croppedImageUri };
+    const singleFace = { id: generateId(), uri: croppedImageUri };
     setDetectedFaces([singleFace]);
     setStep("naming");
   };

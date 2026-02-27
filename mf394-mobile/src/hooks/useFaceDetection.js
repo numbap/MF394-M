@@ -27,17 +27,13 @@ const isWebPlatform = Platform.OS === "web";
  */
 async function loadFaceApiFromCDN() {
   if (!isWebPlatform || typeof window === "undefined") {
-    console.log("Not web platform, skipping CDN load");
     return null;
   }
 
   // Check if already loaded
   if (window.faceapi) {
-    console.log("face-api.js already available globally");
     return window.faceapi;
   }
-
-  console.log("Starting to load face-api.js from CDN...");
 
   return new Promise((resolve, reject) => {
     const script = document.createElement("script");
@@ -47,15 +43,11 @@ async function loadFaceApiFromCDN() {
     script.crossOrigin = "anonymous";
 
     script.onload = () => {
-      console.log("Script loaded from CDN");
       if (window.faceapi) {
-        console.log("face-api.js available on window.faceapi");
         faceapi = window.faceapi;
         resolve(window.faceapi);
       } else {
         console.error("Script loaded but window.faceapi not available");
-        // Try to find it under different names
-        console.log("Available on window:", Object.keys(window).filter(k => k.includes('face') || k.includes('Face')));
         reject(new Error("window.faceapi not available after script load"));
       }
     };
@@ -66,12 +58,8 @@ async function loadFaceApiFromCDN() {
     };
 
     script.onreadystatechange = function () {
-      if (this.readyState === "loaded" || this.readyState === "complete") {
-        console.log("Script readyState:", this.readyState);
-      }
     };
 
-    console.log("Appending script to document head");
     document.head.appendChild(script);
   });
 }
@@ -109,7 +97,6 @@ export function useFaceDetection() {
     const initializeFaceApi = async () => {
       try {
         // Load face-api library from CDN
-        console.log("Attempting to load face-api from CDN...");
         const api = await loadFaceApiFromCDN();
 
         if (!api || !api.nets) {
@@ -124,12 +111,10 @@ export function useFaceDetection() {
 
         // Load models from CDN
         const modelsUrl = "https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model/";
-        console.log("Loading face-api models from:", modelsUrl);
 
         await faceapi.nets.tinyFaceDetector.load(modelsUrl);
 
         if (isMountedRef.current) {
-          console.log("face-api successfully initialized with models");
           setModelsLoaded(true);
         }
       } catch (err) {
@@ -162,8 +147,6 @@ export function useFaceDetection() {
             reject
           );
         });
-        console.log(`[useFaceDetection] Image.getSize: ${width}x${height}`);
-
         let detectedFaces = [];
         let isRealDetection = false;
         let nativeError = null;
@@ -196,9 +179,6 @@ export function useFaceDetection() {
             });
 
             if (result.faces && result.faces.length > 0) {
-              result.faces.forEach((face, i) => {
-                console.log(`[useFaceDetection] Face ${i}: origin=(${face.bounds.origin.x.toFixed(0)}, ${face.bounds.origin.y.toFixed(0)}) size=${face.bounds.size.width.toFixed(0)}x${face.bounds.size.height.toFixed(0)} — image=${width}x${height}`);
-              });
               detectedFaces = result.faces.map((face) => ({
                 id: generateId(),
                 uri: imageUri,
@@ -348,8 +328,6 @@ async function detectFacesWeb(imageUri, imageWidth, imageHeight) {
           throw new Error("face-api.detectAllFaces not available");
         }
 
-        console.log("Starting face detection with face-api...");
-
         // Detect faces using face-api with TinyFaceDetector
         const detections = await api
           .detectAllFaces(
@@ -361,14 +339,10 @@ async function detectFacesWeb(imageUri, imageWidth, imageHeight) {
           )
           .run();
 
-        console.log(`Detected ${detections ? detections.length : 0} faces`);
-
         if (detections && detections.length > 0) {
           const faces = extractFacesFromDetections(img, detections, imageUri);
-          console.log(`Extracted ${faces.length} face crops`);
           resolve(faces);
         } else {
-          console.log("No faces detected by face-api");
           resolve([]);
         }
       } catch (detectErr) {
@@ -381,8 +355,6 @@ async function detectFacesWeb(imageUri, imageWidth, imageHeight) {
       console.error("Image load failed for face detection");
       reject(new Error(`Failed to load image for face detection: ${imageUri}`));
     };
-
-    console.log("Loading image for face detection:", imageUri.substring(0, 100));
 
     // Handle file:// URLs and blob URLs
     if (imageUri.startsWith("file://")) {
@@ -555,10 +527,6 @@ function loadAndCropImage(imageUri, bounds, padding, resolve, reject) {
         throw new Error(`Invalid crop dimensions: ${cropWidth}x${cropHeight}`);
       }
 
-      console.log(
-        `Cropping face at (${originX}, ${originY}) size ${cropWidth}x${cropHeight}`
-      );
-
       // Create canvas for cropped image
       const canvas = document.createElement("canvas");
       canvas.width = cropWidth;
@@ -592,7 +560,6 @@ function loadAndCropImage(imageUri, bounds, padding, resolve, reject) {
     reject(new Error(`Failed to load image: ${imageUri}`));
   };
 
-  console.log(`Loading image for cropping: ${imageUri}`);
   img.src = imageUri;
 }
 

@@ -170,7 +170,7 @@ export default function QuizGameScreen() {
         }
       }
     } catch (error) {
-      console.log("Could not play feedback:", error);
+      // haptic feedback failure is non-critical
     }
   };
 
@@ -373,7 +373,7 @@ export default function QuizGameScreen() {
 
   if (isLoading || isUserLoading) {
     return (
-      <SafeAreaView style={styles.safeArea}>
+      <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
         <View style={styles.container}>
           <ActivityIndicator testID="activity-indicator" size="large" color={colors.primary[500]} />
         </View>
@@ -384,7 +384,7 @@ export default function QuizGameScreen() {
   // Show filter UI if no categories selected
   if (selectedCategories.length === 0) {
     return (
-      <SafeAreaView style={styles.safeArea}>
+      <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
         <ScrollView style={styles.scrollView}>
           <View style={styles.filterPrompt}>
             <Text style={styles.filterPromptTitle}>Select Categories to Start Quiz</Text>
@@ -416,7 +416,7 @@ export default function QuizGameScreen() {
       .join(", ");
 
     return (
-      <SafeAreaView style={styles.safeArea}>
+      <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
         <ScrollView style={styles.scrollView}>
           <FilterContainer>
             <CategoryTagFilter
@@ -447,7 +447,7 @@ export default function QuizGameScreen() {
   // Show celebration inline when quiz is complete
   if (quizComplete) {
     return (
-      <SafeAreaView style={styles.safeArea}>
+      <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
         <FilterContainer>
           <CategoryTagFilter
             categories={CATEGORIES}
@@ -470,7 +470,7 @@ export default function QuizGameScreen() {
   // Don't render quiz until options are generated
   if (currentOptions.length === 0) {
     return (
-      <SafeAreaView style={styles.safeArea}>
+      <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
         <View style={styles.container}>
           <ActivityIndicator size="large" color={colors.primary[500]} />
         </View>
@@ -479,7 +479,7 @@ export default function QuizGameScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
         <FilterContainer>
           <CategoryTagFilter
@@ -503,11 +503,13 @@ export default function QuizGameScreen() {
 
           <Animated.View style={[styles.imageBox, current.photo ? null : styles.hintBox, animatedImageStyle]}>
             {current.photo ? (
-              <Image
-                source={{ uri: current.photo }}
-                style={styles.contactImage}
-                resizeMode="cover"
-              />
+              <View style={styles.imageClip}>
+                <Image
+                  source={{ uri: current.photo }}
+                  style={styles.contactImage}
+                  resizeMode="cover"
+                />
+              </View>
             ) : current.hint ? (
               <View style={styles.hintCard}>
                 <Text style={styles.hintLabel}>Hint</Text>
@@ -559,7 +561,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.xl,
+    paddingBottom: spacing.xl,
   },
   filterPrompt: {
     paddingHorizontal: spacing.lg,
@@ -588,14 +590,19 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   imageBox: {
-    width: 250,
-    height: 250,
+    width: 200,
+    height: 200,
     borderRadius: radii.lg,
     backgroundColor: colors.semantic.surface,
     marginBottom: spacing.xl,
-    overflow: "hidden",
     justifyContent: "center",
     alignItems: "center",
+  },
+  imageClip: {
+    width: "100%",
+    height: "100%",
+    borderRadius: radii.lg,
+    overflow: "hidden",
   },
   contactImage: {
     width: "100%",
@@ -637,20 +644,22 @@ const styles = StyleSheet.create({
     color: colors.semantic.text,
   },
   optionsContainer: {
+    alignItems: "center",  
     width: "100%",
     gap: spacing.md,
   },
   optionButton: {
-    paddingVertical: spacing.md,
+    paddingVertical: spacing.sm,
     paddingHorizontal: spacing.lg,
     backgroundColor: colors.semantic.surface,
     borderRadius: radii.md,
+    width: 300,
     alignItems: "center",
     borderWidth: 2,
-    borderColor: colors.semantic.surface,
+    borderColor: colors.semantic.surfaceHover,
   },
   optionText: {
-    ...typography.body.large,
+    ...typography.body.medium,
     fontWeight: "500",
     color: colors.semantic.text,
   },
@@ -673,7 +682,7 @@ const styles = StyleSheet.create({
     ...typography.body.large,
     color: colors.semantic.text,
     textAlign: "center",
-    marginBottom: spacing.sm,
+    marginVertical: spacing.sm,
   },
   emptySubtext: {
     ...typography.body.small,
