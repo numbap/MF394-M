@@ -51,12 +51,22 @@ export const authApi = createApi({
   baseQuery,
   tagTypes: ['User'],
   endpoints: (builder) => ({
-    // Login with Google ID token
+    // Login with Google ID token (native)
     login: builder.mutation<LoginResponse, { idToken: string }>({
       query: ({ idToken }) => ({
         url: '/auth/mobile-login',
         method: 'POST',
         body: { idToken },
+      }),
+      invalidatesTags: ['User'],
+    }),
+
+    // Login with Google access token (web)
+    webLogin: builder.mutation<LoginResponse, { accessToken: string }>({
+      query: (body) => ({
+        url: '/auth/mobile-login',
+        method: 'POST',
+        body,
       }),
       invalidatesTags: ['User'],
     }),
@@ -71,5 +81,6 @@ export const authApi = createApi({
 
 export const {
   useLoginMutation,
+  useWebLoginMutation,
   useGetUserQuery,
 } = authApi;

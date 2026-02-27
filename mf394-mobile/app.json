@@ -24,7 +24,7 @@
       "versionCode": 1
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./thumbnail.png"
     },
     "plugins": [
       "expo-image-picker",

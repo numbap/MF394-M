@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>UmmYou</title>
+    <style>
+      html, body { margin: 0; padding: 0; height: 100%; }
+      #root { display: flex; height: 100%; }
+      #splash {
+        position: fixed;
+        inset: 0;
+        background: #f5f3ef;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        z-index: 9999;
+        transition: opacity 0.3s ease;
+      }
+      #splash.hidden { opacity: 0; pointer-events: none; }
+      #splash img { width: 160px; height: 160px; object-fit: contain; }
+      #splash p { font-family: sans-serif; color: #555; font-size: 18px; margin: 0; }
+    </style>
+  </head>
+  <body>
+    <div id="splash">
+      <img src="/assets/logo.png" alt="UmmYou" />
+      <p>Loading...</p>
+    </div>
+    <div id="root"></div>
+    <script>
+      var splash = document.getElementById('splash');
+      var root = document.getElementById('root');
+      var observer = new MutationObserver(function () {
+        if (root.children.length > 0) {
+          splash.classList.add('hidden');
+          setTimeout(function () {
+            splash.style.display = 'none';
+          }, 300);
+          observer.disconnect();
+        }
+      });
+      observer.observe(root, { childList: true });
+    </script>
+  </body>
+</html>

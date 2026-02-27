@@ -7,9 +7,8 @@
  *
  * Flow:
  * 1. promptAsync() opens a browser popup for Google account selection
- * 2. Google redirects back with an auth code
- * 3. expo-auth-session exchanges the code for tokens
- * 4. Send idToken to backend → receive app JWT
+ * 2. Google returns an access_token via the implicit token flow
+ * 3. Send accessToken to backend → backend calls Google userinfo → receive app JWT
  */
 
 import * as Google from 'expo-auth-session/providers/google';
@@ -17,7 +16,7 @@ import * as WebBrowser from 'expo-web-browser';
 import { useCallback, useEffect } from 'react';
 import { useAppDispatch } from '../store/hooks';
 import { loginStart, loginSuccess, loginFailure } from '../store/slices/auth.slice';
-import { useLoginMutation } from '../store/api/auth.api';
+import { useWebLoginMutation } from '../store/api/auth.api';
 import { tokenStorage } from '../utils/secureStore';
 import { GOOGLE_OAUTH_WEB_CLIENT_ID } from '../utils/constants';
 
@@ -25,7 +24,7 @@ WebBrowser.maybeCompleteAuthSession();
 
 export function useGoogleAuth() {
   const dispatch = useAppDispatch();
-  const [login] = useLoginMutation();
+  const [webLogin] = useWebLoginMutation();
 
   const [, response, promptAsync] = Google.useAuthRequest({
     webClientId: GOOGLE_OAUTH_WEB_CLIENT_ID,
@@ -41,15 +40,17 @@ export function useGoogleAuth() {
 
     if (response.type !== 'success') return;
 
-    const idToken = response.params?.id_token;
-    if (!idToken) {
-      dispatch(loginFailure('No ID token received from Google'));
+    const accessToken = response.params?.access_token;
+
+    if (!accessToken) {
+      dispatch(loginFailure('No access token received from Google'));
       return;
     }
 
     (async () => {
       try {
-        const loginResult = await login({ idToken }).unwrap();
+        console.log('[useGoogleAuth.web] sending accessToken:', accessToken?.slice(0, 20) + '...');
+        const loginResult = await webLogin({ accessToken }).unwrap();
         await tokenStorage.setToken(loginResult.token);
 
         const userId = (loginResult.user as any)._id || (loginResult.user as any).id;
@@ -67,12 +68,13 @@ export function useGoogleAuth() {
           })
         );
       } catch (error: any) {
+        console.log('[useGoogleAuth.web] login error:', JSON.stringify(error));
         const message =
           error?.data?.error || error?.error || error?.message || 'Authentication failed';
         dispatch(loginFailure(message));
       }
     })();
-  }, [response, dispatch, login]);
+  }, [response, dispatch, webLogin]);
 
   const signInWithGoogle = useCallback(async () => {
     dispatch(loginStart());
