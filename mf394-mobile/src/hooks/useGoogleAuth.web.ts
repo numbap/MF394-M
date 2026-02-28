@@ -13,6 +13,7 @@
 
 import * as Google from 'expo-auth-session/providers/google';
 import * as WebBrowser from 'expo-web-browser';
+import * as AuthSession from 'expo-auth-session';
 import { useCallback, useEffect } from 'react';
 import { useAppDispatch } from '../store/hooks';
 import { loginStart, loginSuccess, loginFailure } from '../store/slices/auth.slice';
@@ -26,8 +27,11 @@ export function useGoogleAuth() {
   const dispatch = useAppDispatch();
   const [webLogin] = useWebLoginMutation();
 
+  const redirectUri = AuthSession.makeRedirectUri({ path: 'api/auth/callback/google' });
+
   const [, response, promptAsync] = Google.useAuthRequest({
     webClientId: GOOGLE_OAUTH_WEB_CLIENT_ID,
+    redirectUri,
   });
 
   useEffect(() => {
