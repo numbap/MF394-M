@@ -158,7 +158,7 @@ exports[`Cropper Component Snapshot matches snapshot for mobile 1`] = `
                 "height": "100%",
               },
               {
-                "width": 416.4,
+                "width": 215.3793103448276,
               },
             ]
           }
@@ -184,7 +184,7 @@ exports[`Cropper Component Snapshot matches snapshot for mobile 1`] = `
                 "width": 28,
               },
               {
-                "left": 416.4,
+                "left": 215.3793103448276,
               },
             ]
           }

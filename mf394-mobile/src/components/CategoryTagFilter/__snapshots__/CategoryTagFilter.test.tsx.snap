@@ -73,8 +73,8 @@ exports[`CategoryTagFilter Snapshot should match snapshot with multiple categori
             "width": "18%",
           },
           {
-            "backgroundColor": "#fbf8ea",
-            "borderColor": "#d4b82b",
+            "backgroundColor": "#eee2aa",
+            "borderColor": "#547fab",
           },
         ]
       }
@@ -129,8 +129,8 @@ exports[`CategoryTagFilter Snapshot should match snapshot with multiple categori
             "width": "18%",
           },
           {
-            "backgroundColor": "#fbf8ea",
-            "borderColor": "#d4b82b",
+            "backgroundColor": "#eee2aa",
+            "borderColor": "#547fab",
           },
         ]
       }
@@ -185,8 +185,8 @@ exports[`CategoryTagFilter Snapshot should match snapshot with multiple categori
             "width": "18%",
           },
           {
-            "backgroundColor": "#fbf8ea",
-            "borderColor": "#d4b82b",
+            "backgroundColor": "#eee2aa",
+            "borderColor": "#547fab",
           },
         ]
       }
@@ -676,8 +676,8 @@ exports[`CategoryTagFilter Snapshot should match snapshot with one category sele
             "width": "18%",
           },
           {
-            "backgroundColor": "#fbf8ea",
-            "borderColor": "#d4b82b",
+            "backgroundColor": "#eee2aa",
+            "borderColor": "#547fab",
           },
         ]
       }

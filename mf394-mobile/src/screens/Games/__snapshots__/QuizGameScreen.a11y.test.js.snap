@@ -4,7 +4,7 @@ exports[`QuizGameScreen - Accessibility Snapshot matches snapshot for full rende
 <RNCSafeAreaView
   edges={
     {
-      "bottom": "additive",
+      "bottom": "off",
       "left": "additive",
       "right": "additive",
       "top": "additive",
@@ -43,8 +43,8 @@ exports[`QuizGameScreen - Accessibility Snapshot matches snapshot for full rende
             "alignItems": "center",
             "flex": 1,
             "justifyContent": "center",
+            "paddingBottom": 20,
             "paddingHorizontal": 16,
-            "paddingVertical": 20,
           }
         }
       >
@@ -80,11 +80,10 @@ exports[`QuizGameScreen - Accessibility Snapshot matches snapshot for full rende
                 "alignItems": "center",
                 "backgroundColor": "#ece7df",
                 "borderRadius": 12,
-                "height": 250,
+                "height": 200,
                 "justifyContent": "center",
                 "marginBottom": 20,
-                "overflow": "hidden",
-                "width": 250,
+                "width": 200,
               },
               null,
               {
@@ -100,24 +99,36 @@ exports[`QuizGameScreen - Accessibility Snapshot matches snapshot for full rende
             ]
           }
         >
-          <Image
-            resizeMode="cover"
-            source={
-              {
-                "uri": "data:image/jpeg;base64,bob",
-              }
-            }
+          <View
             style={
               {
+                "borderRadius": 12,
                 "height": "100%",
+                "overflow": "hidden",
                 "width": "100%",
               }
             }
-          />
+          >
+            <Image
+              resizeMode="cover"
+              source={
+                {
+                  "uri": "data:image/jpeg;base64,eve",
+                }
+              }
+              style={
+                {
+                  "height": "100%",
+                  "width": "100%",
+                }
+              }
+            />
+          </View>
         </View>
         <View
           style={
             {
+              "alignItems": "center",
               "gap": 12,
               "width": "100%",
             }
@@ -155,12 +166,13 @@ exports[`QuizGameScreen - Accessibility Snapshot matches snapshot for full rende
               {
                 "alignItems": "center",
                 "backgroundColor": "#ece7df",
-                "borderColor": "#ece7df",
+                "borderColor": "#d8cec0",
                 "borderRadius": 8,
                 "borderWidth": 2,
                 "opacity": 1,
                 "paddingHorizontal": 16,
-                "paddingVertical": 12,
+                "paddingVertical": 8,
+                "width": 300,
               }
             }
           >
@@ -168,120 +180,10 @@ exports[`QuizGameScreen - Accessibility Snapshot matches snapshot for full rende
               style={
                 {
                   "color": "#181b1b",
-                  "fontSize": 16,
+                  "fontSize": 14,
                   "fontWeight": "500",
-                  "letterSpacing": 0.15,
-                  "lineHeight": 24,
-                }
-              }
-            >
-              Bob
-            </Text>
-          </View>
-          <View
-            accessibilityState={
-              {
-                "busy": undefined,
-                "checked": undefined,
-                "disabled": false,
-                "expanded": undefined,
-                "selected": undefined,
-              }
-            }
-            accessibilityValue={
-              {
-                "max": undefined,
-                "min": undefined,
-                "now": undefined,
-                "text": undefined,
-              }
-            }
-            accessible={true}
-            collapsable={false}
-            focusable={true}
-            onClick={[Function]}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
-            style={
-              {
-                "alignItems": "center",
-                "backgroundColor": "#ece7df",
-                "borderColor": "#ece7df",
-                "borderRadius": 8,
-                "borderWidth": 2,
-                "opacity": 1,
-                "paddingHorizontal": 16,
-                "paddingVertical": 12,
-              }
-            }
-          >
-            <Text
-              style={
-                {
-                  "color": "#181b1b",
-                  "fontSize": 16,
-                  "fontWeight": "500",
-                  "letterSpacing": 0.15,
-                  "lineHeight": 24,
-                }
-              }
-            >
-              Alice
-            </Text>
-          </View>
-          <View
-            accessibilityState={
-              {
-                "busy": undefined,
-                "checked": undefined,
-                "disabled": false,
-                "expanded": undefined,
-                "selected": undefined,
-              }
-            }
-            accessibilityValue={
-              {
-                "max": undefined,
-                "min": undefined,
-                "now": undefined,
-                "text": undefined,
-              }
-            }
-            accessible={true}
-            collapsable={false}
-            focusable={true}
-            onClick={[Function]}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
-            style={
-              {
-                "alignItems": "center",
-                "backgroundColor": "#ece7df",
-                "borderColor": "#ece7df",
-                "borderRadius": 8,
-                "borderWidth": 2,
-                "opacity": 1,
-                "paddingHorizontal": 16,
-                "paddingVertical": 12,
-              }
-            }
-          >
-            <Text
-              style={
-                {
-                  "color": "#181b1b",
-                  "fontSize": 16,
-                  "fontWeight": "500",
-                  "letterSpacing": 0.15,
-                  "lineHeight": 24,
+                  "letterSpacing": 0.25,
+                  "lineHeight": 20,
                 }
               }
             >
@@ -320,12 +222,13 @@ exports[`QuizGameScreen - Accessibility Snapshot matches snapshot for full rende
               {
                 "alignItems": "center",
                 "backgroundColor": "#ece7df",
-                "borderColor": "#ece7df",
+                "borderColor": "#d8cec0",
                 "borderRadius": 8,
                 "borderWidth": 2,
                 "opacity": 1,
                 "paddingHorizontal": 16,
-                "paddingVertical": 12,
+                "paddingVertical": 8,
+                "width": 300,
               }
             }
           >
@@ -333,10 +236,66 @@ exports[`QuizGameScreen - Accessibility Snapshot matches snapshot for full rende
               style={
                 {
                   "color": "#181b1b",
-                  "fontSize": 16,
+                  "fontSize": 14,
                   "fontWeight": "500",
-                  "letterSpacing": 0.15,
-                  "lineHeight": 24,
+                  "letterSpacing": 0.25,
+                  "lineHeight": 20,
+                }
+              }
+            >
+              Charlie
+            </Text>
+          </View>
+          <View
+            accessibilityState={
+              {
+                "busy": undefined,
+                "checked": undefined,
+                "disabled": false,
+                "expanded": undefined,
+                "selected": undefined,
+              }
+            }
+            accessibilityValue={
+              {
+                "max": undefined,
+                "min": undefined,
+                "now": undefined,
+                "text": undefined,
+              }
+            }
+            accessible={true}
+            collapsable={false}
+            focusable={true}
+            onClick={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            style={
+              {
+                "alignItems": "center",
+                "backgroundColor": "#ece7df",
+                "borderColor": "#d8cec0",
+                "borderRadius": 8,
+                "borderWidth": 2,
+                "opacity": 1,
+                "paddingHorizontal": 16,
+                "paddingVertical": 8,
+                "width": 300,
+              }
+            }
+          >
+            <Text
+              style={
+                {
+                  "color": "#181b1b",
+                  "fontSize": 14,
+                  "fontWeight": "500",
+                  "letterSpacing": 0.25,
+                  "lineHeight": 20,
                 }
               }
             >
@@ -375,12 +334,13 @@ exports[`QuizGameScreen - Accessibility Snapshot matches snapshot for full rende
               {
                 "alignItems": "center",
                 "backgroundColor": "#ece7df",
-                "borderColor": "#ece7df",
+                "borderColor": "#d8cec0",
                 "borderRadius": 8,
                 "borderWidth": 2,
                 "opacity": 1,
                 "paddingHorizontal": 16,
-                "paddingVertical": 12,
+                "paddingVertical": 8,
+                "width": 300,
               }
             }
           >
@@ -388,14 +348,70 @@ exports[`QuizGameScreen - Accessibility Snapshot matches snapshot for full rende
               style={
                 {
                   "color": "#181b1b",
-                  "fontSize": 16,
+                  "fontSize": 14,
                   "fontWeight": "500",
-                  "letterSpacing": 0.15,
-                  "lineHeight": 24,
+                  "letterSpacing": 0.25,
+                  "lineHeight": 20,
                 }
               }
             >
-              Charlie
+              Alice
+            </Text>
+          </View>
+          <View
+            accessibilityState={
+              {
+                "busy": undefined,
+                "checked": undefined,
+                "disabled": false,
+                "expanded": undefined,
+                "selected": undefined,
+              }
+            }
+            accessibilityValue={
+              {
+                "max": undefined,
+                "min": undefined,
+                "now": undefined,
+                "text": undefined,
+              }
+            }
+            accessible={true}
+            collapsable={false}
+            focusable={true}
+            onClick={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            style={
+              {
+                "alignItems": "center",
+                "backgroundColor": "#ece7df",
+                "borderColor": "#d8cec0",
+                "borderRadius": 8,
+                "borderWidth": 2,
+                "opacity": 1,
+                "paddingHorizontal": 16,
+                "paddingVertical": 8,
+                "width": 300,
+              }
+            }
+          >
+            <Text
+              style={
+                {
+                  "color": "#181b1b",
+                  "fontSize": 14,
+                  "fontWeight": "500",
+                  "letterSpacing": 0.25,
+                  "lineHeight": 20,
+                }
+              }
+            >
+              Bob
             </Text>
           </View>
         </View>

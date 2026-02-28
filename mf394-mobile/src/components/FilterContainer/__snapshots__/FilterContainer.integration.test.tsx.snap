@@ -496,8 +496,8 @@ exports[`FilterContainer Integration Full Filter Interface matches snapshot with
               "width": "18%",
             },
             {
-              "backgroundColor": "#fbf8ea",
-              "borderColor": "#d4b82b",
+              "backgroundColor": "#eee2aa",
+              "borderColor": "#547fab",
             },
           ]
         }
@@ -605,8 +605,8 @@ exports[`FilterContainer Integration Full Filter Interface matches snapshot with
               "width": "18%",
             },
             {
-              "backgroundColor": "#fbf8ea",
-              "borderColor": "#d4b82b",
+              "backgroundColor": "#eee2aa",
+              "borderColor": "#547fab",
             },
           ]
         }

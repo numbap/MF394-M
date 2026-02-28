@@ -16,7 +16,7 @@ exports[`ContactCard Snapshot matches snapshot for all categories: Category: com
         },
         "shadowOpacity": 0.12,
         "shadowRadius": 8,
-        "width": 360,
+        "width": 180,
       },
       undefined,
     ]
@@ -51,7 +51,7 @@ exports[`ContactCard Snapshot matches snapshot for all categories: Category: com
       [
         {
           "backgroundColor": "#ece7df",
-          "height": 120,
+          "height": 100,
           "justifyContent": "center",
           "paddingBottom": 16,
           "paddingLeft": 12,
@@ -69,12 +69,12 @@ exports[`ContactCard Snapshot matches snapshot for all categories: Category: com
           {
             "alignItems": "center",
             "borderRadius": 4,
-            "height": 36,
+            "height": 25,
             "justifyContent": "center",
             "position": "absolute",
             "right": 0,
             "top": 0,
-            "width": 36,
+            "width": 25,
           },
           {
             "backgroundColor": "#d4b82b",
@@ -139,7 +139,7 @@ exports[`ContactCard Snapshot matches snapshot for all categories: Category: fri
         },
         "shadowOpacity": 0.12,
         "shadowRadius": 8,
-        "width": 360,
+        "width": 180,
       },
       undefined,
     ]
@@ -174,7 +174,7 @@ exports[`ContactCard Snapshot matches snapshot for all categories: Category: fri
       [
         {
           "backgroundColor": "#ece7df",
-          "height": 120,
+          "height": 100,
           "justifyContent": "center",
           "paddingBottom": 16,
           "paddingLeft": 12,
@@ -192,12 +192,12 @@ exports[`ContactCard Snapshot matches snapshot for all categories: Category: fri
           {
             "alignItems": "center",
             "borderRadius": 4,
-            "height": 36,
+            "height": 25,
             "justifyContent": "center",
             "position": "absolute",
             "right": 0,
             "top": 0,
-            "width": 36,
+            "width": 25,
           },
           {
             "backgroundColor": "#d4b82b",
@@ -262,7 +262,7 @@ exports[`ContactCard Snapshot matches snapshot for all categories: Category: goa
         },
         "shadowOpacity": 0.12,
         "shadowRadius": 8,
-        "width": 360,
+        "width": 180,
       },
       undefined,
     ]
@@ -297,7 +297,7 @@ exports[`ContactCard Snapshot matches snapshot for all categories: Category: goa
       [
         {
           "backgroundColor": "#ece7df",
-          "height": 120,
+          "height": 100,
           "justifyContent": "center",
           "paddingBottom": 16,
           "paddingLeft": 12,
@@ -315,12 +315,12 @@ exports[`ContactCard Snapshot matches snapshot for all categories: Category: goa
           {
             "alignItems": "center",
             "borderRadius": 4,
-            "height": 36,
+            "height": 25,
             "justifyContent": "center",
             "position": "absolute",
             "right": 0,
             "top": 0,
-            "width": 36,
+            "width": 25,
           },
           {
             "backgroundColor": "#d4b82b",
@@ -385,7 +385,7 @@ exports[`ContactCard Snapshot matches snapshot for all categories: Category: mis
         },
         "shadowOpacity": 0.12,
         "shadowRadius": 8,
-        "width": 360,
+        "width": 180,
       },
       undefined,
     ]
@@ -420,7 +420,7 @@ exports[`ContactCard Snapshot matches snapshot for all categories: Category: mis
       [
         {
           "backgroundColor": "#ece7df",
-          "height": 120,
+          "height": 100,
           "justifyContent": "center",
           "paddingBottom": 16,
           "paddingLeft": 12,
@@ -438,12 +438,12 @@ exports[`ContactCard Snapshot matches snapshot for all categories: Category: mis
           {
             "alignItems": "center",
             "borderRadius": 4,
-            "height": 36,
+            "height": 25,
             "justifyContent": "center",
             "position": "absolute",
             "right": 0,
             "top": 0,
-            "width": 36,
+            "width": 25,
           },
           {
             "backgroundColor": "#d4b82b",
@@ -508,7 +508,7 @@ exports[`ContactCard Snapshot matches snapshot for all categories: Category: wor
         },
         "shadowOpacity": 0.12,
         "shadowRadius": 8,
-        "width": 360,
+        "width": 180,
       },
       undefined,
     ]
@@ -543,7 +543,7 @@ exports[`ContactCard Snapshot matches snapshot for all categories: Category: wor
       [
         {
           "backgroundColor": "#ece7df",
-          "height": 120,
+          "height": 100,
           "justifyContent": "center",
           "paddingBottom": 16,
           "paddingLeft": 12,
@@ -561,12 +561,12 @@ exports[`ContactCard Snapshot matches snapshot for all categories: Category: wor
           {
             "alignItems": "center",
             "borderRadius": 4,
-            "height": 36,
+            "height": 25,
             "justifyContent": "center",
             "position": "absolute",
             "right": 0,
             "top": 0,
-            "width": 36,
+            "width": 25,
           },
           {
             "backgroundColor": "#d4b82b",
@@ -631,7 +631,7 @@ exports[`ContactCard Snapshot matches snapshot for contact with summary 1`] = `
         },
         "shadowOpacity": 0.12,
         "shadowRadius": 8,
-        "width": 360,
+        "width": 180,
       },
       undefined,
     ]
@@ -666,7 +666,7 @@ exports[`ContactCard Snapshot matches snapshot for contact with summary 1`] = `
       [
         {
           "backgroundColor": "#ece7df",
-          "height": 120,
+          "height": 100,
           "justifyContent": "center",
           "paddingBottom": 16,
           "paddingLeft": 12,
@@ -684,12 +684,12 @@ exports[`ContactCard Snapshot matches snapshot for contact with summary 1`] = `
           {
             "alignItems": "center",
             "borderRadius": 4,
-            "height": 36,
+            "height": 25,
             "justifyContent": "center",
             "position": "absolute",
             "right": 0,
             "top": 0,
-            "width": 36,
+            "width": 25,
           },
           {
             "backgroundColor": "#d4b82b",
@@ -735,12 +735,12 @@ exports[`ContactCard Snapshot matches snapshot for contact with summary 1`] = `
           "backgroundColor": "#547fab",
           "borderRadius": 4,
           "bottom": 0,
-          "height": 36,
+          "height": 25,
           "justifyContent": "center",
           "opacity": 1,
           "position": "absolute",
           "right": 0,
-          "width": 36,
+          "width": 25,
         }
       }
     >
@@ -801,7 +801,7 @@ exports[`ContactCard Snapshot matches snapshot for contact without photo 1`] = `
         },
         "shadowOpacity": 0.12,
         "shadowRadius": 8,
-        "width": 360,
+        "width": 180,
       },
       undefined,
     ]
@@ -821,7 +821,7 @@ exports[`ContactCard Snapshot matches snapshot for contact without photo 1`] = `
         [
           {
             "alignItems": "center",
-            "height": "100%",
+            "aspectRatio": 1,
             "justifyContent": "center",
             "width": "100%",
           },
@@ -841,7 +841,7 @@ exports[`ContactCard Snapshot matches snapshot for contact without photo 1`] = `
       [
         {
           "backgroundColor": "#ece7df",
-          "height": 120,
+          "height": 100,
           "justifyContent": "center",
           "paddingBottom": 16,
           "paddingLeft": 12,
@@ -859,12 +859,12 @@ exports[`ContactCard Snapshot matches snapshot for contact without photo 1`] = `
           {
             "alignItems": "center",
             "borderRadius": 4,
-            "height": 36,
+            "height": 25,
             "justifyContent": "center",
             "position": "absolute",
             "right": 0,
             "top": 0,
-            "width": 36,
+            "width": 25,
           },
           {
             "backgroundColor": "#d4b82b",
@@ -929,7 +929,7 @@ exports[`ContactCard Snapshot matches snapshot for contact without summary 1`] =
         },
         "shadowOpacity": 0.12,
         "shadowRadius": 8,
-        "width": 360,
+        "width": 180,
       },
       undefined,
     ]
@@ -964,7 +964,7 @@ exports[`ContactCard Snapshot matches snapshot for contact without summary 1`] =
       [
         {
           "backgroundColor": "#ece7df",
-          "height": 120,
+          "height": 100,
           "justifyContent": "center",
           "paddingBottom": 16,
           "paddingLeft": 12,
@@ -982,12 +982,12 @@ exports[`ContactCard Snapshot matches snapshot for contact without summary 1`] =
           {
             "alignItems": "center",
             "borderRadius": 4,
-            "height": 36,
+            "height": 25,
             "justifyContent": "center",
             "position": "absolute",
             "right": 0,
             "top": 0,
-            "width": 36,
+            "width": 25,
           },
           {
             "backgroundColor": "#d4b82b",

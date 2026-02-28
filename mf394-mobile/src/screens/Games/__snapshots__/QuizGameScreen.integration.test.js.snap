@@ -4,7 +4,7 @@ exports[`QuizGameScreen - Integration Snapshot matches snapshot for full screen 
 <RNCSafeAreaView
   edges={
     {
-      "bottom": "additive",
+      "bottom": "off",
       "left": "additive",
       "right": "additive",
       "top": "additive",
@@ -114,8 +114,8 @@ exports[`QuizGameScreen - Integration Snapshot matches snapshot for full screen 
                     "width": "18%",
                   },
                   {
-                    "backgroundColor": "#fbf8ea",
-                    "borderColor": "#d4b82b",
+                    "backgroundColor": "#eee2aa",
+                    "borderColor": "#547fab",
                   },
                 ]
               }
@@ -346,8 +346,8 @@ exports[`QuizGameScreen - Integration Snapshot matches snapshot for full screen 
             "alignItems": "center",
             "flex": 1,
             "justifyContent": "center",
+            "paddingBottom": 20,
             "paddingHorizontal": 16,
-            "paddingVertical": 20,
           }
         }
       >
@@ -383,11 +383,10 @@ exports[`QuizGameScreen - Integration Snapshot matches snapshot for full screen 
                 "alignItems": "center",
                 "backgroundColor": "#ece7df",
                 "borderRadius": 12,
-                "height": 250,
+                "height": 200,
                 "justifyContent": "center",
                 "marginBottom": 20,
-                "overflow": "hidden",
-                "width": 250,
+                "width": 200,
               },
               null,
               {
@@ -403,24 +402,36 @@ exports[`QuizGameScreen - Integration Snapshot matches snapshot for full screen 
             ]
           }
         >
-          <Image
-            resizeMode="cover"
-            source={
-              {
-                "uri": "data:image/jpeg;base64,charlie",
-              }
-            }
+          <View
             style={
               {
+                "borderRadius": 12,
                 "height": "100%",
+                "overflow": "hidden",
                 "width": "100%",
               }
             }
-          />
+          >
+            <Image
+              resizeMode="cover"
+              source={
+                {
+                  "uri": "data:image/jpeg;base64,alice",
+                }
+              }
+              style={
+                {
+                  "height": "100%",
+                  "width": "100%",
+                }
+              }
+            />
+          </View>
         </View>
         <View
           style={
             {
+              "alignItems": "center",
               "gap": 12,
               "width": "100%",
             }
@@ -458,12 +469,13 @@ exports[`QuizGameScreen - Integration Snapshot matches snapshot for full screen 
               {
                 "alignItems": "center",
                 "backgroundColor": "#ece7df",
-                "borderColor": "#ece7df",
+                "borderColor": "#d8cec0",
                 "borderRadius": 8,
                 "borderWidth": 2,
                 "opacity": 1,
                 "paddingHorizontal": 16,
-                "paddingVertical": 12,
+                "paddingVertical": 8,
+                "width": 300,
               }
             }
           >
@@ -471,65 +483,10 @@ exports[`QuizGameScreen - Integration Snapshot matches snapshot for full screen 
               style={
                 {
                   "color": "#181b1b",
-                  "fontSize": 16,
+                  "fontSize": 14,
                   "fontWeight": "500",
-                  "letterSpacing": 0.15,
-                  "lineHeight": 24,
-                }
-              }
-            >
-              Charlie
-            </Text>
-          </View>
-          <View
-            accessibilityState={
-              {
-                "busy": undefined,
-                "checked": undefined,
-                "disabled": false,
-                "expanded": undefined,
-                "selected": undefined,
-              }
-            }
-            accessibilityValue={
-              {
-                "max": undefined,
-                "min": undefined,
-                "now": undefined,
-                "text": undefined,
-              }
-            }
-            accessible={true}
-            collapsable={false}
-            focusable={true}
-            onClick={[Function]}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
-            style={
-              {
-                "alignItems": "center",
-                "backgroundColor": "#ece7df",
-                "borderColor": "#ece7df",
-                "borderRadius": 8,
-                "borderWidth": 2,
-                "opacity": 1,
-                "paddingHorizontal": 16,
-                "paddingVertical": 12,
-              }
-            }
-          >
-            <Text
-              style={
-                {
-                  "color": "#181b1b",
-                  "fontSize": 16,
-                  "fontWeight": "500",
-                  "letterSpacing": 0.15,
-                  "lineHeight": 24,
+                  "letterSpacing": 0.25,
+                  "lineHeight": 20,
                 }
               }
             >
@@ -568,12 +525,13 @@ exports[`QuizGameScreen - Integration Snapshot matches snapshot for full screen 
               {
                 "alignItems": "center",
                 "backgroundColor": "#ece7df",
-                "borderColor": "#ece7df",
+                "borderColor": "#d8cec0",
                 "borderRadius": 8,
                 "borderWidth": 2,
                 "opacity": 1,
                 "paddingHorizontal": 16,
-                "paddingVertical": 12,
+                "paddingVertical": 8,
+                "width": 300,
               }
             }
           >
@@ -581,10 +539,10 @@ exports[`QuizGameScreen - Integration Snapshot matches snapshot for full screen 
               style={
                 {
                   "color": "#181b1b",
-                  "fontSize": 16,
+                  "fontSize": 14,
                   "fontWeight": "500",
-                  "letterSpacing": 0.15,
-                  "lineHeight": 24,
+                  "letterSpacing": 0.25,
+                  "lineHeight": 20,
                 }
               }
             >
@@ -623,12 +581,13 @@ exports[`QuizGameScreen - Integration Snapshot matches snapshot for full screen 
               {
                 "alignItems": "center",
                 "backgroundColor": "#ece7df",
-                "borderColor": "#ece7df",
+                "borderColor": "#d8cec0",
                 "borderRadius": 8,
                 "borderWidth": 2,
                 "opacity": 1,
                 "paddingHorizontal": 16,
-                "paddingVertical": 12,
+                "paddingVertical": 8,
+                "width": 300,
               }
             }
           >
@@ -636,14 +595,14 @@ exports[`QuizGameScreen - Integration Snapshot matches snapshot for full screen 
               style={
                 {
                   "color": "#181b1b",
-                  "fontSize": 16,
+                  "fontSize": 14,
                   "fontWeight": "500",
-                  "letterSpacing": 0.15,
-                  "lineHeight": 24,
+                  "letterSpacing": 0.25,
+                  "lineHeight": 20,
                 }
               }
             >
-              Eve
+              Charlie
             </Text>
           </View>
           <View
@@ -678,12 +637,13 @@ exports[`QuizGameScreen - Integration Snapshot matches snapshot for full screen 
               {
                 "alignItems": "center",
                 "backgroundColor": "#ece7df",
-                "borderColor": "#ece7df",
+                "borderColor": "#d8cec0",
                 "borderRadius": 8,
                 "borderWidth": 2,
                 "opacity": 1,
                 "paddingHorizontal": 16,
-                "paddingVertical": 12,
+                "paddingVertical": 8,
+                "width": 300,
               }
             }
           >
@@ -691,14 +651,70 @@ exports[`QuizGameScreen - Integration Snapshot matches snapshot for full screen 
               style={
                 {
                   "color": "#181b1b",
-                  "fontSize": 16,
+                  "fontSize": 14,
                   "fontWeight": "500",
-                  "letterSpacing": 0.15,
-                  "lineHeight": 24,
+                  "letterSpacing": 0.25,
+                  "lineHeight": 20,
                 }
               }
             >
               Alice
+            </Text>
+          </View>
+          <View
+            accessibilityState={
+              {
+                "busy": undefined,
+                "checked": undefined,
+                "disabled": false,
+                "expanded": undefined,
+                "selected": undefined,
+              }
+            }
+            accessibilityValue={
+              {
+                "max": undefined,
+                "min": undefined,
+                "now": undefined,
+                "text": undefined,
+              }
+            }
+            accessible={true}
+            collapsable={false}
+            focusable={true}
+            onClick={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            style={
+              {
+                "alignItems": "center",
+                "backgroundColor": "#ece7df",
+                "borderColor": "#d8cec0",
+                "borderRadius": 8,
+                "borderWidth": 2,
+                "opacity": 1,
+                "paddingHorizontal": 16,
+                "paddingVertical": 8,
+                "width": 300,
+              }
+            }
+          >
+            <Text
+              style={
+                {
+                  "color": "#181b1b",
+                  "fontSize": 14,
+                  "fontWeight": "500",
+                  "letterSpacing": 0.25,
+                  "lineHeight": 20,
+                }
+              }
+            >
+              Eve
             </Text>
           </View>
         </View>

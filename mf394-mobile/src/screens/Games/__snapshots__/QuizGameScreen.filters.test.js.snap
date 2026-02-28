@@ -4,7 +4,7 @@ exports[`QuizGameScreen - Filters Snapshots matches snapshot for filters open (a
 <RNCSafeAreaView
   edges={
     {
-      "bottom": "additive",
+      "bottom": "off",
       "left": "additive",
       "right": "additive",
       "top": "additive",
@@ -272,7 +272,7 @@ exports[`QuizGameScreen - Filters Snapshots matches snapshot for multiple catego
 <RNCSafeAreaView
   edges={
     {
-      "bottom": "additive",
+      "bottom": "off",
       "left": "additive",
       "right": "additive",
       "top": "additive",
@@ -511,7 +511,7 @@ exports[`QuizGameScreen - Filters Snapshots matches snapshot for multiple catego
               "fontWeight": "400",
               "letterSpacing": 0.15,
               "lineHeight": 24,
-              "marginBottom": 8,
+              "marginVertical": 8,
               "textAlign": "center",
             }
           }
@@ -544,7 +544,7 @@ exports[`QuizGameScreen - Filters Snapshots matches snapshot for single category
 <RNCSafeAreaView
   edges={
     {
-      "bottom": "additive",
+      "bottom": "off",
       "left": "additive",
       "right": "additive",
       "top": "additive",
@@ -775,8 +775,8 @@ exports[`QuizGameScreen - Filters Snapshots matches snapshot for single category
             "alignItems": "center",
             "flex": 1,
             "justifyContent": "center",
+            "paddingBottom": 20,
             "paddingHorizontal": 16,
-            "paddingVertical": 20,
           }
         }
       >
@@ -812,11 +812,10 @@ exports[`QuizGameScreen - Filters Snapshots matches snapshot for single category
                 "alignItems": "center",
                 "backgroundColor": "#ece7df",
                 "borderRadius": 12,
-                "height": 250,
+                "height": 200,
                 "justifyContent": "center",
                 "marginBottom": 20,
-                "overflow": "hidden",
-                "width": 250,
+                "width": 200,
               },
               null,
               {
@@ -832,24 +831,36 @@ exports[`QuizGameScreen - Filters Snapshots matches snapshot for single category
             ]
           }
         >
-          <Image
-            resizeMode="cover"
-            source={
-              {
-                "uri": "data:image/jpeg;base64,alice",
-              }
-            }
+          <View
             style={
               {
+                "borderRadius": 12,
                 "height": "100%",
+                "overflow": "hidden",
                 "width": "100%",
               }
             }
-          />
+          >
+            <Image
+              resizeMode="cover"
+              source={
+                {
+                  "uri": "data:image/jpeg;base64,alice",
+                }
+              }
+              style={
+                {
+                  "height": "100%",
+                  "width": "100%",
+                }
+              }
+            />
+          </View>
         </View>
         <View
           style={
             {
+              "alignItems": "center",
               "gap": 12,
               "width": "100%",
             }
@@ -887,12 +898,13 @@ exports[`QuizGameScreen - Filters Snapshots matches snapshot for single category
               {
                 "alignItems": "center",
                 "backgroundColor": "#ece7df",
-                "borderColor": "#ece7df",
+                "borderColor": "#d8cec0",
                 "borderRadius": 8,
                 "borderWidth": 2,
                 "opacity": 1,
                 "paddingHorizontal": 16,
-                "paddingVertical": 12,
+                "paddingVertical": 8,
+                "width": 300,
               }
             }
           >
@@ -900,10 +912,10 @@ exports[`QuizGameScreen - Filters Snapshots matches snapshot for single category
               style={
                 {
                   "color": "#181b1b",
-                  "fontSize": 16,
+                  "fontSize": 14,
                   "fontWeight": "500",
-                  "letterSpacing": 0.15,
-                  "lineHeight": 24,
+                  "letterSpacing": 0.25,
+                  "lineHeight": 20,
                 }
               }
             >
@@ -942,12 +954,13 @@ exports[`QuizGameScreen - Filters Snapshots matches snapshot for single category
               {
                 "alignItems": "center",
                 "backgroundColor": "#ece7df",
-                "borderColor": "#ece7df",
+                "borderColor": "#d8cec0",
                 "borderRadius": 8,
                 "borderWidth": 2,
                 "opacity": 1,
                 "paddingHorizontal": 16,
-                "paddingVertical": 12,
+                "paddingVertical": 8,
+                "width": 300,
               }
             }
           >
@@ -955,10 +968,10 @@ exports[`QuizGameScreen - Filters Snapshots matches snapshot for single category
               style={
                 {
                   "color": "#181b1b",
-                  "fontSize": 16,
+                  "fontSize": 14,
                   "fontWeight": "500",
-                  "letterSpacing": 0.15,
-                  "lineHeight": 24,
+                  "letterSpacing": 0.25,
+                  "lineHeight": 20,
                 }
               }
             >
@@ -997,12 +1010,13 @@ exports[`QuizGameScreen - Filters Snapshots matches snapshot for single category
               {
                 "alignItems": "center",
                 "backgroundColor": "#ece7df",
-                "borderColor": "#ece7df",
+                "borderColor": "#d8cec0",
                 "borderRadius": 8,
                 "borderWidth": 2,
                 "opacity": 1,
                 "paddingHorizontal": 16,
-                "paddingVertical": 12,
+                "paddingVertical": 8,
+                "width": 300,
               }
             }
           >
@@ -1010,10 +1024,10 @@ exports[`QuizGameScreen - Filters Snapshots matches snapshot for single category
               style={
                 {
                   "color": "#181b1b",
-                  "fontSize": 16,
+                  "fontSize": 14,
                   "fontWeight": "500",
-                  "letterSpacing": 0.15,
-                  "lineHeight": 24,
+                  "letterSpacing": 0.25,
+                  "lineHeight": 20,
                 }
               }
             >
@@ -1052,12 +1066,13 @@ exports[`QuizGameScreen - Filters Snapshots matches snapshot for single category
               {
                 "alignItems": "center",
                 "backgroundColor": "#ece7df",
-                "borderColor": "#ece7df",
+                "borderColor": "#d8cec0",
                 "borderRadius": 8,
                 "borderWidth": 2,
                 "opacity": 1,
                 "paddingHorizontal": 16,
-                "paddingVertical": 12,
+                "paddingVertical": 8,
+                "width": 300,
               }
             }
           >
@@ -1065,10 +1080,10 @@ exports[`QuizGameScreen - Filters Snapshots matches snapshot for single category
               style={
                 {
                   "color": "#181b1b",
-                  "fontSize": 16,
+                  "fontSize": 14,
                   "fontWeight": "500",
-                  "letterSpacing": 0.15,
-                  "lineHeight": 24,
+                  "letterSpacing": 0.25,
+                  "lineHeight": 20,
                 }
               }
             >
@@ -1107,12 +1122,13 @@ exports[`QuizGameScreen - Filters Snapshots matches snapshot for single category
               {
                 "alignItems": "center",
                 "backgroundColor": "#ece7df",
-                "borderColor": "#ece7df",
+                "borderColor": "#d8cec0",
                 "borderRadius": 8,
                 "borderWidth": 2,
                 "opacity": 1,
                 "paddingHorizontal": 16,
-                "paddingVertical": 12,
+                "paddingVertical": 8,
+                "width": 300,
               }
             }
           >
@@ -1120,10 +1136,10 @@ exports[`QuizGameScreen - Filters Snapshots matches snapshot for single category
               style={
                 {
                   "color": "#181b1b",
-                  "fontSize": 16,
+                  "fontSize": 14,
                   "fontWeight": "500",
-                  "letterSpacing": 0.15,
-                  "lineHeight": 24,
+                  "letterSpacing": 0.25,
+                  "lineHeight": 20,
                 }
               }
             >
