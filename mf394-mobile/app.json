@@ -28,7 +28,8 @@
     },
     "plugins": [
       "expo-image-picker",
-      "@react-native-google-signin/google-signin"
+      "@react-native-google-signin/google-signin",
+      "expo-web-browser"
     ],
     "extra": {
       "eas": {
