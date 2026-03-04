@@ -543,11 +543,6 @@ function loadAndCropImage(imageUri, bounds, padding, resolve, reject) {
       // Convert canvas to data URL
       const croppedImageUrl = canvas.toDataURL("image/jpeg", 0.9);
 
-      // Clean up blob URL if it was created
-      if (imageUri.startsWith("blob:")) {
-        URL.revokeObjectURL(imageUri);
-      }
-
       resolve(croppedImageUrl);
     } catch (error) {
       console.error("Crop failed:", error);

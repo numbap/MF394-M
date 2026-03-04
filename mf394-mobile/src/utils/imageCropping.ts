@@ -154,10 +154,6 @@ function loadAndCropImageWithBounds(
 
       const croppedImageUrl = canvas.toDataURL('image/jpeg', 0.9);
 
-      if (imageUri.startsWith('blob:')) {
-        URL.revokeObjectURL(imageUri);
-      }
-
       resolve(croppedImageUrl);
     } catch (error) {
       console.error('Crop failed:', error);
