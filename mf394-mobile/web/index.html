@@ -72,17 +72,17 @@
       }, { passive: false, capture: true });
 
       // Visual Viewport counter-zoom: counteract iOS viewport zoom in real-time
+      // When iOS zooms to Nx, we scale #root to 1/N and translate it to the
+      // visual viewport offset so the browser's magnification cancels out.
       if (window.visualViewport) {
         var counterZoom = function() {
-          var scale = window.visualViewport.scale;
-          if (scale > 1.01) {
-            document.documentElement.style.transform = 'scale(' + (1 / scale) + ')';
-            document.documentElement.style.transformOrigin = 'left top';
-            document.documentElement.style.width = (scale * 100) + '%';
+          var vv = window.visualViewport;
+          if (vv.scale > 1.01) {
+            root.style.transform = 'translate(' + vv.offsetLeft + 'px, ' + vv.offsetTop + 'px) scale(' + (1 / vv.scale) + ')';
+            root.style.transformOrigin = '0 0';
           } else {
-            document.documentElement.style.transform = '';
-            document.documentElement.style.transformOrigin = '';
-            document.documentElement.style.width = '';
+            root.style.transform = '';
+            root.style.transformOrigin = '';
           }
         };
         window.visualViewport.addEventListener('resize', counterZoom);

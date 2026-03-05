@@ -100,10 +100,13 @@ describe('web/index.html pinch-zoom prevention', () => {
       expect(html).toMatch(/visualViewport\.addEventListener\s*\(\s*['"]scroll['"]/);
     });
 
-    it('applies counter-transform when scale exceeds 1', () => {
-      expect(html).toMatch(/visualViewport\.scale/);
-      expect(html).toMatch(/document\.documentElement\.style\.transform/);
-      expect(html).toMatch(/1\s*\/\s*scale/);
+    it('applies counter-transform with translate and scale to #root', () => {
+      expect(html).toMatch(/vv\.scale/);
+      expect(html).toMatch(/root\.style\.transform/);
+      expect(html).toMatch(/translate\(/);
+      expect(html).toMatch(/offsetLeft/);
+      expect(html).toMatch(/offsetTop/);
+      expect(html).toMatch(/1\s*\/\s*vv\.scale/);
     });
   });
 });
