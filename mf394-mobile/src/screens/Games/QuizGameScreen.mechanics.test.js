@@ -517,11 +517,12 @@ describe('QuizGameScreen - Mechanics', () => {
         expect(getByText('1 of 5')).toBeTruthy();
       });
 
-      // Answer all 5 questions correctly
-      for (let i = 0; i < 5; i++) {
-        const aliceButton = getByText('Alice');
+      // Answer all 5 questions correctly (shuffle is mocked, order is deterministic)
+      const correctAnswers = ['Alice', 'Bob', 'Charlie', 'David', 'Eve'];
+      for (const name of correctAnswers) {
+        const button = getByText(name);
         act(() => {
-          fireEvent.press(aliceButton);
+          fireEvent.press(button);
         });
         act(() => {
           jest.advanceTimersByTime(600);
@@ -543,11 +544,12 @@ describe('QuizGameScreen - Mechanics', () => {
         expect(getByText('1 of 5')).toBeTruthy();
       });
 
-      // Answer all 5 questions correctly
-      for (let i = 0; i < 5; i++) {
-        const aliceButton = getByText('Alice');
+      // Answer all 5 questions correctly (shuffle is mocked, order is deterministic)
+      const correctAnswers = ['Alice', 'Bob', 'Charlie', 'David', 'Eve'];
+      for (const name of correctAnswers) {
+        const button = getByText(name);
         act(() => {
-          fireEvent.press(aliceButton);
+          fireEvent.press(button);
         });
         act(() => {
           jest.advanceTimersByTime(600);
@@ -568,11 +570,12 @@ describe('QuizGameScreen - Mechanics', () => {
         expect(getByText('1 of 5')).toBeTruthy();
       });
 
-      // Complete quiz
-      for (let i = 0; i < 5; i++) {
-        const aliceButton = getByText('Alice');
+      // Complete quiz with correct answers (shuffle is mocked, order is deterministic)
+      const correctAnswers = ['Alice', 'Bob', 'Charlie', 'David', 'Eve'];
+      for (const name of correctAnswers) {
+        const button = getByText(name);
         act(() => {
-          fireEvent.press(aliceButton);
+          fireEvent.press(button);
         });
         act(() => {
           jest.advanceTimersByTime(600);
@@ -664,9 +667,12 @@ describe('QuizGameScreen - Mechanics', () => {
 
       const aliceButton = getByText('Alice');
 
-      // Double-tap
+      // Attempt double-tap: separate act() calls so React re-renders between presses
+      // (within a single act(), state batching would allow both presses through)
       act(() => {
         fireEvent.press(aliceButton);
+      });
+      act(() => {
         fireEvent.press(aliceButton);
       });
 

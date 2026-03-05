@@ -113,7 +113,7 @@ exports[`QuizGameScreen - Accessibility Snapshot matches snapshot for full rende
               resizeMode="cover"
               source={
                 {
-                  "uri": "data:image/jpeg;base64,david",
+                  "uri": "data:image/jpeg;base64,eve",
                 }
               }
               style={
@@ -188,64 +188,7 @@ exports[`QuizGameScreen - Accessibility Snapshot matches snapshot for full rende
                 }
               }
             >
-              Eve
-            </Text>
-          </View>
-          <View
-            accessibilityRole="button"
-            accessibilityState={
-              {
-                "busy": undefined,
-                "checked": undefined,
-                "disabled": false,
-                "expanded": undefined,
-                "selected": undefined,
-              }
-            }
-            accessibilityValue={
-              {
-                "max": undefined,
-                "min": undefined,
-                "now": undefined,
-                "text": undefined,
-              }
-            }
-            accessible={true}
-            collapsable={false}
-            focusable={true}
-            onClick={[Function]}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
-            style={
-              {
-                "alignItems": "center",
-                "backgroundColor": "#ece7df",
-                "borderColor": "#d8cec0",
-                "borderRadius": 8,
-                "borderWidth": 2,
-                "opacity": 1,
-                "paddingHorizontal": 16,
-                "paddingVertical": 8,
-                "width": 300,
-              }
-            }
-          >
-            <Text
-              style={
-                {
-                  "color": "#181b1b",
-                  "fontSize": 14,
-                  "fontWeight": "500",
-                  "letterSpacing": 0.25,
-                  "lineHeight": 20,
-                }
-              }
-            >
-              David
+              Charlie
             </Text>
           </View>
           <View
@@ -359,6 +302,63 @@ exports[`QuizGameScreen - Accessibility Snapshot matches snapshot for full rende
                 }
               }
             >
+              David
+            </Text>
+          </View>
+          <View
+            accessibilityRole="button"
+            accessibilityState={
+              {
+                "busy": undefined,
+                "checked": undefined,
+                "disabled": false,
+                "expanded": undefined,
+                "selected": undefined,
+              }
+            }
+            accessibilityValue={
+              {
+                "max": undefined,
+                "min": undefined,
+                "now": undefined,
+                "text": undefined,
+              }
+            }
+            accessible={true}
+            collapsable={false}
+            focusable={true}
+            onClick={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            style={
+              {
+                "alignItems": "center",
+                "backgroundColor": "#ece7df",
+                "borderColor": "#d8cec0",
+                "borderRadius": 8,
+                "borderWidth": 2,
+                "opacity": 1,
+                "paddingHorizontal": 16,
+                "paddingVertical": 8,
+                "width": 300,
+              }
+            }
+          >
+            <Text
+              style={
+                {
+                  "color": "#181b1b",
+                  "fontSize": 14,
+                  "fontWeight": "500",
+                  "letterSpacing": 0.25,
+                  "lineHeight": 20,
+                }
+              }
+            >
               Alice
             </Text>
           </View>
@@ -416,7 +416,7 @@ exports[`QuizGameScreen - Accessibility Snapshot matches snapshot for full rende
                 }
               }
             >
-              Charlie
+              Eve
             </Text>
           </View>
         </View>

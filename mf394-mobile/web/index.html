@@ -7,6 +7,7 @@
     <title>UmmYou</title>
     <style>
       html, body { margin: 0; padding: 0; height: 100%; touch-action: pan-x pan-y; }
+      * { touch-action: pan-x pan-y; }
       #root { display: flex; height: 100%; touch-action: pan-x pan-y; }
       #splash {
         position: fixed;
@@ -50,23 +51,23 @@
         if (e.ctrlKey) e.preventDefault();
       }, { passive: false });
 
-      // Block multi-touch from the start (catches Chrome iOS before gesture recognition)
+      // Block pinch-zoom using capture phase so we fire before any framework handler
       document.addEventListener('touchstart', function(e) {
         if (e.touches.length > 1) e.preventDefault();
-      }, { passive: false });
+      }, { passive: false, capture: true });
 
       document.addEventListener('touchmove', function(e) {
         if (e.touches.length > 1) e.preventDefault();
-      }, { passive: false });
+      }, { passive: false, capture: true });
 
-      // Block Safari pinch-zoom gesture events (fires before touchmove)
+      // Safari-specific gesture events (also in capture phase)
       document.addEventListener('gesturestart', function(e) {
         e.preventDefault();
-      }, { passive: false });
+      }, { passive: false, capture: true });
 
       document.addEventListener('gesturechange', function(e) {
         e.preventDefault();
-      }, { passive: false });
+      }, { passive: false, capture: true });
 </script>
   </body>
 </html>
