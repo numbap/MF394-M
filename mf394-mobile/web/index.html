@@ -72,12 +72,13 @@
       }, { passive: false, capture: true });
 
       // Visual Viewport counter-zoom: counteract iOS viewport zoom in real-time
-      // iOS 26+ doesn't fire visualViewport resize/scroll events for pinch-zoom,
-      // so we poll using requestAnimationFrame instead.
+      // iOS 26+ doesn't fire visualViewport events and may throttle rAF during zoom,
+      // so we poll using setInterval.
       if (window.visualViewport) {
         var lastScale = 1;
-        var counterZoomLoop = function() {
+        setInterval(function() {
           var vv = window.visualViewport;
+          document.body.setAttribute('data-vv-scale', vv.scale);
           if (vv.scale > 1.01) {
             root.style.transform = 'translate(' + vv.offsetLeft + 'px, ' + vv.offsetTop + 'px) scale(' + (1 / vv.scale) + ')';
             root.style.transformOrigin = '0 0';
@@ -87,9 +88,7 @@
             root.style.transformOrigin = '';
             lastScale = 1;
           }
-          requestAnimationFrame(counterZoomLoop);
-        };
-        requestAnimationFrame(counterZoomLoop);
+        }, 100);
       }
 </script>
   </body>

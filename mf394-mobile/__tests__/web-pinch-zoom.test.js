@@ -95,8 +95,8 @@ describe('web/index.html pinch-zoom prevention', () => {
       expect(html).toMatch(/window\.visualViewport/);
     });
 
-    it('polls for zoom changes using requestAnimationFrame', () => {
-      expect(html).toMatch(/requestAnimationFrame\s*\(\s*counterZoomLoop\s*\)/);
+    it('polls for zoom changes using setInterval', () => {
+      expect(html).toMatch(/setInterval\s*\(/);
     });
 
     it('applies counter-transform with translate and scale to #root', () => {
