@@ -5,6 +5,7 @@
  *   1. Viewport meta tag with user-scalable=no and maximum-scale=1
  *   2. CSS touch-action on html and body
  *   3. JS event listeners for wheel+ctrlKey (trackpad) and touchmove (mobile)
+ *   4. Visual Viewport API counter-zoom to neutralize iOS viewport zoom
  *
  * These are the only reliable cross-browser defenses against pinch-zoom on web,
  * since modern Safari/Chrome intentionally ignore user-scalable=no in some cases.
@@ -81,6 +82,28 @@ describe('web/index.html pinch-zoom prevention', () => {
         /addEventListener\s*\(\s*['"]touchmove['"][\s\S]{0,200}?passive\s*:\s*false/
       );
       expect(touchListenerRegion).not.toBeNull();
+    });
+
+    it('checks e.scale in touchmove listener for Safari pinch detection', () => {
+      expect(html).toMatch(/e\.scale\s*!==\s*undefined/);
+      expect(html).toMatch(/e\.scale\s*!==\s*1/);
+    });
+  });
+
+  describe('Layer 4: Visual Viewport counter-zoom', () => {
+    it('uses window.visualViewport to detect zoom', () => {
+      expect(html).toMatch(/window\.visualViewport/);
+    });
+
+    it('listens for visualViewport resize and scroll events', () => {
+      expect(html).toMatch(/visualViewport\.addEventListener\s*\(\s*['"]resize['"]/);
+      expect(html).toMatch(/visualViewport\.addEventListener\s*\(\s*['"]scroll['"]/);
+    });
+
+    it('applies counter-transform when scale exceeds 1', () => {
+      expect(html).toMatch(/visualViewport\.scale/);
+      expect(html).toMatch(/document\.documentElement\.style\.transform/);
+      expect(html).toMatch(/1\s*\/\s*scale/);
     });
   });
 });

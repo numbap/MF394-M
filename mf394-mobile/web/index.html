@@ -7,8 +7,8 @@
     <title>UmmYou</title>
     <style>
       * { touch-action: pan-x pan-y !important; }
-      html, body { margin: 0; padding: 0; height: 100%; }
-      #root { display: flex; height: 100%; }
+      html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; }
+      #root { display: flex; height: 100%; overflow: hidden; }
       #splash {
         position: fixed;
         inset: 0;
@@ -57,7 +57,9 @@
       }, { passive: false, capture: true });
 
       document.addEventListener('touchmove', function(e) {
-        if (e.touches.length > 1) e.preventDefault();
+        if (e.touches.length > 1 || (e.scale !== undefined && e.scale !== 1)) {
+          e.preventDefault();
+        }
       }, { passive: false, capture: true });
 
       // Safari-specific gesture events (also in capture phase)
@@ -68,6 +70,24 @@
       document.addEventListener('gesturechange', function(e) {
         e.preventDefault();
       }, { passive: false, capture: true });
+
+      // Visual Viewport counter-zoom: counteract iOS viewport zoom in real-time
+      if (window.visualViewport) {
+        var counterZoom = function() {
+          var scale = window.visualViewport.scale;
+          if (scale > 1.01) {
+            document.documentElement.style.transform = 'scale(' + (1 / scale) + ')';
+            document.documentElement.style.transformOrigin = 'left top';
+            document.documentElement.style.width = (scale * 100) + '%';
+          } else {
+            document.documentElement.style.transform = '';
+            document.documentElement.style.transformOrigin = '';
+            document.documentElement.style.width = '';
+          }
+        };
+        window.visualViewport.addEventListener('resize', counterZoom);
+        window.visualViewport.addEventListener('scroll', counterZoom);
+      }
 </script>
   </body>
 </html>
