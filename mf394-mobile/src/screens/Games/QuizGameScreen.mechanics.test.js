@@ -15,8 +15,6 @@ import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
 import QuizGameScreen from './QuizGameScreen';
 import { renderWithRedux } from '../../../__tests__/utils/reduxTestUtils';
 import { QUIZ_CONTACTS, createQuizStoreState, FILTER_STATES } from '../../../__tests__/fixtures/quizGame.fixtures';
-import { StorageService } from '../../services/storage.service';
-
 // Mock dependencies
 jest.mock('react-native-reanimated', () => {
   const View = require('react-native').View;
@@ -39,14 +37,6 @@ jest.mock('expo-haptics', () => ({
   notificationAsync: jest.fn(() => Promise.resolve()),
   ImpactFeedbackStyle: { Medium: 'medium' },
   NotificationFeedbackType: { Error: 'error' },
-}));
-
-// Mock StorageService
-jest.mock('../../services/storage.service', () => ({
-  StorageService: {
-    loadFilters: jest.fn(() => Promise.resolve({ categories: ['friends-family'], tags: [] })),
-    saveFilters: jest.fn(() => Promise.resolve()),
-  },
 }));
 
 // Mock child components
@@ -167,14 +157,14 @@ describe('QuizGameScreen - Mechanics', () => {
       // The important test is that we have enough contacts to play
     });
 
-    it('shows loading state while filters load', async () => {
-      const { UNSAFE_getByType } = renderWithRedux(<QuizGameScreen />, {
-        preloadedState: createQuizStoreState(QUIZ_CONTACTS.minimal, FILTER_STATES.notLoaded),
+    it('shows loading state while data loads', async () => {
+      mockUseGetUserQuery.mockReturnValueOnce({ data: undefined, isLoading: true });
+      const { getByTestId } = renderWithRedux(<QuizGameScreen />, {
+        preloadedState: createQuizStoreState(QUIZ_CONTACTS.minimal, FILTER_STATES.empty),
       });
 
-      // Should show loading indicator
-      const indicator = UNSAFE_getByType(require('react-native').ActivityIndicator);
-      expect(indicator).toBeTruthy();
+      // Should show loading indicator while RTK Query loads
+      expect(getByTestId('activity-indicator')).toBeTruthy();
     });
   });
 

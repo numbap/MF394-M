@@ -110,35 +110,24 @@ export const FILTER_STATES = {
   empty: {
     selectedCategories: [],
     selectedTags: [],
-    isLoaded: true,
   },
 
   // Single category selected
   singleCategory: {
     selectedCategories: ['friends-family'],
     selectedTags: [],
-    isLoaded: true,
   },
 
   // Multiple categories selected
   multiCategory: {
     selectedCategories: ['friends-family', 'work'],
     selectedTags: [],
-    isLoaded: true,
   },
 
   // Categories + tags selected
   withTags: {
     selectedCategories: ['friends-family'],
     selectedTags: ['Sports', 'Music'],
-    isLoaded: true,
-  },
-
-  // Filters not yet loaded from storage
-  notLoaded: {
-    selectedCategories: [],
-    selectedTags: [],
-    isLoaded: false,
   },
 };
 

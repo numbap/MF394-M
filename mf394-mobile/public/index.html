@@ -77,12 +77,18 @@
 
       // Visual Viewport counter-zoom: counteract iOS viewport zoom in real-time
       // iOS 26+ doesn't fire visualViewport events and may throttle rAF during zoom,
-      // so we poll using setInterval.
+      // so we poll. Polls fast (100ms) during/after touch, slow (500ms) otherwise.
       if (window.visualViewport) {
         var lastScale = 1;
+        var touching = false;
+        var pollInterval = 500;
+        document.addEventListener('touchstart', function() { touching = true; }, true);
+        document.addEventListener('touchend', function() {
+          setTimeout(function() { touching = false; }, 1000);
+        }, true);
         setInterval(function() {
+          if (!touching && lastScale <= 1.01) return;
           var vv = window.visualViewport;
-          document.body.setAttribute('data-vv-scale', vv.scale);
           if (vv.scale > 1.01) {
             root.style.transform = 'translate(' + vv.offsetLeft + 'px, ' + vv.offsetTop + 'px) scale(' + (1 / vv.scale) + ')';
             root.style.transformOrigin = '0 0';
@@ -92,7 +98,7 @@
             root.style.transformOrigin = '';
             lastScale = 1;
           }
-        }, 100);
+        }, pollInterval);
       }
     </script>
   </body>

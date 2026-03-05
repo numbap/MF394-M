@@ -2,22 +2,20 @@
  * Filters Slice
  *
  * Manages category and tag filter selections shared across Contacts and Quiz screens.
- * Persists to AsyncStorage so filters are remembered between app sessions.
+ * Filter state resets on every session (no persistence) so users always start with
+ * zero categories selected after login or page refresh.
  */
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { StorageService } from '../../services/storage.service';
 
 interface FiltersState {
   selectedCategories: string[];
   selectedTags: string[];
-  isLoaded: boolean; // Track if we've loaded from storage
 }
 
 const initialState: FiltersState = {
   selectedCategories: [],
   selectedTags: [],
-  isLoaded: false,
 };
 
 const filtersSlice = createSlice({
@@ -28,11 +26,6 @@ const filtersSlice = createSlice({
       state.selectedCategories = action.payload;
       // Clear tags when categories change
       state.selectedTags = [];
-      // Spread to plain arrays — immer draft proxies are revoked after reducer returns
-      StorageService.saveFilters({
-        categories: [...action.payload],
-        tags: [],
-      });
     },
 
     toggleCategory: (state, action: PayloadAction<string>) => {
@@ -44,20 +37,10 @@ const filtersSlice = createSlice({
       }
       // Clear tags when categories change
       state.selectedTags = [];
-      // Spread to plain arrays — immer draft proxies are revoked after reducer returns
-      StorageService.saveFilters({
-        categories: [...state.selectedCategories],
-        tags: [],
-      });
     },
 
     setTags: (state, action: PayloadAction<string[]>) => {
       state.selectedTags = action.payload;
-      // Spread to plain arrays — immer draft proxies are revoked after reducer returns
-      StorageService.saveFilters({
-        categories: [...state.selectedCategories],
-        tags: [...action.payload],
-      });
     },
 
     toggleTag: (state, action: PayloadAction<string>) => {
@@ -67,35 +50,11 @@ const filtersSlice = createSlice({
       } else {
         state.selectedTags.push(tag);
       }
-      // Spread to plain arrays — immer draft proxies are revoked after reducer returns
-      StorageService.saveFilters({
-        categories: [...state.selectedCategories],
-        tags: [...state.selectedTags],
-      });
     },
 
     clearFilters: (state) => {
       state.selectedCategories = [];
       state.selectedTags = [];
-      // Persist to storage
-      StorageService.saveFilters({
-        categories: [],
-        tags: [],
-      });
-    },
-
-    // Load filters from storage on app start
-    restoreFilters: (state, action: PayloadAction<{ categories: string[]; tags: string[] }>) => {
-      // Sanitize — guard against corrupted storage returning non-array values
-      state.selectedCategories = Array.isArray(action.payload.categories)
-        ? action.payload.categories
-        : [];
-      state.selectedTags = Array.isArray(action.payload.tags) ? action.payload.tags : [];
-      state.isLoaded = true;
-    },
-
-    markFiltersLoaded: (state) => {
-      state.isLoaded = true;
     },
   },
 });
@@ -106,8 +65,6 @@ export const {
   setTags,
   toggleTag,
   clearFilters,
-  restoreFilters,
-  markFiltersLoaded,
 } = filtersSlice.actions;
 
 export default filtersSlice.reducer;
@@ -118,6 +75,3 @@ export const selectSelectedCategories = (state: { filters: FiltersState }) =>
 
 export const selectSelectedTags = (state: { filters: FiltersState }) =>
   state.filters.selectedTags;
-
-export const selectFiltersLoaded = (state: { filters: FiltersState }) =>
-  state.filters.isLoaded;

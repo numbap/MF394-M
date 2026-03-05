@@ -32,17 +32,14 @@ import {
   toggleTag,
   setCategories,
   setTags,
-  restoreFilters,
   selectSelectedCategories,
   selectSelectedTags,
-  selectFiltersLoaded,
 } from "../../store/slices/filters.slice";
 import { useGetUserQuery } from "../../store/api/contacts.api";
 import { ContactCard } from "../../components/ContactCard";
 import { SummaryThumbnail } from "../../components/SummaryThumbnail";
 import { CategoryTagFilter } from "../../components/CategoryTagFilter";
 import { FilterContainer } from "../../components/FilterContainer";
-import { StorageService } from "../../services/storage.service";
 import { useNetworkStatus } from "../../hooks/useNetworkStatus";
 import { CATEGORIES } from "../../constants";
 
@@ -51,7 +48,6 @@ export default function ListingScreen({ navigation }: any) {
   const route = useRoute();
   const selectedCategories = useSelector(selectSelectedCategories);
   const selectedTags = useSelector(selectSelectedTags);
-  const filtersLoaded = useSelector(selectFiltersLoaded);
   const { width } = useWindowDimensions();
   const { isOnline } = useNetworkStatus();
 
@@ -75,21 +71,6 @@ export default function ListingScreen({ navigation }: any) {
   // Load all contacts + tags from /api/user (single call)
   const { data: userData, isLoading, error } = useGetUserQuery();
   const contacts = userData?.contacts || [];
-
-  // Load filters from storage on mount
-  useEffect(() => {
-    const loadFilters = async () => {
-      if (!filtersLoaded) {
-        try {
-          const storedFilters = await StorageService.loadFilters();
-          dispatch(restoreFilters(storedFilters));
-        } catch (err) {
-          console.error("Failed to load filters:", err);
-        }
-      }
-    };
-    loadFilters();
-  }, [dispatch, filtersLoaded]);
 
   // Apply filters from route params (when navigating from Add/Edit/Party)
   useEffect(() => {

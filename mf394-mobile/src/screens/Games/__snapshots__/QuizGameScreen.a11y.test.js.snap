@@ -113,7 +113,7 @@ exports[`QuizGameScreen - Accessibility Snapshot matches snapshot for full rende
               resizeMode="cover"
               source={
                 {
-                  "uri": "data:image/jpeg;base64,david",
+                  "uri": "data:image/jpeg;base64,alice",
                 }
               }
               style={

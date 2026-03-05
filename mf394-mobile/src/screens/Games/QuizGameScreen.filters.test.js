@@ -15,8 +15,6 @@ import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
 import QuizGameScreen from './QuizGameScreen';
 import { renderWithRedux } from '../../../__tests__/utils/reduxTestUtils';
 import { QUIZ_CONTACTS, createQuizStoreState, FILTER_STATES } from '../../../__tests__/fixtures/quizGame.fixtures';
-import { StorageService } from '../../services/storage.service';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { toggleCategory, toggleTag } from '../../store/slices/filters.slice';
 
 // Mock shuffle to be deterministic for snapshot tests
@@ -58,13 +56,6 @@ global.AudioContext = jest.fn().mockImplementation(() => ({
   currentTime: 0,
 }));
 
-jest.mock('../../services/storage.service', () => ({
-  StorageService: {
-    loadFilters: jest.fn(() => Promise.resolve({ categories: [], tags: [] })),
-    saveFilters: jest.fn(() => Promise.resolve()),
-  },
-}));
-
 jest.mock('../../components/CategoryTagFilter/CategoryTagFilter', () => ({
   CategoryTagFilter: ({ onCategoryPress, selectedCategories, categories }) => {
     const { View, TouchableOpacity, Text } = require('react-native');
@@ -91,56 +82,10 @@ jest.mock('../../components/FilterContainer/FilterContainer', () => ({
 describe('QuizGameScreen - Filters', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    AsyncStorage.clear();
     // Default: user data loaded with standard contacts
     mockUseGetUserQuery.mockReturnValue({
       data: { contacts: QUIZ_CONTACTS.standard },
       isLoading: false,
-    });
-  });
-
-  describe('Filter Initialization', () => {
-    it('loads filters from AsyncStorage on mount', async () => {
-      StorageService.loadFilters.mockResolvedValue({
-        categories: ['friends-family'],
-        tags: [],
-      });
-
-      renderWithRedux(<QuizGameScreen />, {
-        preloadedState: createQuizStoreState(QUIZ_CONTACTS.standard, FILTER_STATES.notLoaded),
-      });
-
-      await waitFor(() => {
-        expect(StorageService.loadFilters).toHaveBeenCalled();
-      });
-    });
-
-    it('handles AsyncStorage errors gracefully', async () => {
-      StorageService.loadFilters.mockRejectedValue(new Error('Storage error'));
-
-      const { getByText } = renderWithRedux(<QuizGameScreen />, {
-        preloadedState: createQuizStoreState(QUIZ_CONTACTS.standard, FILTER_STATES.notLoaded),
-      });
-
-      // Should not crash, should show category selection prompt
-      await waitFor(() => {
-        expect(getByText(/Select Categories to Start Quiz/i)).toBeTruthy();
-      });
-    });
-
-    it('displays all categories if no saved filters', async () => {
-      StorageService.loadFilters.mockResolvedValue({
-        categories: [],
-        tags: [],
-      });
-
-      const { getByText } = renderWithRedux(<QuizGameScreen />, {
-        preloadedState: createQuizStoreState(QUIZ_CONTACTS.standard, FILTER_STATES.empty),
-      });
-
-      await waitFor(() => {
-        expect(getByText(/Select Categories to Start Quiz/i)).toBeTruthy();
-      });
     });
   });
 
@@ -202,23 +147,6 @@ describe('QuizGameScreen - Filters', () => {
         expect(state.filters.selectedCategories).toContain('friends-family');
         expect(state.filters.selectedCategories).toContain('work');
       });
-    });
-
-    it('persists selection to AsyncStorage', async () => {
-      const { store } = renderWithRedux(<QuizGameScreen />, {
-        preloadedState: createQuizStoreState(QUIZ_CONTACTS.standard, FILTER_STATES.empty),
-      });
-
-      // saveFilters is called synchronously in the reducer
-      act(() => {
-        store.dispatch(toggleCategory('friends-family'));
-      });
-
-      expect(StorageService.saveFilters).toHaveBeenCalledWith(
-        expect.objectContaining({
-          categories: expect.arrayContaining(['friends-family']),
-        })
-      );
     });
 
     it('shows empty state if no contacts in category', async () => {
@@ -289,7 +217,6 @@ describe('QuizGameScreen - Filters', () => {
         preloadedState: createQuizStoreState(contacts, {
           selectedCategories: ['friends-family'],
           selectedTags: ['Sports'],
-          isLoaded: true,
         }),
       });
 
@@ -305,30 +232,12 @@ describe('QuizGameScreen - Filters', () => {
         preloadedState: createQuizStoreState(QUIZ_CONTACTS.standard, {
           selectedCategories: ['friends-family'],
           selectedTags: ['Sports', 'Music'],
-          isLoaded: true,
         }),
       });
 
       const state = store.getState();
       expect(state.filters.selectedTags).toContain('Sports');
       expect(state.filters.selectedTags).toContain('Music');
-    });
-
-    it('persists tag selection to AsyncStorage', async () => {
-      const { store } = renderWithRedux(<QuizGameScreen />, {
-        preloadedState: createQuizStoreState(QUIZ_CONTACTS.standard, FILTER_STATES.singleCategory),
-      });
-
-      // Dispatch tag toggle — saveFilters is called synchronously in the reducer
-      act(() => {
-        store.dispatch(toggleTag('Sports'));
-      });
-
-      expect(StorageService.saveFilters).toHaveBeenCalledWith(
-        expect.objectContaining({
-          tags: expect.arrayContaining(['Sports']),
-        })
-      );
     });
 
     it('clears selected tags when all categories deselected', async () => {
@@ -375,7 +284,6 @@ describe('QuizGameScreen - Filters', () => {
         preloadedState: createQuizStoreState(QUIZ_CONTACTS.large, {
           selectedCategories: allCategories,
           selectedTags: [],
-          isLoaded: true,
         }),
       });
 
@@ -399,7 +307,6 @@ describe('QuizGameScreen - Filters', () => {
         preloadedState: createQuizStoreState(contacts, {
           selectedCategories: ['friends-family'],
           selectedTags: ['Sports'],
-          isLoaded: true,
         }),
       });
 
@@ -424,7 +331,6 @@ describe('QuizGameScreen - Filters', () => {
         preloadedState: createQuizStoreState(contacts, {
           selectedCategories: ['friends-family'],
           selectedTags: ['Sports', 'Music'],
-          isLoaded: true,
         }),
       });
 

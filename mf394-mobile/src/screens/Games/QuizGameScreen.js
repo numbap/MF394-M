@@ -28,16 +28,12 @@ import {
   toggleTag,
   setCategories,
   setTags,
-  restoreFilters,
-  markFiltersLoaded,
   selectSelectedCategories,
   selectSelectedTags,
-  selectFiltersLoaded,
 } from "../../store/slices/filters.slice";
 import { CategoryTagFilter } from "../../components/CategoryTagFilter";
 import { FilterContainer } from "../../components/FilterContainer";
 import { QuizCelebration } from "../../components/QuizCelebration";
-import { StorageService } from "../../services/storage.service";
 import { CATEGORIES } from "../../constants";
 
 export default function QuizGameScreen() {
@@ -52,7 +48,6 @@ export default function QuizGameScreen() {
   // Redux state
   const selectedCategories = useSelector(selectSelectedCategories);
   const selectedTags = useSelector(selectSelectedTags);
-  const filtersLoaded = useSelector(selectFiltersLoaded);
 
   // Local state
   const [quizContacts, setQuizContacts] = useState([]);
@@ -74,23 +69,6 @@ export default function QuizGameScreen() {
 
   // Timer ref for cleanup
   const timerRef = useRef(null);
-
-  // Load filters from storage on mount
-  useEffect(() => {
-    const loadFilters = async () => {
-      if (!filtersLoaded) {
-        try {
-          const storedFilters = await StorageService.loadFilters();
-          dispatch(restoreFilters(storedFilters));
-        } catch (error) {
-          console.error("Failed to load filters:", error);
-          // Mark loaded even on error so the quiz renders (with empty defaults)
-          dispatch(markFiltersLoaded());
-        }
-      }
-    };
-    loadFilters();
-  }, [dispatch, filtersLoaded]);
 
   useEffect(() => {
     loadSounds();
@@ -212,10 +190,10 @@ export default function QuizGameScreen() {
 
   // Reload quiz contacts when filters or user data changes
   useEffect(() => {
-    if (filtersLoaded && !isUserLoading) {
+    if (!isUserLoading) {
       loadQuizContacts();
     }
-  }, [filteredContacts, filtersLoaded, isUserLoading]);
+  }, [filteredContacts, isUserLoading]);
 
   // Generate options when question changes (but NOT when clicking answers)
   useEffect(() => {

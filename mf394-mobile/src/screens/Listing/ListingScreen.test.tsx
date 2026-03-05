@@ -49,14 +49,6 @@ jest.mock("../../store/api/contacts.api", () => ({
   })),
 }));
 
-// Mock StorageService
-jest.mock("../../services/storage.service", () => ({
-  StorageService: {
-    loadFilters: jest.fn().mockResolvedValue({ categories: [], tags: [] }),
-    saveFilters: jest.fn(),
-  },
-}));
-
 // Mock network status
 jest.mock("../../hooks/useNetworkStatus", () => ({
   useNetworkStatus: () => ({ isOnline: true }),

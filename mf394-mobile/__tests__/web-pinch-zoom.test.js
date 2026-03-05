@@ -1,7 +1,7 @@
 /**
  * web-pinch-zoom.test.js
  *
- * Verifies that web/index.html contains all three layers of pinch-zoom prevention:
+ * Verifies that public/index.html contains all four layers of pinch-zoom prevention:
  *   1. Viewport meta tag with user-scalable=no and maximum-scale=1
  *   2. CSS touch-action on html and body
  *   3. JS event listeners for wheel+ctrlKey (trackpad) and touchmove (mobile)
@@ -23,7 +23,7 @@ beforeAll(() => {
   html = fs.readFileSync(HTML_PATH, 'utf8');
 });
 
-describe('web/index.html pinch-zoom prevention', () => {
+describe('public/index.html pinch-zoom prevention', () => {
   describe('Layer 1: Viewport meta tag', () => {
     it('has a viewport meta tag', () => {
       expect(html).toMatch(/<meta[^>]+name=["']viewport["'][^>]*>/i);
@@ -89,6 +89,51 @@ describe('web/index.html pinch-zoom prevention', () => {
       expect(html).toMatch(/e\.scale\s*!==\s*undefined/);
       expect(html).toMatch(/e\.scale\s*!==\s*1/);
     });
+
+    it('has a gesturestart listener (Safari-specific gesture prevention)', () => {
+      expect(html).toMatch(/addEventListener\s*\(\s*['"]gesturestart['"]/);
+    });
+
+    it('has a gesturechange listener (Safari-specific gesture prevention)', () => {
+      expect(html).toMatch(/addEventListener\s*\(\s*['"]gesturechange['"]/);
+    });
+
+    it('blocks multi-touch on touchstart (not just touchmove)', () => {
+      // touchstart must also check touches.length > 1 to block the gesture early
+      const touchstartBlock = html.match(
+        /addEventListener\s*\(\s*['"]touchstart['"][\s\S]{0,300}?touches\.length/
+      );
+      expect(touchstartBlock).not.toBeNull();
+    });
+
+    it('registers touchstart listener with capture: true', () => {
+      // capture phase ensures we fire before any framework handler
+      const region = html.match(
+        /addEventListener\s*\(\s*['"]touchstart['"][\s\S]{0,200}?capture\s*:\s*true/
+      );
+      expect(region).not.toBeNull();
+    });
+
+    it('registers touchmove listener with capture: true', () => {
+      const region = html.match(
+        /addEventListener\s*\(\s*['"]touchmove['"][\s\S]{0,200}?capture\s*:\s*true/
+      );
+      expect(region).not.toBeNull();
+    });
+
+    it('registers gesturestart listener with capture: true', () => {
+      const region = html.match(
+        /addEventListener\s*\(\s*['"]gesturestart['"][\s\S]{0,200}?capture\s*:\s*true/
+      );
+      expect(region).not.toBeNull();
+    });
+
+    it('registers gesturechange listener with capture: true', () => {
+      const region = html.match(
+        /addEventListener\s*\(\s*['"]gesturechange['"][\s\S]{0,200}?capture\s*:\s*true/
+      );
+      expect(region).not.toBeNull();
+    });
   });
 
   describe('Layer 4: Visual Viewport counter-zoom', () => {
@@ -96,8 +141,15 @@ describe('web/index.html pinch-zoom prevention', () => {
       expect(html).toMatch(/window\.visualViewport/);
     });
 
-    it('polls for zoom changes using setInterval', () => {
+    it('polls for zoom changes using setInterval with touch-aware throttling', () => {
       expect(html).toMatch(/setInterval\s*\(/);
+      expect(html).toMatch(/touching/);
+    });
+
+    it('resets touching flag to false on touchend', () => {
+      // After touch ends, the polling should throttle back to slow mode
+      expect(html).toMatch(/addEventListener\s*\(\s*['"]touchend['"]/);
+      expect(html).toMatch(/touching\s*=\s*false/);
     });
 
     it('applies counter-transform with translate and scale to #root', () => {
@@ -107,6 +159,18 @@ describe('web/index.html pinch-zoom prevention', () => {
       expect(html).toMatch(/offsetLeft/);
       expect(html).toMatch(/offsetTop/);
       expect(html).toMatch(/1\s*\/\s*vv\.scale/);
+    });
+
+    it('sets transformOrigin to "0 0" when applying counter-scale', () => {
+      expect(html).toMatch(/root\.style\.transformOrigin\s*=\s*['"]0 0['"]/);
+    });
+
+    it('clears transform and transformOrigin when scale returns to 1 (reset path)', () => {
+      // When lastScale > 1.01 but current scale is back to 1, both must be cleared
+      const resetBlock = html.match(
+        /lastScale\s*>\s*1\.01[\s\S]{0,200}?root\.style\.transform\s*=\s*['"]['"][\s\S]{0,100}?root\.style\.transformOrigin\s*=\s*['"]['"]/
+      );
+      expect(resetBlock).not.toBeNull();
     });
   });
 });

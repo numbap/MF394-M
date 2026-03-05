@@ -47,13 +47,6 @@ global.AudioContext = jest.fn().mockImplementation(() => ({
   currentTime: 0,
 }));
 
-jest.mock('../../services/storage.service', () => ({
-  StorageService: {
-    loadFilters: jest.fn(() => Promise.resolve({ categories: ['friends-family'], tags: [] })),
-    saveFilters: jest.fn(() => Promise.resolve()),
-  },
-}));
-
 jest.mock('../../components/CategoryTagFilter/CategoryTagFilter', () => {
   const React = require('react');
   const { View, Text } = require('react-native');
@@ -70,6 +63,9 @@ jest.mock('../../components/FilterContainer/FilterContainer', () => {
     FilterContainer: ({ children }) => children,
   };
 });
+
+// Mock shuffle to be deterministic so snapshot order is stable across runs
+jest.mock('../../utils/shuffle', () => (arr) => [...arr]);
 
 // Mock RTK Query so contacts come from useGetUserQuery, not state.contacts.data
 const mockUseGetUserQuery = jest.fn();
@@ -293,8 +289,9 @@ describe('QuizGameScreen - Accessibility', () => {
 
   describe('Loading State', () => {
     it('has accessible loading indicator', async () => {
+      mockUseGetUserQuery.mockReturnValueOnce({ data: undefined, isLoading: true });
       const { UNSAFE_getByType } = renderWithRedux(<QuizGameScreen />, {
-        preloadedState: createQuizStoreState(QUIZ_CONTACTS.minimal, FILTER_STATES.notLoaded),
+        preloadedState: createQuizStoreState(QUIZ_CONTACTS.minimal, FILTER_STATES.empty),
       });
 
       const indicator = UNSAFE_getByType(require('react-native').ActivityIndicator);
@@ -302,12 +299,12 @@ describe('QuizGameScreen - Accessibility', () => {
     });
 
     it('has testID on loading indicator', async () => {
-      const { UNSAFE_getByType } = renderWithRedux(<QuizGameScreen />, {
-        preloadedState: createQuizStoreState(QUIZ_CONTACTS.minimal, FILTER_STATES.notLoaded),
+      mockUseGetUserQuery.mockReturnValueOnce({ data: undefined, isLoading: true });
+      const { getByTestId } = renderWithRedux(<QuizGameScreen />, {
+        preloadedState: createQuizStoreState(QUIZ_CONTACTS.minimal, FILTER_STATES.empty),
       });
 
-      const indicator = UNSAFE_getByType(require('react-native').ActivityIndicator);
-      expect(indicator).toBeTruthy();
+      expect(getByTestId('activity-indicator')).toBeTruthy();
     });
   });
 

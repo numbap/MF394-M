@@ -8,7 +8,7 @@
  * - Timer edge cases
  * - Shuffle edge cases
  * - State consistency
- * - AsyncStorage failures
+ * - Error handling
  * - Redux edge cases
  * - Animation edge cases
  * - Sound edge cases
@@ -19,9 +19,6 @@ import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
 import QuizGameScreen from './QuizGameScreen';
 import { renderWithRedux } from '../../../__tests__/utils/reduxTestUtils';
 import { QUIZ_CONTACTS, createQuizStoreState, FILTER_STATES, createMockContact } from '../../../__tests__/fixtures/quizGame.fixtures';
-import { StorageService } from '../../services/storage.service';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
 // Mock dependencies
 jest.mock('react-native-reanimated', () => {
   const View = require('react-native').View;
@@ -41,13 +38,6 @@ jest.mock('expo-haptics', () => ({
   notificationAsync: jest.fn(() => Promise.resolve()),
   ImpactFeedbackStyle: { Medium: 'medium' },
   NotificationFeedbackType: { Error: 'error' },
-}));
-
-jest.mock('../../services/storage.service', () => ({
-  StorageService: {
-    loadFilters: jest.fn(() => Promise.resolve({ categories: ['friends-family'], tags: [] })),
-    saveFilters: jest.fn(() => Promise.resolve()),
-  },
 }));
 
 jest.mock('../../components/CategoryTagFilter/CategoryTagFilter', () => {
@@ -90,7 +80,6 @@ describe('QuizGameScreen - Edge Cases', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.useFakeTimers();
-    AsyncStorage.clear();
     // Default: return minimal contacts (5 friends-family with photos)
     mockUseGetUserQuery.mockReturnValue({
       data: { contacts: QUIZ_CONTACTS.minimal },
@@ -537,62 +526,6 @@ describe('QuizGameScreen - Edge Cases', () => {
       // Quiz should reset with larger pool
       await waitFor(() => {
         expect(getByText(/1 of/)).toBeTruthy();
-      });
-    });
-  });
-
-  describe('AsyncStorage Failures', () => {
-    it('handles getItem failure', async () => {
-      StorageService.loadFilters.mockRejectedValue(new Error('getItem failed'));
-
-      const { getByText } = renderWithRedux(<QuizGameScreen />, {
-        preloadedState: createQuizStoreState(QUIZ_CONTACTS.standard, FILTER_STATES.notLoaded),
-      });
-
-      // Should not crash
-      await waitFor(() => {
-        expect(getByText(/Select Categories to Start Quiz/i)).toBeTruthy();
-      });
-    });
-
-    it('handles setItem failure', async () => {
-      // The filters reducer calls saveFilters() fire-and-forget (no await/catch).
-      // Using mockRejectedValue would create an unhandled rejection that fails Jest.
-      // Instead, simulate the failure with a self-caught rejection so the state
-      // update (which happens synchronously before the save) is still testable.
-      StorageService.saveFilters.mockImplementation(() =>
-        Promise.reject(new Error('setItem failed')).catch(() => {})
-      );
-
-      const { store } = renderWithRedux(<QuizGameScreen />, {
-        preloadedState: createQuizStoreState(QUIZ_CONTACTS.standard, FILTER_STATES.empty),
-      });
-
-      // Toggle category (will try to save)
-      act(() => {
-        store.dispatch({ type: 'filters/toggleCategory', payload: 'friends-family' });
-      });
-
-      // Should continue despite save failure
-      await waitFor(() => {
-        const state = store.getState();
-        expect(state.filters.selectedCategories).toContain('friends-family');
-      });
-    });
-
-    it('handles corrupted AsyncStorage data', async () => {
-      StorageService.loadFilters.mockResolvedValue({
-        categories: 'invalid', // Should be array
-        tags: null, // Should be array
-      });
-
-      const { getByText } = renderWithRedux(<QuizGameScreen />, {
-        preloadedState: createQuizStoreState(QUIZ_CONTACTS.standard, FILTER_STATES.notLoaded),
-      });
-
-      // Should handle gracefully
-      await waitFor(() => {
-        expect(getByText(/Select Categories to Start Quiz/i)).toBeTruthy();
       });
     });
   });

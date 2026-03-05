@@ -370,6 +370,7 @@ exports[`Cropper Component Snapshot matches snapshot for web 1`] = `
         "marginBottom": 16,
         "overflow": "hidden",
         "position": "relative",
+        "touchAction": "none",
         "width": 1128,
       }
     }

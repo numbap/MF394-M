@@ -16,7 +16,6 @@ import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
 import QuizGameScreen from './QuizGameScreen';
 import { renderWithRedux } from '../../../__tests__/utils/reduxTestUtils';
 import { QUIZ_CONTACTS, createQuizStoreState, FILTER_STATES } from '../../../__tests__/fixtures/quizGame.fixtures';
-import { StorageService } from '../../services/storage.service';
 import { toggleCategory, toggleTag } from '../../store/slices/filters.slice';
 
 // Mock only what we must (animations, sounds)
@@ -38,13 +37,6 @@ jest.mock('expo-haptics', () => ({
   notificationAsync: jest.fn(() => Promise.resolve()),
   ImpactFeedbackStyle: { Medium: 'medium' },
   NotificationFeedbackType: { Error: 'error' },
-}));
-
-jest.mock('../../services/storage.service', () => ({
-  StorageService: {
-    loadFilters: jest.fn(() => Promise.resolve({ categories: ['friends-family'], tags: [] })),
-    saveFilters: jest.fn(() => Promise.resolve()),
-  },
 }));
 
 // Mock shuffle to make contact order deterministic
@@ -317,50 +309,6 @@ describe('QuizGameScreen - Integration', () => {
     });
   });
 
-  describe('Redux + AsyncStorage Sync', () => {
-    it('syncs filter changes to both Redux and AsyncStorage', async () => {
-      const { store } = renderWithRedux(<QuizGameScreen />, {
-        preloadedState: createQuizStoreState(QUIZ_CONTACTS.standard, FILTER_STATES.empty),
-      });
-
-      // Toggle category (this triggers Redux update + AsyncStorage save)
-      act(() => {
-        store.dispatch(toggleCategory('friends-family'));
-      });
-
-      await waitFor(() => {
-        // Redux updated
-        const state = store.getState();
-        expect(state.filters.selectedCategories).toContain('friends-family');
-
-        // AsyncStorage called
-        expect(StorageService.saveFilters).toHaveBeenCalledWith(
-          expect.objectContaining({
-            categories: expect.arrayContaining(['friends-family']),
-          })
-        );
-      });
-    });
-
-    it('loads initial state from AsyncStorage into Redux', async () => {
-      StorageService.loadFilters.mockResolvedValue({
-        categories: ['work', 'community'],
-        tags: ['Tech'],
-      });
-
-      const { store } = renderWithRedux(<QuizGameScreen />, {
-        preloadedState: createQuizStoreState(QUIZ_CONTACTS.standard, FILTER_STATES.notLoaded),
-      });
-
-      await waitFor(() => {
-        expect(StorageService.loadFilters).toHaveBeenCalled();
-      });
-
-      // Redux should be updated with loaded filters
-      // Note: This happens via restoreFilters action in the component
-    });
-  });
-
   describe('Multi-Step Quiz Flow', () => {
     it('handles complete quiz with all correct answers', async () => {
       const { getByText, getByTestId } = renderWithRedux(<QuizGameScreen />, {
@@ -484,43 +432,6 @@ describe('QuizGameScreen - Integration', () => {
 
       const newState = store.getState();
       expect(newState.filters.selectedCategories).toContain('work');
-    });
-  });
-
-  describe('Error Recovery', () => {
-    it('recovers from AsyncStorage load failure', async () => {
-      StorageService.loadFilters.mockRejectedValue(new Error('Storage error'));
-
-      const { getByText } = renderWithRedux(<QuizGameScreen />, {
-        preloadedState: createQuizStoreState(QUIZ_CONTACTS.standard, FILTER_STATES.notLoaded),
-      });
-
-      // Should not crash, show category selection
-      await waitFor(() => {
-        expect(getByText(/Select Categories to Start Quiz/i)).toBeTruthy();
-      });
-    });
-
-    it('continues quiz despite AsyncStorage save failure', async () => {
-      // Use mockImplementation with a caught rejection to avoid unhandled rejection errors.
-      // The filters reducer calls saveFilters() fire-and-forget (no await/catch).
-      StorageService.saveFilters.mockImplementation(() =>
-        Promise.reject(new Error('Save failed')).catch(() => {})
-      );
-
-      const { store, getByText } = renderWithRedux(<QuizGameScreen />, {
-        preloadedState: createQuizStoreState(QUIZ_CONTACTS.standard, FILTER_STATES.empty),
-      });
-
-      // Toggle category (save will fail silently)
-      act(() => {
-        store.dispatch(toggleCategory('friends-family'));
-      });
-
-      // Quiz should still load
-      await waitFor(() => {
-        expect(getByText(/\d+ of \d+/)).toBeTruthy();
-      });
     });
   });
 
