@@ -44,7 +44,7 @@ describe('web/index.html pinch-zoom prevention', () => {
     it('applies touch-action to all elements via universal selector', () => {
       // Matches: * { touch-action: pan-x pan-y; }
       // The universal selector ensures ALL elements (including RNW-generated divs) are covered.
-      expect(html).toMatch(/\*\s*\{[^}]*touch-action\s*:\s*pan-x\s+pan-y/);
+      expect(html).toMatch(/\*\s*\{[^}]*touch-action\s*:\s*pan-x\s+pan-y\s*!important/);
     });
   });
 
