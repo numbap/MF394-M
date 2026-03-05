@@ -102,7 +102,7 @@ describe('ImageSelector', () => {
 
       await waitFor(() => {
         expect(ImagePicker.launchImageLibraryAsync).toHaveBeenCalledWith({
-          mediaTypes: ImagePicker.MediaTypeOptions.Images,
+          mediaTypes: 'images',
           allowsEditing: false,
           aspect: [1, 1],
           quality: 1,

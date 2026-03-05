@@ -113,7 +113,7 @@ exports[`QuizGameScreen - Accessibility Snapshot matches snapshot for full rende
               resizeMode="cover"
               source={
                 {
-                  "uri": "data:image/jpeg;base64,eve",
+                  "uri": "data:image/jpeg;base64,david",
                 }
               }
               style={
@@ -188,7 +188,7 @@ exports[`QuizGameScreen - Accessibility Snapshot matches snapshot for full rende
                 }
               }
             >
-              Charlie
+              Alice
             </Text>
           </View>
           <View
@@ -302,7 +302,7 @@ exports[`QuizGameScreen - Accessibility Snapshot matches snapshot for full rende
                 }
               }
             >
-              David
+              Charlie
             </Text>
           </View>
           <View
@@ -359,7 +359,7 @@ exports[`QuizGameScreen - Accessibility Snapshot matches snapshot for full rende
                 }
               }
             >
-              Alice
+              David
             </Text>
           </View>
           <View

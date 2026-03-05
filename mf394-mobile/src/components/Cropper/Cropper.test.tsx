@@ -253,9 +253,6 @@ describe('Cropper Component', () => {
       Platform.OS = 'ios';
       const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
 
-      // Mock manipulateAsync failure (v14 named-export API)
-      mockManipulateAsync.mockRejectedValueOnce(new Error('Crop failed'));
-
       const { getByText } = render(
         <Cropper
           imageUri={mockImageUri}
@@ -263,6 +260,15 @@ describe('Cropper Component', () => {
           onCancel={mockOnCancel}
         />
       );
+
+      // Wait for the probe useEffect call to complete before setting up the rejection.
+      // mockRejectedValueOnce set before render would be consumed by the probe call.
+      await waitFor(() => {
+        expect(mockManipulateAsync).toHaveBeenCalledTimes(1);
+      });
+
+      // Now mock the crop call to fail
+      mockManipulateAsync.mockRejectedValueOnce(new Error('Crop failed'));
 
       const cropButton = getByText('Crop');
       fireEvent.press(cropButton);
