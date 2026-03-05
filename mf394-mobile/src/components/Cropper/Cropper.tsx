@@ -239,6 +239,7 @@ function WebCropper({ imageUri, onCropConfirm, onCancel }: CropperProps) {
           crop={crop}
           zoom={zoom}
           aspect={1}
+          cropSize={{ width: CANVAS_SIZE, height: CANVAS_SIZE }}
           onCropChange={setCrop}
           onCropComplete={(_croppedArea: any, croppedAreaPixels: any) => {
             setCroppedAreaPixels(croppedAreaPixels);
