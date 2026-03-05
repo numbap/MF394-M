@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no" />
     <title>UmmYou</title>
     <style>
-      html, body { margin: 0; padding: 0; height: 100%; }
+      html, body { margin: 0; padding: 0; height: 100%; touch-action: pan-x pan-y; }
       #root { display: flex; height: 100%; }
       #splash {
         position: fixed;
@@ -44,6 +44,15 @@
         }
       });
       observer.observe(root, { childList: true });
+
+      // Prevent pinch-zoom on all modern browsers including Safari
+      document.addEventListener('wheel', function(e) {
+        if (e.ctrlKey) e.preventDefault();
+      }, { passive: false });
+
+      document.addEventListener('touchmove', function(e) {
+        if (e.touches.length > 1) e.preventDefault();
+      }, { passive: false });
     </script>
   </body>
 </html>
