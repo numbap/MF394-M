@@ -72,21 +72,24 @@
       }, { passive: false, capture: true });
 
       // Visual Viewport counter-zoom: counteract iOS viewport zoom in real-time
-      // When iOS zooms to Nx, we scale #root to 1/N and translate it to the
-      // visual viewport offset so the browser's magnification cancels out.
+      // iOS 26+ doesn't fire visualViewport resize/scroll events for pinch-zoom,
+      // so we poll using requestAnimationFrame instead.
       if (window.visualViewport) {
-        var counterZoom = function() {
+        var lastScale = 1;
+        var counterZoomLoop = function() {
           var vv = window.visualViewport;
           if (vv.scale > 1.01) {
             root.style.transform = 'translate(' + vv.offsetLeft + 'px, ' + vv.offsetTop + 'px) scale(' + (1 / vv.scale) + ')';
             root.style.transformOrigin = '0 0';
-          } else {
+            lastScale = vv.scale;
+          } else if (lastScale > 1.01) {
             root.style.transform = '';
             root.style.transformOrigin = '';
+            lastScale = 1;
           }
+          requestAnimationFrame(counterZoomLoop);
         };
-        window.visualViewport.addEventListener('resize', counterZoom);
-        window.visualViewport.addEventListener('scroll', counterZoom);
+        requestAnimationFrame(counterZoomLoop);
       }
 </script>
   </body>
