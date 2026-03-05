@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="%LANG_ISO_CODE%">
+  <head>
+    <meta charset="utf-8" />
+    <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no" />
+    <title>%WEB_TITLE%</title>
+    <style id="expo-reset">
+      * { touch-action: pan-x pan-y !important; }
+      html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; }
+      body { overflow: hidden; }
+      #root { display: flex; height: 100%; flex: 1; overflow: hidden; }
+    </style>
+    <style>
+      #splash {
+        position: fixed;
+        inset: 0;
+        background: #f5f3ef;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        z-index: 9999;
+        transition: opacity 0.3s ease;
+      }
+      #splash.hidden { opacity: 0; pointer-events: none; }
+      #splash img { width: 160px; height: 160px; object-fit: contain; }
+      #splash p { font-family: sans-serif; color: #555; font-size: 18px; margin: 0; }
+    </style>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="splash">
+      <img src="/assets/logo.png" alt="UmmYou" />
+      <p>Loading...</p>
+    </div>
+    <div id="root"></div>
+    <script>
+      var splash = document.getElementById('splash');
+      var root = document.getElementById('root');
+      var observer = new MutationObserver(function () {
+        if (root.children.length > 0) {
+          splash.classList.add('hidden');
+          setTimeout(function () {
+            splash.style.display = 'none';
+          }, 300);
+          observer.disconnect();
+        }
+      });
+      observer.observe(root, { childList: true });
+
+      // Prevent pinch-zoom on all modern browsers including Safari
+      document.addEventListener('wheel', function(e) {
+        if (e.ctrlKey) e.preventDefault();
+      }, { passive: false });
+
+      // Block pinch-zoom using capture phase so we fire before any framework handler
+      document.addEventListener('touchstart', function(e) {
+        if (e.touches.length > 1) e.preventDefault();
+      }, { passive: false, capture: true });
+
+      document.addEventListener('touchmove', function(e) {
+        if (e.touches.length > 1 || (e.scale !== undefined && e.scale !== 1)) {
+          e.preventDefault();
+        }
+      }, { passive: false, capture: true });
+
+      // Safari-specific gesture events (also in capture phase)
+      document.addEventListener('gesturestart', function(e) {
+        e.preventDefault();
+      }, { passive: false, capture: true });
+
+      document.addEventListener('gesturechange', function(e) {
+        e.preventDefault();
+      }, { passive: false, capture: true });
+
+      // Visual Viewport counter-zoom: counteract iOS viewport zoom in real-time
+      // iOS 26+ doesn't fire visualViewport events and may throttle rAF during zoom,
+      // so we poll using setInterval.
+      if (window.visualViewport) {
+        var lastScale = 1;
+        setInterval(function() {
+          var vv = window.visualViewport;
+          document.body.setAttribute('data-vv-scale', vv.scale);
+          if (vv.scale > 1.01) {
+            root.style.transform = 'translate(' + vv.offsetLeft + 'px, ' + vv.offsetTop + 'px) scale(' + (1 / vv.scale) + ')';
+            root.style.transformOrigin = '0 0';
+            lastScale = vv.scale;
+          } else if (lastScale > 1.01) {
+            root.style.transform = '';
+            root.style.transformOrigin = '';
+            lastScale = 1;
+          }
+        }, 100);
+      }
+    </script>
+  </body>
+</html>

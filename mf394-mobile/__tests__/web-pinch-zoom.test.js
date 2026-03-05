@@ -14,7 +14,8 @@
 const fs = require('fs');
 const path = require('path');
 
-const HTML_PATH = path.resolve(__dirname, '../web/index.html');
+// Expo uses public/index.html as the web template (not web/index.html)
+const HTML_PATH = path.resolve(__dirname, '../public/index.html');
 
 let html;
 
