@@ -13,12 +13,16 @@ import { spacing, typography } from '../../theme/theme';
 // Import the mocked hook
 const useWindowDimensionsMock = require('react-native/Libraries/Utilities/useWindowDimensions').default;
 
+// Captured props from last EasyCrop render (var avoids temporal dead zone with jest.mock hoisting)
+var lastEasyCropProps: any = null;
+
 // Mock dependencies
 jest.mock('react-easy-crop', () => ({
-  default: ({ image, onCropComplete }: any) => {
+  default: (props: any) => {
+    lastEasyCropProps = props;
     // Simulate EasyCrop component
     setTimeout(() => {
-      onCropComplete(
+      props.onCropComplete(
         { x: 0, y: 0, width: 100, height: 100 },
         { x: 0, y: 0, width: 100, height: 100 }
       );
@@ -51,6 +55,7 @@ describe('Cropper Component', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    lastEasyCropProps = null;
   });
 
   describe('Common Tests (Web & Mobile)', () => {
@@ -152,6 +157,26 @@ describe('Cropper Component', () => {
       // WebCropper renders action buttons but no title heading
       expect(getByText('Crop')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
+    });
+
+    it('passes cropSize matching CANVAS_SIZE so crop area fills the container', () => {
+      useWindowDimensionsMock.mockReturnValue({ width: 800, height: 1200 });
+      Platform.OS = 'web';
+
+      render(
+        <Cropper
+          imageUri={mockImageUri}
+          onCropConfirm={mockOnCropConfirm}
+          onCancel={mockOnCancel}
+        />
+      );
+
+      expect(lastEasyCropProps).not.toBeNull();
+      expect(lastEasyCropProps.cropSize).toBeDefined();
+      // Must be square (1:1 ratio)
+      expect(lastEasyCropProps.cropSize.width).toBe(lastEasyCropProps.cropSize.height);
+      // Must be positive
+      expect(lastEasyCropProps.cropSize.width).toBeGreaterThan(0);
     });
 
     it.skip('calls onCropConfirm with cropped image on web', async () => {
