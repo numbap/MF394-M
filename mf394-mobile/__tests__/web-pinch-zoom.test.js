@@ -41,10 +41,10 @@ describe('web/index.html pinch-zoom prevention', () => {
   });
 
   describe('Layer 2: CSS touch-action', () => {
-    it('applies touch-action to html and body', () => {
-      // Matches: html, body { ... touch-action: pan-x pan-y ... }
-      // Allows whitespace variation and properties before/after touch-action.
-      expect(html).toMatch(/html\s*,\s*body\s*\{[^}]*touch-action\s*:\s*pan-x\s+pan-y/);
+    it('applies touch-action to all elements via universal selector', () => {
+      // Matches: * { touch-action: pan-x pan-y; }
+      // The universal selector ensures ALL elements (including RNW-generated divs) are covered.
+      expect(html).toMatch(/\*\s*\{[^}]*touch-action\s*:\s*pan-x\s+pan-y/);
     });
   });
 

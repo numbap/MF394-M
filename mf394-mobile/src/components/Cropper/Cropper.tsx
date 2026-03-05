@@ -232,6 +232,7 @@ function WebCropper({ imageUri, onCropConfirm, onCancel }: CropperProps) {
           overflow: "hidden",
           marginBottom: spacing.lg,
           position: "relative",
+          touchAction: "manipulation",
         }}
       >
         <EasyCrop
