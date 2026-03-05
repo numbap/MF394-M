@@ -60,7 +60,7 @@ export function ImageSelector({
       <TouchableOpacity
         testID="image-selector-container"
         style={styles.imageContainer}
-        onPress={handlePickImage}
+        onPress={imageUri ? undefined : handlePickImage}
         onLongPress={handleLongPress}
         delayLongPress={500}
         activeOpacity={0.7}

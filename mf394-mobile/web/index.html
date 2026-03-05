@@ -7,7 +7,7 @@
     <title>UmmYou</title>
     <style>
       html, body { margin: 0; padding: 0; height: 100%; touch-action: pan-x pan-y; }
-      #root { display: flex; height: 100%; }
+      #root { display: flex; height: 100%; touch-action: pan-x pan-y; }
       #splash {
         position: fixed;
         inset: 0;
@@ -53,6 +53,15 @@
       document.addEventListener('touchmove', function(e) {
         if (e.touches.length > 1) e.preventDefault();
       }, { passive: false });
-    </script>
+
+      // Block Safari pinch-zoom gesture events (fires before touchmove)
+      document.addEventListener('gesturestart', function(e) {
+        e.preventDefault();
+      }, { passive: false });
+
+      document.addEventListener('gesturechange', function(e) {
+        e.preventDefault();
+      }, { passive: false });
+</script>
   </body>
 </html>

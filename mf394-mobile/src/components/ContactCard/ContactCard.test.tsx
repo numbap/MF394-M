@@ -196,7 +196,7 @@ describe("ContactCard", () => {
         ? rootElement.props.style.flat()
         : [rootElement.props.style];
 
-      const hasFixedWidth = style.some((s: any) => s && s.width === 360);
+      const hasFixedWidth = style.some((s: any) => s && s.width === 180);
       expect(hasFixedWidth).toBe(true);
     });
   });

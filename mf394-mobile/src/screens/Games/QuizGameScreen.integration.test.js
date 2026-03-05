@@ -47,6 +47,9 @@ jest.mock('../../services/storage.service', () => ({
   },
 }));
 
+// Mock shuffle to make contact order deterministic
+jest.mock('../../utils/shuffle', () => (arr) => [...arr]);
+
 // DO NOT mock CategoryTagFilter or FilterContainer (integration test!)
 
 jest.mock('../../components/QuizCelebration', () => {
@@ -152,16 +155,13 @@ describe('QuizGameScreen - Integration', () => {
 
   describe('CategoryTagFilter Integration', () => {
     it('renders CategoryTagFilter component', async () => {
-      const { container } = renderWithRedux(<QuizGameScreen />, {
+      const { getByText } = renderWithRedux(<QuizGameScreen />, {
         preloadedState: createQuizStoreState(QUIZ_CONTACTS.standard, FILTER_STATES.empty),
       });
 
       await waitFor(() => {
-        expect(container).toBeTruthy();
+        expect(getByText(/Select Categories to Start Quiz/i)).toBeTruthy();
       });
-
-      // CategoryTagFilter should be rendered (we verify by checking for category text)
-      // Note: Real component may not expose testIDs in same way as mock
     });
 
     it('passes correct props to CategoryTagFilter', async () => {
@@ -208,16 +208,13 @@ describe('QuizGameScreen - Integration', () => {
 
   describe('FilterContainer Integration', () => {
     it('wraps CategoryTagFilter in FilterContainer', async () => {
-      const { container } = renderWithRedux(<QuizGameScreen />, {
+      const { getByText } = renderWithRedux(<QuizGameScreen />, {
         preloadedState: createQuizStoreState(QUIZ_CONTACTS.standard, FILTER_STATES.empty),
       });
 
       await waitFor(() => {
-        expect(container).toBeTruthy();
+        expect(getByText(/Select Categories to Start Quiz/i)).toBeTruthy();
       });
-
-      // FilterContainer should wrap the filter UI
-      // We verify by checking component renders
     });
 
     it('handles FilterContainer collapse/expand', async () => {

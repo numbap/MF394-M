@@ -527,6 +527,7 @@ export default function QuizGameScreen() {
                 style={getOptionStyle(option)}
                 onPress={() => handleAnswer(option)}
                 disabled={feedback === "correct"}
+                accessibilityRole="button"
               >
                 <Text style={styles.optionText}>{option}</Text>
               </TouchableOpacity>

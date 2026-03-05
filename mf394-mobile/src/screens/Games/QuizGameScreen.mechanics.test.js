@@ -76,6 +76,9 @@ jest.mock('../../components/QuizCelebration', () => {
   };
 });
 
+// Mock shuffle to make contact order deterministic
+jest.mock('../../utils/shuffle', () => (arr) => [...arr]);
+
 // Mock RTK Query so contacts come from useGetUserQuery, not state.contacts.data
 const mockUseGetUserQuery = jest.fn();
 jest.mock('../../store/api/contacts.api', () => ({

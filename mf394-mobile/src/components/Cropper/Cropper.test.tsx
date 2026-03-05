@@ -32,7 +32,7 @@ jest.mock('react-easy-crop', () => ({
 }));
 
 // Mock expo-image-manipulator (v14 named-export API)
-const mockManipulateAsync = jest.fn().mockResolvedValue({ uri: 'cropped-image-uri' });
+const mockManipulateAsync = jest.fn().mockResolvedValue({ uri: 'cropped-image-uri', base64: 'base64-encoded-image-data', width: 100, height: 100 });
 jest.mock('expo-image-manipulator', () => ({
   manipulateAsync: mockManipulateAsync,
   SaveFormat: { JPEG: 'jpeg', PNG: 'png' },

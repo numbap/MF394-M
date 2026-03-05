@@ -99,12 +99,14 @@ describe('QuizGameScreen - Accessibility', () => {
     });
 
     it('has testID on main container', async () => {
-      const { container } = renderWithRedux(<QuizGameScreen />, {
+      const { getByText } = renderWithRedux(<QuizGameScreen />, {
         preloadedState: createQuizStoreState(QUIZ_CONTACTS.minimal, FILTER_STATES.singleCategory),
       });
 
-      // Main container should exist
-      expect(container).toBeTruthy();
+      // Main container should exist (quiz renders progress text)
+      await waitFor(() => {
+        expect(getByText(/\d+ of \d+/)).toBeTruthy();
+      });
     });
   });
 
