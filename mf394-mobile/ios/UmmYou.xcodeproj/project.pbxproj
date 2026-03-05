@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		126C3D42D1891C9F9E701D9C /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = EA8303CB303AD307EAA3020F /* PrivacyInfo.xcprivacy */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
-		252EB41AFB9071EB7A18BB8D /* libPods-FaceMemorizer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 12ED20A3343ACF681360BC95 /* libPods-FaceMemorizer.a */; };
+		252EB41AFB9071EB7A18BB8D /* libPods-UmmYou.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 12ED20A3343ACF681360BC95 /* libPods-UmmYou.a */; };
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
 		5F1B48090071F94423430657 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5790990AB2F5053629E13347 /* ExpoModulesProvider.swift */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
@@ -17,19 +17,19 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		12ED20A3343ACF681360BC95 /* libPods-FaceMemorizer.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-FaceMemorizer.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		13B07F961A680F5B00A75B9A /* FaceMemorizer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FaceMemorizer.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = FaceMemorizer/Images.xcassets; sourceTree = "<group>"; };
-		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = FaceMemorizer/Info.plist; sourceTree = "<group>"; };
-		2F2E42596FA90F61B0699B61 /* Pods-FaceMemorizer.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FaceMemorizer.debug.xcconfig"; path = "Target Support Files/Pods-FaceMemorizer/Pods-FaceMemorizer.debug.xcconfig"; sourceTree = "<group>"; };
-		5790990AB2F5053629E13347 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-FaceMemorizer/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
-		5D0AF32541C6884015BE9608 /* Pods-FaceMemorizer.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FaceMemorizer.release.xcconfig"; path = "Target Support Files/Pods-FaceMemorizer/Pods-FaceMemorizer.release.xcconfig"; sourceTree = "<group>"; };
-		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = FaceMemorizer/SplashScreen.storyboard; sourceTree = "<group>"; };
+		12ED20A3343ACF681360BC95 /* libPods-UmmYou.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-UmmYou.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		13B07F961A680F5B00A75B9A /* UmmYou.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UmmYou.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = UmmYou/Images.xcassets; sourceTree = "<group>"; };
+		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = UmmYou/Info.plist; sourceTree = "<group>"; };
+		2F2E42596FA90F61B0699B61 /* Pods-UmmYou.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-UmmYou.debug.xcconfig"; path = "Target Support Files/Pods-UmmYou/Pods-UmmYou.debug.xcconfig"; sourceTree = "<group>"; };
+		5790990AB2F5053629E13347 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-UmmYou/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
+		5D0AF32541C6884015BE9608 /* Pods-UmmYou.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-UmmYou.release.xcconfig"; path = "Target Support Files/Pods-UmmYou/Pods-UmmYou.release.xcconfig"; sourceTree = "<group>"; };
+		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = UmmYou/SplashScreen.storyboard; sourceTree = "<group>"; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
-		EA8303CB303AD307EAA3020F /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = FaceMemorizer/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		EA8303CB303AD307EAA3020F /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = UmmYou/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
-		F11748412D0307B40044C1D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = FaceMemorizer/AppDelegate.swift; sourceTree = "<group>"; };
-		F11748442D0722820044C1D9 /* FaceMemorizer-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "FaceMemorizer-Bridging-Header.h"; path = "FaceMemorizer/FaceMemorizer-Bridging-Header.h"; sourceTree = "<group>"; };
+		F11748412D0307B40044C1D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = UmmYou/AppDelegate.swift; sourceTree = "<group>"; };
+		F11748442D0722820044C1D9 /* UmmYou-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "UmmYou-Bridging-Header.h"; path = "UmmYou/UmmYou-Bridging-Header.h"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -37,32 +37,32 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				252EB41AFB9071EB7A18BB8D /* libPods-FaceMemorizer.a in Frameworks */,
+				252EB41AFB9071EB7A18BB8D /* libPods-UmmYou.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		13B07FAE1A68108700A75B9A /* FaceMemorizer */ = {
+		13B07FAE1A68108700A75B9A /* UmmYou */ = {
 			isa = PBXGroup;
 			children = (
 				F11748412D0307B40044C1D9 /* AppDelegate.swift */,
-				F11748442D0722820044C1D9 /* FaceMemorizer-Bridging-Header.h */,
+				F11748442D0722820044C1D9 /* UmmYou-Bridging-Header.h */,
 				BB2F792B24A3F905000567C9 /* Supporting */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
 				EA8303CB303AD307EAA3020F /* PrivacyInfo.xcprivacy */,
 			);
-			name = FaceMemorizer;
+			name = UmmYou;
 			sourceTree = "<group>";
 		};
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				12ED20A3343ACF681360BC95 /* libPods-FaceMemorizer.a */,
+				12ED20A3343ACF681360BC95 /* libPods-UmmYou.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -70,19 +70,18 @@
 		6AA166CB773BB208DA7CD07E /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				2F2E42596FA90F61B0699B61 /* Pods-FaceMemorizer.debug.xcconfig */,
-				5D0AF32541C6884015BE9608 /* Pods-FaceMemorizer.release.xcconfig */,
+				2F2E42596FA90F61B0699B61 /* Pods-UmmYou.debug.xcconfig */,
+				5D0AF32541C6884015BE9608 /* Pods-UmmYou.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
-		6B1B0A0B4E458EAEEFB7A105 /* FaceMemorizer */ = {
+		6B1B0A0B4E458EAEEFB7A105 /* UmmYou */ = {
 			isa = PBXGroup;
 			children = (
 				5790990AB2F5053629E13347 /* ExpoModulesProvider.swift */,
 			);
-			name = FaceMemorizer;
+			name = UmmYou;
 			sourceTree = "<group>";
 		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
@@ -95,7 +94,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
-				13B07FAE1A68108700A75B9A /* FaceMemorizer */,
+				13B07FAE1A68108700A75B9A /* UmmYou */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
@@ -110,7 +109,7 @@
 		83CBBA001A601CBA00E9B192 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				13B07F961A680F5B00A75B9A /* FaceMemorizer.app */,
+				13B07F961A680F5B00A75B9A /* UmmYou.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -121,13 +120,13 @@
 				BB2F792C24A3F905000567C9 /* Expo.plist */,
 			);
 			name = Supporting;
-			path = FaceMemorizer/Supporting;
+			path = UmmYou/Supporting;
 			sourceTree = "<group>";
 		};
 		FE7FB1FD2242DCCA13728C5C /* ExpoModulesProviders */ = {
 			isa = PBXGroup;
 			children = (
-				6B1B0A0B4E458EAEEFB7A105 /* FaceMemorizer */,
+				6B1B0A0B4E458EAEEFB7A105 /* UmmYou */,
 			);
 			name = ExpoModulesProviders;
 			sourceTree = "<group>";
@@ -135,9 +134,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		13B07F861A680F5B00A75B9A /* FaceMemorizer */ = {
+		13B07F861A680F5B00A75B9A /* UmmYou */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "FaceMemorizer" */;
+			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "UmmYou" */;
 			buildPhases = (
 				08A4A3CD28434E44B6B9DE2E /* [CP] Check Pods Manifest.lock */,
 				85623E44F189E6F5D5CAEDBD /* [Expo] Configure project */,
@@ -152,9 +151,9 @@
 			);
 			dependencies = (
 			);
-			name = FaceMemorizer;
-			productName = FaceMemorizer;
-			productReference = 13B07F961A680F5B00A75B9A /* FaceMemorizer.app */;
+			name = UmmYou;
+			productName = UmmYou;
+			productReference = 13B07F961A680F5B00A75B9A /* UmmYou.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -170,7 +169,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "FaceMemorizer" */;
+			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "UmmYou" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -183,7 +182,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				13B07F861A680F5B00A75B9A /* FaceMemorizer */,
+				13B07F861A680F5B00A75B9A /* UmmYou */,
 			);
 		};
 /* End PBXProject section */
@@ -235,7 +234,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-FaceMemorizer-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-UmmYou-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -248,7 +247,7 @@
 			files = (
 			);
 			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-FaceMemorizer/Pods-FaceMemorizer-resources.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-UmmYou/Pods-UmmYou-resources.sh",
 				"${PODS_CONFIGURATION_BUILD_DIR}/AppAuth/AppAuthCore_Privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/EXApplication/ExpoApplication_privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/EXConstants.bundle",
@@ -287,7 +286,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-FaceMemorizer/Pods-FaceMemorizer-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-UmmYou/Pods-UmmYou-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		85623E44F189E6F5D5CAEDBD /* [Expo] Configure project */ = {
@@ -301,18 +300,18 @@
 			inputPaths = (
 				"$(SRCROOT)/.xcode.env",
 				"$(SRCROOT)/.xcode.env.local",
-				"$(SRCROOT)/FaceMemorizer/FaceMemorizer.entitlements",
-				"$(SRCROOT)/Pods/Target Support Files/Pods-FaceMemorizer/expo-configure-project.sh",
+				"$(SRCROOT)/UmmYou/UmmYou.entitlements",
+				"$(SRCROOT)/Pods/Target Support Files/Pods-UmmYou/expo-configure-project.sh",
 			);
 			name = "[Expo] Configure project";
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(SRCROOT)/Pods/Target Support Files/Pods-FaceMemorizer/ExpoModulesProvider.swift",
+				"$(SRCROOT)/Pods/Target Support Files/Pods-UmmYou/ExpoModulesProvider.swift",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-FaceMemorizer/expo-configure-project.sh\"\n";
+			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-UmmYou/expo-configure-project.sh\"\n";
 		};
 		D667CF11EA0A356211B59074 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -320,7 +319,7 @@
 			files = (
 			);
 			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-FaceMemorizer/Pods-FaceMemorizer-frameworks.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-UmmYou/Pods-UmmYou-frameworks.sh",
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/React-Core-prebuilt/React.framework/React",
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/ReactNativeDependencies/ReactNativeDependencies.framework/ReactNativeDependencies",
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/hermes-engine/Pre-built/hermes.framework/hermes",
@@ -333,7 +332,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-FaceMemorizer/Pods-FaceMemorizer-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-UmmYou/Pods-UmmYou-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -353,19 +352,22 @@
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2F2E42596FA90F61B0699B61 /* Pods-FaceMemorizer.debug.xcconfig */;
+			baseConfigurationReference = 2F2E42596FA90F61B0699B61 /* Pods-UmmYou.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_ENTITLEMENTS = FaceMemorizer/FaceMemorizer.entitlements;
+				CODE_SIGN_ENTITLEMENTS = UmmYou/UmmYou.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = LPVCD652VW;
 				ENABLE_BITCODE = NO;
 				ENABLE_ON_DEMAND_RESOURCES = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 					"FB_SONARKIT_ENABLED=1",
 				);
-				INFOPLIST_FILE = FaceMemorizer/Info.plist;
+				INFOPLIST_FILE = UmmYou/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -379,8 +381,13 @@
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = com.ummyou.ios;
-				PRODUCT_NAME = FaceMemorizer;
-				SWIFT_OBJC_BRIDGING_HEADER = "FaceMemorizer/FaceMemorizer-Bridging-Header.h";
+				PRODUCT_NAME = UmmYou;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_OBJC_BRIDGING_HEADER = "UmmYou/UmmYou-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -390,13 +397,16 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5D0AF32541C6884015BE9608 /* Pods-FaceMemorizer.release.xcconfig */;
+			baseConfigurationReference = 5D0AF32541C6884015BE9608 /* Pods-UmmYou.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_ENTITLEMENTS = FaceMemorizer/FaceMemorizer.entitlements;
+				CODE_SIGN_ENTITLEMENTS = UmmYou/UmmYou.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				INFOPLIST_FILE = FaceMemorizer/Info.plist;
+				DEVELOPMENT_TEAM = LPVCD652VW;
+				INFOPLIST_FILE = UmmYou/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -410,8 +420,13 @@
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
 				PRODUCT_BUNDLE_IDENTIFIER = com.ummyou.ios;
-				PRODUCT_NAME = FaceMemorizer;
-				SWIFT_OBJC_BRIDGING_HEADER = "FaceMemorizer/FaceMemorizer-Bridging-Header.h";
+				PRODUCT_NAME = UmmYou;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_OBJC_BRIDGING_HEADER = "UmmYou/UmmYou-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -539,7 +554,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "FaceMemorizer" */ = {
+		13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "UmmYou" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				13B07F941A680F5B00A75B9A /* Debug */,
@@ -548,7 +563,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "FaceMemorizer" */ = {
+		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "UmmYou" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				83CBBA201A601CBA00E9B192 /* Debug */,

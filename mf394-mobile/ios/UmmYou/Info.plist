@@ -7,7 +7,7 @@
     <key>CFBundleDevelopmentRegion</key>
     <string>$(DEVELOPMENT_LANGUAGE)</string>
     <key>CFBundleDisplayName</key>
-    <string>Face Memorizer</string>
+    <string>UmmYou</string>
     <key>CFBundleExecutable</key>
     <string>$(EXECUTABLE_NAME)</string>
     <key>CFBundleIdentifier</key>
@@ -27,7 +27,6 @@
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-          <string>com.ummyou.facememorizer</string>
           <string>com.ummyou.ios</string>
         </array>
       </dict>

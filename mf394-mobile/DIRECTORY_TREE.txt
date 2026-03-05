@@ -1,4 +1,4 @@
-Face Memorizer - React Native App
+UmmYou - React Native App
 Complete Directory Structure
 ================================
 

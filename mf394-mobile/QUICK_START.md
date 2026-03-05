@@ -1,6 +1,6 @@
 # Quick Start Guide
 
-Get the Face Memorizer app running in 5 minutes!
+Get the UmmYou app running in 5 minutes!
 
 ## Prerequisites
 

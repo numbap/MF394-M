@@ -1,6 +1,6 @@
 ╔════════════════════════════════════════════════════════════════════════════╗
 ║               COMPLETE FILE LISTING - React Native App                    ║
-║               Face Memorizer - Created February 2025                       ║
+║               UmmYou - Created February 2025                       ║
 ╚════════════════════════════════════════════════════════════════════════════╝
 
 ROOT CONFIGURATION (11 FILES)

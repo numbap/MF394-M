@@ -1,4 +1,4 @@
-# Face Memorizer - React Native App
+# UmmYou - React Native App
 
 A cross-platform React Native application for managing and memorizing faces of people you meet. Features include contact management, face detection, and interactive study games.
 
@@ -107,7 +107,7 @@ npm run lint
 ### iOS
 1. Go to [Google Cloud Console](https://console.cloud.google.com/)
 2. Create OAuth 2.0 credentials for iOS
-3. Get your iOS Bundle ID from `app.json` (e.g., `com.yourname.facememorizer`)
+3. Get your iOS Bundle ID from `app.json` (e.g., `com.ummyou.ios`)
 4. Add the Client ID to `.env`
 
 ### Android

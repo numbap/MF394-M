@@ -1,6 +1,6 @@
 # Project Structure
 
-Complete file structure for the Face Memorizer React Native app.
+Complete file structure for the UmmYou React Native app.
 
 ## Root Configuration Files
 
