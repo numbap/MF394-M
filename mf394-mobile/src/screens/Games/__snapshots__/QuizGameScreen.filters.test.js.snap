@@ -867,6 +867,7 @@ exports[`QuizGameScreen - Filters Snapshots matches snapshot for single category
           }
         >
           <View
+            accessibilityRole="button"
             accessibilityState={
               {
                 "busy": undefined,
@@ -923,6 +924,7 @@ exports[`QuizGameScreen - Filters Snapshots matches snapshot for single category
             </Text>
           </View>
           <View
+            accessibilityRole="button"
             accessibilityState={
               {
                 "busy": undefined,
@@ -979,6 +981,7 @@ exports[`QuizGameScreen - Filters Snapshots matches snapshot for single category
             </Text>
           </View>
           <View
+            accessibilityRole="button"
             accessibilityState={
               {
                 "busy": undefined,
@@ -1035,6 +1038,7 @@ exports[`QuizGameScreen - Filters Snapshots matches snapshot for single category
             </Text>
           </View>
           <View
+            accessibilityRole="button"
             accessibilityState={
               {
                 "busy": undefined,
@@ -1091,6 +1095,7 @@ exports[`QuizGameScreen - Filters Snapshots matches snapshot for single category
             </Text>
           </View>
           <View
+            accessibilityRole="button"
             accessibilityState={
               {
                 "busy": undefined,
