@@ -2,12 +2,13 @@
 
 set -e
 
-cd $CI_PRIMARY_REPOSITORY_PATH/mf394-mobile/ios
+# Install Node.js via Homebrew (required for Podfile to resolve Expo/RN paths)
+brew install node
+
+# Install JS dependencies
+cd $CI_PRIMARY_REPOSITORY_PATH/mf394-mobile
+npm install
 
 # Install CocoaPods dependencies
+cd $CI_PRIMARY_REPOSITORY_PATH/mf394-mobile/ios
 pod install
-
-Make it executable:
-chmod +x ios/ci_scripts/ci_post_clone.sh
-
-Xcode Cloud automatically runs ci_post_clone.sh after cloning your repo, before the build starts.
