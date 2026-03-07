@@ -150,7 +150,7 @@ function HomeStack() {
         name="PartyMode"
         component={PartyModeScreen}
         options={({ navigation }) => ({
-          title: "Party Mode",
+          title: "Party",
           headerLeft: ({ onPress }) => <BackWithThumbnail onPress={onPress} />,
         })}
       />

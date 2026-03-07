@@ -496,7 +496,7 @@ function MobileCropper({ imageUri, onCropConfirm, onCancel, style }: CropperProp
 
   return (
     <View style={[styles.container, style]}>
-      <Text style={styles.title}>Crop Photo</Text>
+    
 
       {/* Canvas Area */}
       <View style={styles.canvasWrapper}>
