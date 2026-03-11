@@ -28,6 +28,7 @@
         <category android:name="android.intent.category.DEFAULT"/>
         <category android:name="android.intent.category.BROWSABLE"/>
         <data android:scheme="com.ummyou.ios"/>
+        <data android:scheme="exp+ummyoumobile"/>
       </intent-filter>
     </activity>
   </application>
