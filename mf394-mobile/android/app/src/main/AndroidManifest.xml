@@ -30,6 +30,15 @@
         <data android:scheme="com.ummyou.ios"/>
         <data android:scheme="exp+ummyoumobile"/>
       </intent-filter>
+      <intent-filter>
+        <action android:name="android.intent.action.SEND"/>
+        <data android:mimeType="image/*"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+      </intent-filter>
+      <intent-filter>
+        <action android:name="android.intent.action.SEND_MULTIPLE"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+      </intent-filter>
     </activity>
   </application>
 </manifest>

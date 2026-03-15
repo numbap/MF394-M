@@ -228,6 +228,7 @@ export default function ListingScreen({ navigation }: any) {
               <FontAwesome name="users" size={18} color="#fff" />
               <Text style={styles.actionButtonText}>Party</Text>
             </TouchableOpacity>
+
           </View>
 
           {/* View Toggle */}

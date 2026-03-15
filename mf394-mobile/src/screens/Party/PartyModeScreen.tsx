@@ -15,7 +15,7 @@ import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, ScrollView, Image } from "react-native";
 import { generateId } from "../../utils/generateId";
 import { showAlert } from "../../utils/showAlert";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { colors, spacing, radii, typography } from "../../theme/theme";
 import { ImageSelector } from "../../components/ImageSelector";
 import { BulkNamer, NamedFace } from "../../components/BulkNamer";
@@ -26,12 +26,11 @@ import { LoadingState } from "../../components/LoadingState";
 import { InfoBox } from "../../components/InfoBox";
 import { Cropper } from "../../components/Cropper";
 import { FullScreenSpinner } from "../../components/FullScreenSpinner";
-import { useFaceDetection } from "../../hooks/useFaceDetection";
+import { usePartyProcessing } from "../../hooks/usePartyProcessing";
 import { useBulkCreateContactsMutation } from "../../store/api/contacts.api";
 import type { ContactInput } from "../../store/api/contacts.api";
 import { useUploadImageMutation } from "../../store/api/upload.api";
 import { CATEGORIES, DEFAULT_CATEGORY } from "../../constants";
-import { cropFaceWithBounds } from "../../utils/imageCropping";
 import { TagManagementView } from "../../components/TagManagementView";
 
 type Step = "upload" | "detecting" | "naming" | "category" | "crop";
@@ -39,6 +38,7 @@ type ViewMode = "category" | "tagManagement";
 
 export default function PartyModeScreen() {
   const navigation = useNavigation();
+  const route = useRoute();
   const [step, setStep] = useState<Step>("upload");
   const [uploadedImageUri, setUploadedImageUri] = useState<string | null>(null);
   const [detectedFaces, setDetectedFaces] = useState<Array<{ id: string; uri: string }>>([]);
@@ -49,11 +49,21 @@ export default function PartyModeScreen() {
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
 
+  const sharedImageUri = (route.params as any)?.sharedImageUri as string | undefined;
+
   useEffect(() => {
     navigation.setOptions({ gestureEnabled: step !== "crop" });
   }, [step, navigation]);
 
-  const { detectFaces } = useFaceDetection();
+  // Auto-start face detection when launched via share intent
+  useEffect(() => {
+    if (sharedImageUri) {
+      navigation.setParams({ sharedImageUri: undefined } as any);
+      handleImageSelected(sharedImageUri);
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const { process: processImage } = usePartyProcessing();
   const [bulkCreateContacts] = useBulkCreateContactsMutation();
   const [uploadImage] = useUploadImageMutation();
 
@@ -62,32 +72,23 @@ export default function PartyModeScreen() {
     setStep("detecting");
 
     try {
-      const result = await detectFaces(uri);
-      const faces = result?.faces || [];
+      const { detectedFaces: processedFaces, prePopulatedNames } = await processImage(uri);
 
-      if (!faces || faces.length === 0) {
+      if (processedFaces.length === 0) {
         setStep("crop");
         return;
       }
 
-      const processedFaces = await Promise.all(
-        faces.map(async (face, index) => {
-          const faceId = face.id || generateId();
-          try {
-            const croppedUri = await cropFaceWithBounds(uri, face.bounds);
-            return { id: faceId, uri: croppedUri };
-          } catch (error) {
-            console.warn(`[PartyMode] Failed to crop face ${index}:`, error);
-            return { id: faceId, uri };
-          }
-        })
-      );
-
       setDetectedFaces(processedFaces);
+
+      if (prePopulatedNames.length > 0) {
+        setNamedFaces(prePopulatedNames);
+      }
+
       setStep("naming");
     } catch (error: any) {
-      console.error("[PartyMode] Error during face detection:", error);
-      showAlert("Error", "Failed to detect faces. Please try again.");
+      console.error("[PartyMode] Error during image processing:", error);
+      showAlert("Error", "Failed to process image. Please try again.");
       setStep("upload");
       setUploadedImageUri(null);
     }

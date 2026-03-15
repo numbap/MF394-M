@@ -11,12 +11,14 @@ import { contactsApi } from './api/contacts.api';
 import { authApi } from './api/auth.api';
 import { tagsApi } from './api/tags.api';
 import { uploadApi } from './api/upload.api';
+import { extractApi } from './api/extract.api';
 
 import authReducer from './slices/auth.slice';
 import uiReducer from './slices/ui.slice';
 import contactsReducer from './slices/contacts.slice';
 import tagsReducer from './slices/tags.slice';
 import filtersReducer from './slices/filters.slice';
+import shareIntentReducer from './slices/shareIntent.slice';
 
 import { errorHandlingMiddleware } from './middleware/errorHandling.middleware';
 
@@ -27,12 +29,14 @@ export const store = configureStore({
     contacts: contactsReducer,
     tags: tagsReducer,
     filters: filtersReducer,
+    shareIntent: shareIntentReducer,
 
     // RTK Query APIs
     [contactsApi.reducerPath]: contactsApi.reducer,
     [authApi.reducerPath]: authApi.reducer,
     [tagsApi.reducerPath]: tagsApi.reducer,
     [uploadApi.reducerPath]: uploadApi.reducer,
+    [extractApi.reducerPath]: extractApi.reducer,
   },
 
   middleware: (getDefaultMiddleware) =>
@@ -41,6 +45,7 @@ export const store = configureStore({
       .concat(authApi.middleware)
       .concat(tagsApi.middleware)
       .concat(uploadApi.middleware)
+      .concat(extractApi.middleware)
       .concat(errorHandlingMiddleware),
 
   devTools: {
@@ -56,4 +61,4 @@ setupListeners(store.dispatch);
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 
-export { contactsApi, authApi, tagsApi, uploadApi };
+export { contactsApi, authApi, tagsApi, uploadApi, extractApi };

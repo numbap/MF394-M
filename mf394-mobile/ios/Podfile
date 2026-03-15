@@ -17,7 +17,6 @@ ENV['EX_DEV_CLIENT_NETWORK_INSPECTOR'] ||= podfile_properties['EX_DEV_CLIENT_NET
 ENV['RCT_USE_RN_DEP'] ||= '1' if podfile_properties['ios.buildReactNativeFromSource'] != 'true' && podfile_properties['newArchEnabled'] != 'false'
 ENV['RCT_USE_PREBUILT_RNCORE'] ||= '1' if podfile_properties['ios.buildReactNativeFromSource'] != 'true' && podfile_properties['newArchEnabled'] != 'false'
 platform :ios, podfile_properties['ios.deploymentTarget'] || '15.1'
-workspace 'UmmYou'
 
 prepare_react_native_project!
 
@@ -60,21 +59,5 @@ target 'UmmYou' do
       :mac_catalyst_enabled => false,
       :ccache_enabled => ccache_enabled?(podfile_properties),
     )
-
-    # Fix for ML Kit (expo-face-detector) on Apple Silicon:
-    # ML Kit pre-built binaries don't include arm64 simulator slices,
-    # so we exclude arm64 from simulator builds to force Rosetta (x86_64).
-    installer.pods_project.targets.each do |target|
-      target.build_configurations.each do |config|
-        config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'arm64'
-        # Ensure no pod uses a deployment target below the project minimum
-        if config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'].to_f < 15.1
-          config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.1'
-        end
-      end
-    end
-
-    # Note: ML Kit (expo-face-detector) ships pre-built binaries without arm64 simulator slices.
-    # The simulator must run under Rosetta (x86_64) for this to work on Apple Silicon Macs.
   end
 end

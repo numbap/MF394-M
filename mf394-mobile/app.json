@@ -36,7 +36,15 @@
     "plugins": [
       "expo-image-picker",
       "@react-native-google-signin/google-signin",
-      "expo-web-browser"
+      "expo-web-browser",
+      ["expo-share-intent", {
+        "iosActivationRules": {
+          "NSExtensionActivationSupportsImageWithMaxCount": 1,
+          "NSExtensionActivationSupportsMovieWithMaxCount": 0
+        },
+        "androidIntentFilters": ["image/*"],
+        "androidMultiIntentFilters": []
+      }]
     ],
     "extra": {
       "eas": {

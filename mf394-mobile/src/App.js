@@ -6,6 +6,7 @@ import { AlertDialogProvider } from "./components/AlertDialog";
 import { restoreSession } from "./store/slices/auth.slice";
 import { tokenStorage } from "./utils/secureStore";
 import { API_BASE_URL } from "./utils/constants";
+import { useShareIntentListener } from "./hooks/useShareIntentListener";
 
 /**
  * SessionRestorer
@@ -15,6 +16,7 @@ import { API_BASE_URL } from "./utils/constants";
  */
 function SessionRestorer({ children }) {
   const dispatch = useDispatch();
+  useShareIntentListener();
 
   useEffect(() => {
     const restoreAuth = async () => {

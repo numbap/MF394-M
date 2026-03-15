@@ -1,13 +1,14 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { View, TouchableOpacity, Image } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import { RootState } from "../store";
 import { colors } from "../theme/theme";
 import { OfflineBanner } from "../components/OfflineBanner";
+import { clearSharedImage } from "../store/slices/shareIntent.slice";
 
 import LoginScreen from "../screens/Auth/LoginScreen";
 import { ListingScreen } from "../screens/Listing";
@@ -35,6 +36,8 @@ const BackWithThumbnail = ({ onPress }) => (
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
+export const navigationRef = React.createRef();
+
 export function RootNavigator() {
   const auth = useSelector((state: RootState) => state.auth);
   const user = auth?.user || null;
@@ -43,7 +46,7 @@ export function RootNavigator() {
   return (
     <>
       <OfflineBanner />
-      <NavigationContainer>
+      <NavigationContainer ref={navigationRef}>
         {user ? <AuthenticatedStack key={loginSessionKey} /> : <UnauthenticatedStack />}
       </NavigationContainer>
     </>
@@ -64,6 +67,26 @@ function UnauthenticatedStack() {
 }
 
 function AuthenticatedStack() {
+  const dispatch = useDispatch();
+  const pendingImageUri = useSelector(
+    (state: RootState) => state.shareIntent.pendingImageUri
+  );
+
+  useEffect(() => {
+    if (!pendingImageUri) return;
+    // Small delay to ensure navigation is mounted
+    const timer = setTimeout(() => {
+      if (navigationRef.current?.isReady()) {
+        navigationRef.current.navigate("HomeTab", {
+          screen: "PartyMode",
+          params: { sharedImageUri: pendingImageUri },
+        });
+        dispatch(clearSharedImage());
+      }
+    }, 100);
+    return () => clearTimeout(timer);
+  }, [pendingImageUri, dispatch]);
+
   return (
     <Tab.Navigator
       initialRouteName="HomeTab"

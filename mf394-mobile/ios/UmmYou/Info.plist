@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
   <dict>
+    <key>AppGroupIdentifier</key>
+    <string>group.com.ummyou.ios</string>
     <key>CADisableMinimumFrameDurationOnPhone</key>
     <true/>
     <key>CFBundleDevelopmentRegion</key>
@@ -14,8 +16,6 @@
     <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
     <key>CFBundleInfoDictionaryVersion</key>
     <string>6.0</string>
-    <key>CFBundleIconName</key>
-    <string>AppIcon</string>
     <key>CFBundleName</key>
     <string>$(PRODUCT_NAME)</string>
     <key>CFBundlePackageType</key>
@@ -30,17 +30,20 @@
         <key>CFBundleURLSchemes</key>
         <array>
           <string>com.ummyou.ios</string>
+          <string>com.ummyou.ios</string>
         </array>
       </dict>
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-          <string>com.googleusercontent.apps.522498015179-g0htpel9384on5ubq0ofmlvsa9r2pqvl</string>
+          <string>exp+ummyoumobile</string>
         </array>
       </dict>
     </array>
     <key>CFBundleVersion</key>
     <string>1</string>
+    <key>ITSAppUsesNonExemptEncryption</key>
+    <false/>
     <key>LSMinimumSystemVersion</key>
     <string>12.0</string>
     <key>LSRequiresIPhoneOS</key>
@@ -54,7 +57,9 @@
     </dict>
     <key>NSCameraUsageDescription</key>
     <string>Allow $(PRODUCT_NAME) to access your camera</string>
-<key>NSPhotoLibraryUsageDescription</key>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>Allow $(PRODUCT_NAME) to access your microphone</string>
+    <key>NSPhotoLibraryUsageDescription</key>
     <string>Allow $(PRODUCT_NAME) to access your photos</string>
     <key>RCTNewArchEnabled</key>
     <true/>
@@ -65,7 +70,7 @@
       <string>arm64</string>
     </array>
     <key>UIRequiresFullScreen</key>
-    <true/>
+    <false/>
     <key>UIStatusBarStyle</key>
     <string>UIStatusBarStyleDefault</string>
     <key>UISupportedInterfaceOrientations</key>

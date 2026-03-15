@@ -7,31 +7,64 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		126C3D42D1891C9F9E701D9C /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = EA8303CB303AD307EAA3020F /* PrivacyInfo.xcprivacy */; };
+		050A91878239B71EEB2B4664 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 37E56DBF795D4682AA71A311 /* PrivacyInfo.xcprivacy */; };
+		08A6F74E20D14B29977C8C6E /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F46596811F764504AA185168 /* MainInterface.storyboard */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
-		252EB41AFB9071EB7A18BB8D /* libPods-UmmYou.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 12ED20A3343ACF681360BC95 /* libPods-UmmYou.a */; };
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
-		5F1B48090071F94423430657 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5790990AB2F5053629E13347 /* ExpoModulesProvider.swift */; };
+		494EB8779EE346A5BEF8819A /* ShareExtension.appex in Copy Files */ = {isa = PBXBuildFile; fileRef = F98333C5F1774CA0B3378646 /* ShareExtension.appex */; };
+		560477B4C27E4B369C204CBD /* ShareExtensionPreprocessor.js in Resources */ = {isa = PBXBuildFile; fileRef = B7E8920027EB42F181C94AAF /* ShareExtensionPreprocessor.js */; };
+		86CCF29E3D374DDAAAEFDF55 /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39C627068F36480D8BDC4BB2 /* ShareViewController.swift */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
+		BE95AC86E76035B7C166FDFA /* libPods-UmmYou.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9696F5D1D3C99BC19A3A1D62 /* libPods-UmmYou.a */; };
+		C03ACFC965564B06B5CA631B /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 37E56DBF795D4682AA71A311 /* PrivacyInfo.xcprivacy */; };
+		D3EC80863ADFAA170630D577 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0747A08D666B4E6293A42798 /* ExpoModulesProvider.swift */; };
 		F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748412D0307B40044C1D9 /* AppDelegate.swift */; };
-		A1B2C3D4E5F6789012345678 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6789012345679 /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		D2BB79752B8B4A69B8F8AF8F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 6F0B9A1704A545C0BA168EB6;
+			remoteInfo = ShareExtension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		B7D51C764E8A403FA816513F /* Copy Files */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				494EB8779EE346A5BEF8819A /* ShareExtension.appex in Copy Files */,
+			);
+			name = "Copy Files";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
-		12ED20A3343ACF681360BC95 /* libPods-UmmYou.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-UmmYou.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		0747A08D666B4E6293A42798 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-UmmYou/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* UmmYou.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UmmYou.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = UmmYou/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = UmmYou/Info.plist; sourceTree = "<group>"; };
-		2F2E42596FA90F61B0699B61 /* Pods-UmmYou.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-UmmYou.debug.xcconfig"; path = "Target Support Files/Pods-UmmYou/Pods-UmmYou.debug.xcconfig"; sourceTree = "<group>"; };
-		5790990AB2F5053629E13347 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-UmmYou/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
-		5D0AF32541C6884015BE9608 /* Pods-UmmYou.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-UmmYou.release.xcconfig"; path = "Target Support Files/Pods-UmmYou/Pods-UmmYou.release.xcconfig"; sourceTree = "<group>"; };
+		37E56DBF795D4682AA71A311 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = PrivacyInfo.xcprivacy; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		39C627068F36480D8BDC4BB2 /* ShareViewController.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = ShareViewController.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
+		7803D190E35346A4B4BC88D3 /* ShareExtension.entitlements */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = ShareExtension.entitlements; path = ShareExtension.entitlements; sourceTree = "<group>"; };
+		9696F5D1D3C99BC19A3A1D62 /* libPods-UmmYou.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-UmmYou.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = UmmYou/SplashScreen.storyboard; sourceTree = "<group>"; };
+		B7E8920027EB42F181C94AAF /* ShareExtensionPreprocessor.js */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = ShareExtensionPreprocessor.js; path = ShareExtensionPreprocessor.js; sourceTree = "<group>"; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
-		EA8303CB303AD307EAA3020F /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = UmmYou/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		BEFDCFC9DD29A89E6CC7EAA2 /* Pods-UmmYou.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-UmmYou.release.xcconfig"; path = "Target Support Files/Pods-UmmYou/Pods-UmmYou.release.xcconfig"; sourceTree = "<group>"; };
+		DA58997834AB28E379C843B0 /* Pods-UmmYou.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-UmmYou.debug.xcconfig"; path = "Target Support Files/Pods-UmmYou/Pods-UmmYou.debug.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F11748412D0307B40044C1D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = UmmYou/AppDelegate.swift; sourceTree = "<group>"; };
 		F11748442D0722820044C1D9 /* UmmYou-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "UmmYou-Bridging-Header.h"; path = "UmmYou/UmmYou-Bridging-Header.h"; sourceTree = "<group>"; };
-		A1B2C3D4E5F6789012345679 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "UmmYou/GoogleService-Info.plist"; sourceTree = "<group>"; };
+		F46596811F764504AA185168 /* MainInterface.storyboard */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = MainInterface.storyboard; path = MainInterface.storyboard; sourceTree = "<group>"; };
+		F927BD27A7EF439AA321B462 /* ShareExtension-Info.plist */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = text.plist.xml; name = "ShareExtension-Info.plist"; path = "ShareExtension-Info.plist"; sourceTree = "<group>"; };
+		F98333C5F1774CA0B3378646 /* ShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = undefined; name = ShareExtension.appex; path = ShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -39,7 +72,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				252EB41AFB9071EB7A18BB8D /* libPods-UmmYou.a in Frameworks */,
+				BE95AC86E76035B7C166FDFA /* libPods-UmmYou.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		593882FA23134465BB72EFA1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -55,8 +95,6 @@
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
-				EA8303CB303AD307EAA3020F /* PrivacyInfo.xcprivacy */,
-				A1B2C3D4E5F6789012345679 /* GoogleService-Info.plist */,
 			);
 			name = UmmYou;
 			sourceTree = "<group>";
@@ -65,26 +103,27 @@
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				12ED20A3343ACF681360BC95 /* libPods-UmmYou.a */,
+				9696F5D1D3C99BC19A3A1D62 /* libPods-UmmYou.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		6AA166CB773BB208DA7CD07E /* Pods */ = {
+		33E901E57B4F295FE674DDC7 /* UmmYou */ = {
 			isa = PBXGroup;
 			children = (
-				2F2E42596FA90F61B0699B61 /* Pods-UmmYou.debug.xcconfig */,
-				5D0AF32541C6884015BE9608 /* Pods-UmmYou.release.xcconfig */,
-			);
-			path = Pods;
-			sourceTree = "<group>";
-		};
-		6B1B0A0B4E458EAEEFB7A105 /* UmmYou */ = {
-			isa = PBXGroup;
-			children = (
-				5790990AB2F5053629E13347 /* ExpoModulesProvider.swift */,
+				0747A08D666B4E6293A42798 /* ExpoModulesProvider.swift */,
 			);
 			name = UmmYou;
+			sourceTree = "<group>";
+		};
+		37AA9E2766618D6B4BE90A42 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				DA58997834AB28E379C843B0 /* Pods-UmmYou.debug.xcconfig */,
+				BEFDCFC9DD29A89E6CC7EAA2 /* Pods-UmmYou.release.xcconfig */,
+			);
+			name = Pods;
+			path = Pods;
 			sourceTree = "<group>";
 		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
@@ -101,8 +140,9 @@
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
-				6AA166CB773BB208DA7CD07E /* Pods */,
-				FE7FB1FD2242DCCA13728C5C /* ExpoModulesProviders */,
+				D59678D3AF034727B24F1575 /* ShareExtension */,
+				37AA9E2766618D6B4BE90A42 /* Pods */,
+				E6787AE3A864915807A2255A /* ExpoModulesProviders */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -113,6 +153,7 @@
 			isa = PBXGroup;
 			children = (
 				13B07F961A680F5B00A75B9A /* UmmYou.app */,
+				F98333C5F1774CA0B3378646 /* ShareExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -126,10 +167,24 @@
 			path = UmmYou/Supporting;
 			sourceTree = "<group>";
 		};
-		FE7FB1FD2242DCCA13728C5C /* ExpoModulesProviders */ = {
+		D59678D3AF034727B24F1575 /* ShareExtension */ = {
 			isa = PBXGroup;
 			children = (
-				6B1B0A0B4E458EAEEFB7A105 /* UmmYou */,
+				39C627068F36480D8BDC4BB2 /* ShareViewController.swift */,
+				F46596811F764504AA185168 /* MainInterface.storyboard */,
+				B7E8920027EB42F181C94AAF /* ShareExtensionPreprocessor.js */,
+				37E56DBF795D4682AA71A311 /* PrivacyInfo.xcprivacy */,
+				F927BD27A7EF439AA321B462 /* ShareExtension-Info.plist */,
+				7803D190E35346A4B4BC88D3 /* ShareExtension.entitlements */,
+			);
+			name = ShareExtension;
+			path = ShareExtension;
+			sourceTree = "<group>";
+		};
+		E6787AE3A864915807A2255A /* ExpoModulesProviders */ = {
+			isa = PBXGroup;
+			children = (
+				33E901E57B4F295FE674DDC7 /* UmmYou */,
 			);
 			name = ExpoModulesProviders;
 			sourceTree = "<group>";
@@ -142,22 +197,41 @@
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "UmmYou" */;
 			buildPhases = (
 				08A4A3CD28434E44B6B9DE2E /* [CP] Check Pods Manifest.lock */,
-				85623E44F189E6F5D5CAEDBD /* [Expo] Configure project */,
+				E63125D260E7152644579BC6 /* [Expo] Configure project */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */,
-				D667CF11EA0A356211B59074 /* [CP] Embed Pods Frameworks */,
+				B7D51C764E8A403FA816513F /* Copy Files */,
+				E05714F34774755CD290B5B0 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				535819D28FA442759DC1D7EF /* PBXTargetDependency */,
 			);
 			name = UmmYou;
 			productName = UmmYou;
 			productReference = 13B07F961A680F5B00A75B9A /* UmmYou.app */;
 			productType = "com.apple.product-type.application";
+		};
+		6F0B9A1704A545C0BA168EB6 /* ShareExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 66C02869E1C64290B8149CD8 /* Build configuration list for PBXNativeTarget "ShareExtension" */;
+			buildPhases = (
+				1F5F88C161EA4AD1A107EDB3 /* Sources */,
+				F8805CAAEA8E441B85F6F01B /* Resources */,
+				593882FA23134465BB72EFA1 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ShareExtension;
+			productName = ShareExtension;
+			productReference = F98333C5F1774CA0B3378646 /* ShareExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -186,6 +260,7 @@
 			projectRoot = "";
 			targets = (
 				13B07F861A680F5B00A75B9A /* UmmYou */,
+				6F0B9A1704A545C0BA168EB6 /* ShareExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -198,8 +273,17 @@
 				BB2F792D24A3F905000567C9 /* Expo.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
-				126C3D42D1891C9F9E701D9C /* PrivacyInfo.xcprivacy in Resources */,
-				A1B2C3D4E5F6789012345678 /* GoogleService-Info.plist in Resources */,
+				050A91878239B71EEB2B4664 /* PrivacyInfo.xcprivacy in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F8805CAAEA8E441B85F6F01B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				08A6F74E20D14B29977C8C6E /* MainInterface.storyboard in Resources */,
+				560477B4C27E4B369C204CBD /* ShareExtensionPreprocessor.js in Resources */,
+				C03ACFC965564B06B5CA631B /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -257,12 +341,19 @@
 				"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/EXConstants.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/ExpoConstants_privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/ExpoFileSystem/ExpoFileSystem_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/GTMSessionFetcher/GTMSessionFetcher_Core_Privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/GoogleDataTransport/GoogleDataTransport_Privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/GoogleSignIn/GoogleSignIn.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/GoogleToolboxForMac/GoogleToolboxForMac_Privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/GoogleToolboxForMac/GoogleToolboxForMac_Logger_Privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/GoogleUtilities/GoogleUtilities_Privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/MLKitFaceDetection/GoogleMVFaceDetectorResources.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/MLKitTextRecognition/LatinOCRResources.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/MLKitTextRecognitionChinese/ChineseOCRResources.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/MLKitTextRecognitionDevanagari/DevanagariOCRResources.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/MLKitTextRecognitionJapanese/JapaneseOCRResources.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/MLKitTextRecognitionKorean/KoreanOCRResources.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/PromisesObjC/FBLPromises_Privacy.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/Protobuf/Protobuf_Privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/RNCAsyncStorage/RNCAsyncStorage_resources.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/React-Core_privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/React-cxxreact/React-cxxreact_privacy.bundle",
@@ -278,12 +369,19 @@
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EXConstants.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoConstants_privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoFileSystem_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GTMSessionFetcher_Core_Privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleDataTransport_Privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleSignIn.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleToolboxForMac_Privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleToolboxForMac_Logger_Privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleUtilities_Privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleMVFaceDetectorResources.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/LatinOCRResources.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ChineseOCRResources.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/DevanagariOCRResources.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/JapaneseOCRResources.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/KoreanOCRResources.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FBLPromises_Privacy.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Protobuf_Privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RNCAsyncStorage_resources.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/React-Core_privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/React-cxxreact_privacy.bundle",
@@ -297,7 +395,29 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-UmmYou/Pods-UmmYou-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		85623E44F189E6F5D5CAEDBD /* [Expo] Configure project */ = {
+		E05714F34774755CD290B5B0 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-UmmYou/Pods-UmmYou-frameworks.sh",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/React-Core-prebuilt/React.framework/React",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/ReactNativeDependencies/ReactNativeDependencies.framework/ReactNativeDependencies",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/hermes-engine/Pre-built/hermes.framework/hermes",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/React.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ReactNativeDependencies.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/hermes.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-UmmYou/Pods-UmmYou-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		E63125D260E7152644579BC6 /* [Expo] Configure project */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
@@ -321,28 +441,6 @@
 			shellPath = /bin/sh;
 			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-UmmYou/expo-configure-project.sh\"\n";
 		};
-		D667CF11EA0A356211B59074 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-UmmYou/Pods-UmmYou-frameworks.sh",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/React-Core-prebuilt/React.framework/React",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/ReactNativeDependencies/ReactNativeDependencies.framework/ReactNativeDependencies",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/hermes-engine/Pre-built/hermes.framework/hermes",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/React.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ReactNativeDependencies.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/hermes.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-UmmYou/Pods-UmmYou-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -351,26 +449,38 @@
 			buildActionMask = 2147483647;
 			files = (
 				F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */,
-				5F1B48090071F94423430657 /* ExpoModulesProvider.swift in Sources */,
+				D3EC80863ADFAA170630D577 /* ExpoModulesProvider.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1F5F88C161EA4AD1A107EDB3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				86CCF29E3D374DDAAAEFDF55 /* ShareViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		535819D28FA442759DC1D7EF /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 6F0B9A1704A545C0BA168EB6 /* ShareExtension */;
+			targetProxy = D2BB79752B8B4A69B8F8AF8F /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2F2E42596FA90F61B0699B61 /* Pods-UmmYou.debug.xcconfig */;
+			baseConfigurationReference = DA58997834AB28E379C843B0 /* Pods-UmmYou.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = UmmYou/UmmYou.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = LPVCD652VW;
 				ENABLE_BITCODE = NO;
-				ENABLE_ON_DEMAND_RESOURCES = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 					"FB_SONARKIT_ENABLED=1",
@@ -390,11 +500,6 @@
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = com.ummyou.ios;
 				PRODUCT_NAME = UmmYou;
-				PROVISIONING_PROFILE_SPECIFIER = "";
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SUPPORTS_MACCATALYST = NO;
-				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
-				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_OBJC_BRIDGING_HEADER = "UmmYou/UmmYou-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -405,15 +510,12 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5D0AF32541C6884015BE9608 /* Pods-UmmYou.release.xcconfig */;
+			baseConfigurationReference = BEFDCFC9DD29A89E6CC7EAA2 /* Pods-UmmYou.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = UmmYou/UmmYou.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = LPVCD652VW;
 				INFOPLIST_FILE = UmmYou/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -429,11 +531,6 @@
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
 				PRODUCT_BUNDLE_IDENTIFIER = com.ummyou.ios;
 				PRODUCT_NAME = UmmYou;
-				PROVISIONING_PROFILE_SPECIFIER = "";
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SUPPORTS_MACCATALYST = NO;
-				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
-				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_OBJC_BRIDGING_HEADER = "UmmYou/UmmYou-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -469,7 +566,7 @@
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -532,7 +629,7 @@
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -559,6 +656,60 @@
 			};
 			name = Release;
 		};
+		9A2C593AA4F1471BB0571C38 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = ShareExtension/ShareExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "ShareExtension/ShareExtension-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.ummyou.ios.share-extension";
+				PRODUCT_NAME = ShareExtension;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		D6ED7D4729DD444AA8429797 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = ShareExtension/ShareExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "ShareExtension/ShareExtension-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.ummyou.ios.share-extension";
+				PRODUCT_NAME = ShareExtension;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -567,6 +718,15 @@
 			buildConfigurations = (
 				13B07F941A680F5B00A75B9A /* Debug */,
 				13B07F951A680F5B00A75B9A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		66C02869E1C64290B8149CD8 /* Build configuration list for PBXNativeTarget "ShareExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D6ED7D4729DD444AA8429797 /* Debug */,
+				9A2C593AA4F1471BB0571C38 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
