@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { logout } from './auth.slice';
 
 interface ShareIntentState {
   pendingImageUri: string | null;
@@ -18,6 +19,11 @@ const shareIntentSlice = createSlice({
     clearSharedImage(state) {
       state.pendingImageUri = null;
     },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(logout, (state) => {
+      state.pendingImageUri = null;
+    });
   },
 });
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useCallback } from "react";
 import { View, TouchableOpacity, Image } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -9,6 +9,7 @@ import { RootState } from "../store";
 import { colors } from "../theme/theme";
 import { OfflineBanner } from "../components/OfflineBanner";
 import { clearSharedImage } from "../store/slices/shareIntent.slice";
+import { useOnboarding } from "../hooks/useOnboarding";
 
 import LoginScreen from "../screens/Auth/LoginScreen";
 import { ListingScreen } from "../screens/Listing";
@@ -18,6 +19,7 @@ import PracticeGameScreen from "../screens/Games/PracticeGameScreen";
 import AddEditContactScreen from "../screens/AddEdit/AddEditContactScreen";
 import PartyModeScreen from "../screens/Party/PartyModeScreen";
 import SettingsScreen from "../screens/Settings/SettingsScreen";
+import OnboardingScreen from "../screens/Onboarding/OnboardingScreen";
 
 const BackWithThumbnail = ({ onPress }) => (
   <TouchableOpacity
@@ -43,13 +45,47 @@ export function RootNavigator() {
   const user = auth?.user || null;
   const loginSessionKey = auth?.loginSessionKey || user?.id;
 
+  const { needsOnboarding, isLoading: onboardingLoading, markComplete } = useOnboarding();
+
+  const handleOnboardingComplete = useCallback(async () => {
+    await markComplete();
+  }, [markComplete]);
+
   return (
     <>
       <OfflineBanner />
       <NavigationContainer ref={navigationRef}>
-        {user ? <AuthenticatedStack key={loginSessionKey} /> : <UnauthenticatedStack />}
+        {!user ? (
+          <UnauthenticatedStack />
+        ) : onboardingLoading ? (
+          <LoadingPlaceholder />
+        ) : needsOnboarding ? (
+          <OnboardingStack onComplete={handleOnboardingComplete} />
+        ) : (
+          <AuthenticatedStack key={loginSessionKey} />
+        )}
       </NavigationContainer>
     </>
+  );
+}
+
+function LoadingPlaceholder() {
+  return <View style={{ flex: 1, backgroundColor: colors.semantic.background }} />;
+}
+
+function OnboardingStack({ onComplete }) {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+        gestureEnabled: false,
+        animationEnabled: false,
+      }}
+    >
+      <Stack.Screen name="Onboarding">
+        {() => <OnboardingScreen onComplete={onComplete} />}
+      </Stack.Screen>
+    </Stack.Navigator>
   );
 }
 
@@ -174,7 +210,11 @@ function HomeStack() {
         component={PartyModeScreen}
         options={({ navigation }) => ({
           title: "Party",
-          headerLeft: ({ onPress }) => <BackWithThumbnail onPress={onPress} />,
+          headerLeft: ({ onPress, canGoBack }) => (
+            <BackWithThumbnail
+              onPress={canGoBack ? onPress : () => navigation.navigate("Listing")}
+            />
+          ),
         })}
       />
     </Stack.Navigator>

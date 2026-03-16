@@ -1,0 +1,49 @@
+1️⃣ Multi-Arch Docker Builds
+
+To ensure your container works both on your Mac (arm64) and ECS (amd64), you should build a multi-platform image:
+
+docker buildx create --use
+docker buildx build --platform linux/amd64,linux/arm64 -t yourusername/vision-service:latest --push .
+
+--platform linux/amd64 → ECS Fargate
+
+--platform linux/arm64 → Mac M1/M2/M4
+
+--push → pushes to Docker Hub or ECR (needed for ECS)
+
+Fargate only supports amd64 and arm64. Most AWS images are amd64 by default.
+
+2️⃣ Use the Right Base Image
+
+Some packages like PaddlePaddle or TensorFlow provide prebuilt wheels only for x86_64 Linux.
+
+So for ECS, your Dockerfile should target linux/amd64, even if you test locally on arm64:
+
+FROM --platform=linux/amd64 python:3.11-slim
+
+This ensures your dependencies (PaddlePaddle, TensorFlow) install correctly.
+
+3️⃣ Install PaddlePaddle Correctly
+
+For CPU-only, in your Dockerfile:
+
+RUN pip install --no-cache-dir paddlepaddle==2.6.2
+
+For GPU Fargate (if you have ECS GPU instances):
+
+RUN pip install --no-cache-dir paddlepaddle-gpu==2.6.2.post112
+
+Important: On your Mac, building for amd64 may require --platform=linux/amd64 and QEMU support (Docker Desktop on Mac provides it automatically).
+
+4️⃣ Disable Model Hoster Check (Optional)
+ENV PADDLE_PDX_DISABLE_MODEL_SOURCE_CHECK=True
+
+This prevents startup delays when PaddleOCR checks its remote models.
+
+5️⃣ Example Docker Build for ECS
+docker buildx build \
+  --platform linux/amd64 \
+  -t your-ecr-repo/vision-service:latest \
+  --push .
+
+Then deploy that image to ECS Fargate.

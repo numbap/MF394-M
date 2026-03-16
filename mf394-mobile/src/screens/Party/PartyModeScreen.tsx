@@ -63,6 +63,23 @@ export default function PartyModeScreen() {
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Reset local state when screen re-focuses without a shared image (e.g. after account switch)
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      const params = (route.params as any);
+      if (!params?.sharedImageUri && step !== 'upload') {
+        setStep('upload');
+        setUploadedImageUri(null);
+        setDetectedFaces([]);
+        setNamedFaces([]);
+        setCategory(DEFAULT_CATEGORY);
+        setTags([]);
+        setViewMode('category');
+      }
+    });
+    return unsubscribe;
+  }, [navigation, route.params, step]);
+
   const { process: processImage } = usePartyProcessing();
   const [bulkCreateContacts] = useBulkCreateContactsMutation();
   const [uploadImage] = useUploadImageMutation();
@@ -217,7 +234,13 @@ export default function PartyModeScreen() {
             cancelButton={{
               label: "Back",
               icon: "arrow-left",
-              onPress: () => navigation.goBack(),
+              onPress: () => {
+                if (navigation.canGoBack()) {
+                  navigation.goBack();
+                } else {
+                  navigation.navigate("Listing" as never);
+                }
+              },
             }}
           />
         </ScrollView>

@@ -30,13 +30,20 @@
         <key>CFBundleURLSchemes</key>
         <array>
           <string>com.ummyou.ios</string>
-          <string>com.ummyou.ios</string>
         </array>
       </dict>
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
           <string>exp+ummyoumobile</string>
+        </array>
+      </dict>
+      <dict>
+        <key>CFBundleURLName</key>
+        <string>Google Sign-In</string>
+        <key>CFBundleURLSchemes</key>
+        <array>
+          <string>com.googleusercontent.apps.522498015179-g0htpel9384on5ubq0ofmlvsa9r2pqvl</string>
         </array>
       </dict>
     </array>
