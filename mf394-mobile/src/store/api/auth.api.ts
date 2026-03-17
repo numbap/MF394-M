@@ -71,6 +71,16 @@ export const authApi = createApi({
       invalidatesTags: ['User'],
     }),
 
+    // Login with Apple ID token (iOS native)
+    appleLogin: builder.mutation<LoginResponse, { idToken: string; provider: 'apple'; name?: { firstName?: string; lastName?: string } | null }>({
+      query: (body) => ({
+        url: '/auth/mobile-login',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['User'],
+    }),
+
     // Get full user data including contacts and tags
     getUser: builder.query<UserDataResponse, void>({
       query: () => '/user',
@@ -82,5 +92,6 @@ export const authApi = createApi({
 export const {
   useLoginMutation,
   useWebLoginMutation,
+  useAppleLoginMutation,
   useGetUserQuery,
 } = authApi;

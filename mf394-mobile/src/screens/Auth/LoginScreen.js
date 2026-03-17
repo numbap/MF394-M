@@ -7,14 +7,18 @@ import {
   StyleSheet,
   ScrollView,
   ActivityIndicator,
+  Platform,
 } from "react-native";
+import * as AppleAuthentication from "expo-apple-authentication";
 import { useSelector } from "react-redux";
 import { useGoogleAuth } from "../../hooks/useGoogleAuth";
+import { useAppleAuth } from "../../hooks/useAppleAuth";
 import { colors, spacing, typography, radii } from "../../theme/theme";
 
 export default function LoginScreen() {
   const { isLoading, error } = useSelector((state) => state.auth);
   const { signInWithGoogle } = useGoogleAuth();
+  const { signInWithApple, isAvailable: isAppleAvailable } = useAppleAuth();
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -45,6 +49,16 @@ export default function LoginScreen() {
             <Text style={styles.signInButtonText}>Sign in with Google</Text>
           )}
         </TouchableOpacity>
+
+        {Platform.OS === "ios" && isAppleAvailable && (
+          <AppleAuthentication.AppleAuthenticationButton
+            buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
+            buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
+            cornerRadius={radii.lg}
+            style={styles.appleButton}
+            onPress={signInWithApple}
+          />
+        )}
       </View>
     </ScrollView>
   );
@@ -98,5 +112,10 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "600",
     fontSize: typography.title.medium.fontSize,
+  },
+  appleButton: {
+    width: "100%",
+    height: 56,
+    marginTop: spacing.md,
   },
 });
