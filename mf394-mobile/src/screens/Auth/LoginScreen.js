@@ -16,9 +16,9 @@ import { useAppleAuth } from "../../hooks/useAppleAuth";
 import { colors, spacing, typography, radii } from "../../theme/theme";
 
 export default function LoginScreen() {
-  const { isLoading, error } = useSelector((state) => state.auth);
-  const { signInWithGoogle } = useGoogleAuth();
-  const { signInWithApple, isAvailable: isAppleAvailable } = useAppleAuth();
+  const { error } = useSelector((state) => state.auth);
+  const { signInWithGoogle, isLoading: isGoogleLoading } = useGoogleAuth();
+  const { signInWithApple, isAvailable: isAppleAvailable, isLoading: isAppleLoading } = useAppleAuth();
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -39,11 +39,11 @@ export default function LoginScreen() {
 
       <View style={styles.buttonContainer}>
         <TouchableOpacity
-          style={[styles.signInButton, isLoading && styles.signInButtonDisabled]}
+          style={[styles.signInButton, isGoogleLoading && styles.signInButtonDisabled]}
           onPress={signInWithGoogle}
-          disabled={isLoading}
+          disabled={isGoogleLoading}
         >
-          {isLoading ? (
+          {isGoogleLoading ? (
             <ActivityIndicator color="#fff" />
           ) : (
             <Text style={styles.signInButtonText}>Sign in with Google</Text>
@@ -53,9 +53,11 @@ export default function LoginScreen() {
         {Platform.OS === "ios" && isAppleAvailable && (
           <AppleAuthentication.AppleAuthenticationButton
             buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
-            buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
+            buttonStyle={isAppleLoading
+              ? AppleAuthentication.AppleAuthenticationButtonStyle.WHITE_OUTLINE
+              : AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
             cornerRadius={radii.lg}
-            style={styles.appleButton}
+            style={[styles.appleButton, isAppleLoading && styles.appleButtonDisabled]}
             onPress={signInWithApple}
           />
         )}
@@ -117,5 +119,8 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 56,
     marginTop: spacing.md,
+  },
+  appleButtonDisabled: {
+    opacity: 0.7,
   },
 });

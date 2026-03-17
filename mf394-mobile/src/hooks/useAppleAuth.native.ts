@@ -8,6 +8,7 @@ import { tokenStorage } from '../utils/secureStore';
 export function useAppleAuth() {
   const dispatch = useDispatch();
   const [isAvailable, setIsAvailable] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [appleLogin] = useAppleLoginMutation();
 
   useEffect(() => {
@@ -15,14 +16,17 @@ export function useAppleAuth() {
   }, []);
 
   const signInWithApple = async () => {
+    if (isLoading) return;
+    setIsLoading(true);
     try {
-      dispatch(loginStart());
       const credential = await AppleAuthentication.signInAsync({
         requestedScopes: [
           AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
           AppleAuthentication.AppleAuthenticationScope.EMAIL,
         ],
       });
+
+      dispatch(loginStart());
 
       const name = credential.fullName
         ? {
@@ -37,16 +41,29 @@ export function useAppleAuth() {
         ...(name && { name }),
       }).unwrap();
 
+      const userId = (result.user as any)._id || (result.user as any).id;
       await tokenStorage.setToken(result.token);
-      dispatch(loginSuccess({ user: result.user, token: result.token }));
+      dispatch(loginSuccess({
+        user: {
+          id: userId,
+          email: result.user.email,
+          name: result.user.name,
+          image: result.user.image,
+          provider: 'apple',
+        },
+        token: result.token,
+      }));
     } catch (err: any) {
       if (err?.code === 'ERR_REQUEST_CANCELED') {
         dispatch(loginFailure('Sign-in cancelled'));
       } else {
-        dispatch(loginFailure(err?.message ?? 'Apple sign-in failed'));
+        const message = err?.data?.error || err?.error || err?.message || 'Apple sign-in failed';
+        dispatch(loginFailure(message));
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  return { signInWithApple, isAvailable };
+  return { signInWithApple, isAvailable, isLoading };
 }

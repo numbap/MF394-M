@@ -54,7 +54,7 @@ export const authApi = createApi({
     // Login with Google ID token (native)
     login: builder.mutation<LoginResponse, { idToken: string }>({
       query: ({ idToken }) => ({
-        url: '/auth/mobile-login',
+        url: '/auth/provider-login',
         method: 'POST',
         body: { idToken },
       }),
@@ -64,7 +64,7 @@ export const authApi = createApi({
     // Login with Google access token (web)
     webLogin: builder.mutation<LoginResponse, { accessToken: string }>({
       query: (body) => ({
-        url: '/auth/mobile-login',
+        url: '/auth/provider-login',
         method: 'POST',
         body,
       }),
@@ -74,7 +74,7 @@ export const authApi = createApi({
     // Login with Apple ID token (iOS native)
     appleLogin: builder.mutation<LoginResponse, { idToken: string; provider: 'apple'; name?: { firstName?: string; lastName?: string } | null }>({
       query: (body) => ({
-        url: '/auth/mobile-login',
+        url: '/auth/provider-login',
         method: 'POST',
         body,
       }),

@@ -12,7 +12,7 @@ export interface User {
   email: string;
   name: string;
   image?: string;
-  provider: 'google';
+  provider: 'google' | 'apple';
 }
 
 interface AuthState {

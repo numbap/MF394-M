@@ -85,5 +85,5 @@ export function useGoogleAuth() {
     await promptAsync();
   }, [dispatch, promptAsync]);
 
-  return { signInWithGoogle };
+  return { signInWithGoogle, isLoading: false };
 }

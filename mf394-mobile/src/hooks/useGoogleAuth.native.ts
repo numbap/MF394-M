@@ -10,7 +10,7 @@
  */
 
 import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAppDispatch } from '../store/hooks';
 import { loginStart, loginSuccess, loginFailure } from '../store/slices/auth.slice';
 import { useLoginMutation } from '../store/api/auth.api';
@@ -21,6 +21,7 @@ export function useGoogleAuth() {
   const dispatch = useAppDispatch();
   const [login] = useLoginMutation();
   const isSigningIn = useRef(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     GoogleSignin.configure({
@@ -33,6 +34,7 @@ export function useGoogleAuth() {
   const signInWithGoogle = useCallback(async () => {
     if (isSigningIn.current) return;
     isSigningIn.current = true;
+    setIsLoading(true);
 
     dispatch(loginStart());
 
@@ -78,8 +80,9 @@ export function useGoogleAuth() {
       }
     } finally {
       isSigningIn.current = false;
+      setIsLoading(false);
     }
   }, [dispatch, login]);
 
-  return { signInWithGoogle };
+  return { signInWithGoogle, isLoading };
 }
