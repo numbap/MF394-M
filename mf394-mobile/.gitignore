@@ -40,6 +40,10 @@ build/
 # Babel
 .babelrc.json
 
+# Google credentials (never commit)
+google-services.json
+google-play-service-account.json
+
 # Misc
 npm-debug.log*
 yarn-debug.log*

@@ -6,6 +6,8 @@
     <string>group.com.ummyou.ios</string>
     <key>CADisableMinimumFrameDurationOnPhone</key>
     <true/>
+    <key>CFBundleAllowMixedLocalizations</key>
+    <true/>
     <key>CFBundleDevelopmentRegion</key>
     <string>$(DEVELOPMENT_LANGUAGE)</string>
     <key>CFBundleDisplayName</key>
@@ -39,11 +41,9 @@
         </array>
       </dict>
       <dict>
-        <key>CFBundleURLName</key>
-        <string>Google Sign-In</string>
         <key>CFBundleURLSchemes</key>
         <array>
-          <string>com.googleusercontent.apps.522498015179-g0htpel9384on5ubq0ofmlvsa9r2pqvl</string>
+          <string>com.googleusercontent.apps.356418259207-ilau724ipgojbk1fnbq0cm0kd544m9sk</string>
         </array>
       </dict>
     </array>

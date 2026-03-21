@@ -48,6 +48,12 @@ export function useGoogleAuth() {
         return;
       }
 
+      // DEBUG: decode JWT payload to inspect aud claim
+      try {
+        const payload = JSON.parse(atob(idToken.split('.')[1]));
+        console.log('[GoogleAuth] token aud:', payload.aud, '| iss:', payload.iss);
+      } catch {}
+
       const loginResult = await login({ idToken }).unwrap();
       await tokenStorage.setToken(loginResult.token);
 

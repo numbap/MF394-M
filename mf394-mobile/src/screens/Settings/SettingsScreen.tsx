@@ -4,6 +4,7 @@ import { useAppSelector } from '../../store/hooks';
 import { selectAuthUser } from '../../store/hooks';
 import { useDispatch } from 'react-redux';
 import { logout } from '../../store/slices/auth.slice';
+import { contactsApi, authApi, tagsApi, uploadApi, extractApi } from '../../store';
 import { tokenStorage } from '../../utils/secureStore';
 import { colors, spacing, radii, typography } from '../../theme/theme';
 
@@ -12,8 +13,14 @@ export default function SettingsScreen() {
   const dispatch = useDispatch();
 
   const handleLogout = async () => {
-    await tokenStorage.clearToken();
     dispatch(logout());
+    dispatch(contactsApi.util.resetApiState());
+    dispatch(authApi.util.resetApiState());
+    dispatch(tagsApi.util.resetApiState());
+    dispatch(uploadApi.util.resetApiState());
+    dispatch(extractApi.util.resetApiState());
+
+    await tokenStorage.clearToken();
   };
 
   return (
