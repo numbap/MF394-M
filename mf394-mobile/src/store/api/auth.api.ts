@@ -61,16 +61,6 @@ export const authApi = createApi({
       invalidatesTags: ['User'],
     }),
 
-    // Login with Google access token (web)
-    webLogin: builder.mutation<LoginResponse, { accessToken: string }>({
-      query: (body) => ({
-        url: '/auth/provider-login',
-        method: 'POST',
-        body,
-      }),
-      invalidatesTags: ['User'],
-    }),
-
     // Login with Apple ID token (iOS native)
     appleLogin: builder.mutation<LoginResponse, { idToken: string; provider: 'apple'; name?: { firstName?: string; lastName?: string } | null }>({
       query: (body) => ({
@@ -91,7 +81,6 @@ export const authApi = createApi({
 
 export const {
   useLoginMutation,
-  useWebLoginMutation,
   useAppleLoginMutation,
   useGetUserQuery,
 } = authApi;
