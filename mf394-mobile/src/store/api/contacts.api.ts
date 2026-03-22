@@ -10,6 +10,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type { RootState } from '../index';
 import { mapCategoryToAPI, mapCategoryFromAPI } from '../../utils/categoryMapper';
 import { API_BASE_URL } from '../../utils/constants';
+import { saveUserData } from '../../services/sessionCache';
 
 export interface Contact {
   _id: string;
@@ -87,6 +88,15 @@ export const contactsApi = createApi({
         contacts: (response.contacts || []).map(transformFromAPI),
       }),
       providesTags: ['User', 'Contact'],
+      async onQueryStarted(_arg, { queryFulfilled }) {
+        // When fresh data arrives, persist it for next cold start
+        try {
+          const { data } = await queryFulfilled;
+          saveUserData(data);
+        } catch {
+          // Network error or 401 — don't update cache
+        }
+      },
     }),
 
     // Get single contact

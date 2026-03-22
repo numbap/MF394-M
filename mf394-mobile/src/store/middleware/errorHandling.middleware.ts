@@ -10,6 +10,9 @@ import type { Middleware } from '@reduxjs/toolkit';
 import { addToast } from '../slices/ui.slice';
 import { loginFailure, logout } from '../slices/auth.slice';
 import { generateId } from '../../utils/generateId';
+import { clearSessionCache } from '../../services/sessionCache';
+import { clearFilterSnapshot } from '../../services/filterCache';
+import { tokenStorage } from '../../utils/secureStore';
 
 /**
  * Log a warning and show user-friendly toast on every error.
@@ -64,6 +67,9 @@ export const errorHandlingMiddleware: Middleware = (storeAPI) => (next) => (acti
 
     // Handle unauthorized (token expired)
     if (shouldLogout) {
+      clearSessionCache();
+      clearFilterSnapshot();
+      tokenStorage.clearToken();
       storeAPI.dispatch(logout());
     }
   }

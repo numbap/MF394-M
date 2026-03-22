@@ -1,4 +1,4 @@
-package com.ummyou.android
+package com.ummyou.mobile
 
 import android.app.Application
 import android.content.res.Configuration

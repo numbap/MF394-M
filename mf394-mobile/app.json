@@ -24,7 +24,7 @@
       }
     },
     "android": {
-      "package": "com.ummyou.android",
+      "package": "com.ummyou.mobile",
       "versionCode": 1,
       "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {

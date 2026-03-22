@@ -6,6 +6,8 @@ import { useDispatch } from 'react-redux';
 import { logout } from '../../store/slices/auth.slice';
 import { contactsApi, authApi, tagsApi, uploadApi, extractApi } from '../../store';
 import { tokenStorage } from '../../utils/secureStore';
+import { clearSessionCache } from '../../services/sessionCache';
+import { clearFilterSnapshot } from '../../services/filterCache';
 import { colors, spacing, radii, typography } from '../../theme/theme';
 
 export default function SettingsScreen() {
@@ -21,6 +23,8 @@ export default function SettingsScreen() {
     dispatch(extractApi.util.resetApiState());
 
     await tokenStorage.clearToken();
+    await clearSessionCache();
+    await clearFilterSnapshot();
   };
 
   return (

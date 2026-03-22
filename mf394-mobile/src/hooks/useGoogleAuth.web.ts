@@ -19,6 +19,7 @@ import { useAppDispatch } from '../store/hooks';
 import { loginStart, loginSuccess, loginFailure } from '../store/slices/auth.slice';
 import { useWebLoginMutation } from '../store/api/auth.api';
 import { tokenStorage } from '../utils/secureStore';
+import { saveSession } from '../services/sessionCache';
 import { GOOGLE_OAUTH_WEB_CLIENT_ID } from '../utils/constants';
 
 WebBrowser.maybeCompleteAuthSession();
@@ -59,18 +60,15 @@ export function useGoogleAuth() {
 
         const userId = (loginResult.user as any)._id || (loginResult.user as any).id;
 
-        dispatch(
-          loginSuccess({
-            user: {
-              id: userId,
-              email: loginResult.user.email,
-              name: loginResult.user.name,
-              image: loginResult.user.image,
-              provider: 'google',
-            },
-            token: loginResult.token,
-          })
-        );
+        const user = {
+          id: userId,
+          email: loginResult.user.email,
+          name: loginResult.user.name,
+          image: loginResult.user.image,
+          provider: 'google' as const,
+        };
+        dispatch(loginSuccess({ user, token: loginResult.token }));
+        saveSession(user, loginResult.token);
       } catch (error: any) {
         console.log('[useGoogleAuth.web] login error:', JSON.stringify(error));
         const message =

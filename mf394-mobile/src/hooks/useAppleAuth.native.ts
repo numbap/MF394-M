@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { loginStart, loginSuccess, loginFailure } from '../store/slices/auth.slice';
 import { useAppleLoginMutation } from '../store/api/auth.api';
 import { tokenStorage } from '../utils/secureStore';
+import { saveSession } from '../services/sessionCache';
 
 export function useAppleAuth() {
   const dispatch = useDispatch();
@@ -43,16 +44,15 @@ export function useAppleAuth() {
 
       const userId = (result.user as any)._id || (result.user as any).id;
       await tokenStorage.setToken(result.token);
-      dispatch(loginSuccess({
-        user: {
-          id: userId,
-          email: result.user.email,
-          name: result.user.name,
-          image: result.user.image,
-          provider: 'apple',
-        },
-        token: result.token,
-      }));
+      const user = {
+        id: userId,
+        email: result.user.email,
+        name: result.user.name,
+        image: result.user.image,
+        provider: 'apple' as const,
+      };
+      dispatch(loginSuccess({ user, token: result.token }));
+      saveSession(user, result.token);
     } catch (err: any) {
       if (err?.code === 'ERR_REQUEST_CANCELED') {
         dispatch(loginFailure('Sign-in cancelled'));

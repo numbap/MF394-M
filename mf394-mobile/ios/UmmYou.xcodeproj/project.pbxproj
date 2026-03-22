@@ -18,6 +18,7 @@
 		BE95AC86E76035B7C166FDFA /* libPods-UmmYou.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9696F5D1D3C99BC19A3A1D62 /* libPods-UmmYou.a */; };
 		C03ACFC965564B06B5CA631B /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 37E56DBF795D4682AA71A311 /* PrivacyInfo.xcprivacy */; };
 		D3EC80863ADFAA170630D577 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0747A08D666B4E6293A42798 /* ExpoModulesProvider.swift */; };
+		E2A7F5EADCAA849ABA10A4DB /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0713163EF623300A30A53930 /* GoogleService-Info.plist */; };
 		F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748412D0307B40044C1D9 /* AppDelegate.swift */; };
 /* End PBXBuildFile section */
 
@@ -46,6 +47,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0713163EF623300A30A53930 /* GoogleService-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		0747A08D666B4E6293A42798 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-UmmYou/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* UmmYou.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UmmYou.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = UmmYou/Images.xcassets; sourceTree = "<group>"; };
@@ -95,6 +97,7 @@
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
+				0713163EF623300A30A53930 /* GoogleService-Info.plist */,
 			);
 			name = UmmYou;
 			sourceTree = "<group>";
@@ -280,6 +283,7 @@
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
 				050A91878239B71EEB2B4664 /* PrivacyInfo.xcprivacy in Resources */,
+				E2A7F5EADCAA849ABA10A4DB /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

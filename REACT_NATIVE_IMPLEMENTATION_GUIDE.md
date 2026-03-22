@@ -2729,7 +2729,7 @@ Create `eas.json`:
   "submit": {
     "production": {
       "ios": {
-        "ascAppId": "YOUR_APP_ID"
+        "ascAppId": "com.ummyou.ios"
       },
       "android": {
         "serviceAccount": "path/to/service-account.json"

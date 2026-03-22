@@ -87,9 +87,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace 'com.ummyou.android'
+    namespace 'com.ummyou.mobile'
     defaultConfig {
-        applicationId 'com.ummyou.android'
+        applicationId 'com.ummyou.mobile'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

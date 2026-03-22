@@ -89,8 +89,13 @@ export function TagManagementView({ onExit }: TagManagementViewProps) {
   };
 
   const handleInputChange = (text: string) => {
-    // Auto-uppercase and strip any character that isn't A-Z, 0-9, space, or hyphen
-    const sanitized = text.toUpperCase().replace(/[^A-Z0-9 -]/g, '');
+    // Strip any character that isn't alphanumeric, space, or hyphen
+    // Note: we do NOT call toUpperCase() here — on Android, transforming text
+    // inside onChangeText conflicts with the IME composing buffer, causing
+    // character duplication (e.g., "bread" → "bbrbrebreabread").
+    // Uppercasing is handled by autoCapitalize="characters" on the TextInput
+    // and by normalizeTag() on submit.
+    const sanitized = text.replace(/[^A-Za-z0-9 -]/g, '');
     setNewTagInput(sanitized);
     if (errorMessage) {
       setErrorMessage(null);
@@ -165,6 +170,9 @@ export function TagManagementView({ onExit }: TagManagementViewProps) {
             maxLength={30}
             onSubmitEditing={handleAddTag}
             returnKeyType="done"
+            autoCapitalize="characters"
+            autoCorrect={false}
+            autoComplete="off"
             testID="tag-input"
           />
           <Pressable

@@ -171,7 +171,7 @@ export default function ListingScreen({ navigation }: any) {
     navigation.navigate("PartyMode");
   };
 
-  if (isLoading) {
+  if (isLoading && !userData) {
     return (
       <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
         <View style={styles.centeredState}>
@@ -182,7 +182,7 @@ export default function ListingScreen({ navigation }: any) {
     );
   }
 
-  if (error) {
+  if (error && !userData) {
     console.error('[Contacts] error:', JSON.stringify(error));
     return (
       <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>

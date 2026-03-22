@@ -1,4 +1,4 @@
-package com.ummyou.android
+package com.ummyou.mobile
 
 import android.os.Build
 import android.os.Bundle

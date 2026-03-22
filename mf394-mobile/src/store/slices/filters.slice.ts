@@ -2,11 +2,13 @@
  * Filters Slice
  *
  * Manages category and tag filter selections shared across Contacts and Quiz screens.
- * Filter state resets on every session (no persistence) so users always start with
- * zero categories selected after login or page refresh.
+ * Filter selections are persisted to AsyncStorage and restored on app resume
+ * if the app was backgrounded less than 30 minutes ago. Otherwise, filters
+ * reset to empty (no categories selected).
  */
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { logout } from './auth.slice';
 
 interface FiltersState {
   selectedCategories: string[];
@@ -56,6 +58,17 @@ const filtersSlice = createSlice({
       state.selectedCategories = [];
       state.selectedTags = [];
     },
+
+    restoreFilters: (state, action: PayloadAction<{ selectedCategories: string[]; selectedTags: string[] }>) => {
+      state.selectedCategories = action.payload.selectedCategories;
+      state.selectedTags = action.payload.selectedTags;
+    },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(logout, (state) => {
+      state.selectedCategories = [];
+      state.selectedTags = [];
+    });
   },
 });
 
@@ -65,6 +78,7 @@ export const {
   setTags,
   toggleTag,
   clearFilters,
+  restoreFilters,
 } = filtersSlice.actions;
 
 export default filtersSlice.reducer;
