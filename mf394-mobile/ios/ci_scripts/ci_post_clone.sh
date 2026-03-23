@@ -25,6 +25,6 @@ npm install --legacy-peer-deps
 # ── CocoaPods ─────────────────────────────────────────────────────────────────
 echo "Running pod install..."
 cd ios
-pod install
+pod install --no-repo-update
 
 echo "=== ci_post_clone: Done ==="
