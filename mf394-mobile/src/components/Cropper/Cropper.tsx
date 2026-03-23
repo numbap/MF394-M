@@ -21,7 +21,6 @@ import {
   Platform,
   PanResponder,
   GestureResponderEvent,
-  Dimensions,
   useWindowDimensions,
   ScrollView,
 } from "react-native";
@@ -35,8 +34,8 @@ export interface CropperProps {
   style?: ViewStyle;
 }
 
-const DEVICE_WIDTH = Dimensions.get("window").width;
-const CANVAS_SIZE = DEVICE_WIDTH - spacing.lg * 2; // Device width minus padding (used by mobile only)
+// CANVAS_SIZE is computed dynamically inside MobileCropper via useWindowDimensions
+// to avoid stale module-level Dimensions.get() calls that can crash on iPad.
 
 // Clean Slider Component
 interface SliderComponentProps {
@@ -288,12 +287,19 @@ function WebCropper({ imageUri, onCropConfirm, onCancel }: CropperProps) {
 
 // Mobile implementation with custom cropper
 function MobileCropper({ imageUri, onCropConfirm, onCancel, style }: CropperProps) {
+  const { width: deviceWidth } = useWindowDimensions();
+  const canvasSize = deviceWidth - spacing.lg * 2;
+
   const [zoom, setZoom] = useState(1);
   const [minZoom, setMinZoom] = useState(0.1);
   const [offsetX, setOffsetX] = useState(0);
   const [offsetY, setOffsetY] = useState(0);
   const [imageDimensions, setImageDimensions] = useState({ width: 0, height: 0 });
   const [isLoading, setIsLoading] = useState(false);
+
+  // Keep canvasSize in a ref so PanResponder callbacks avoid stale closures
+  const canvasSizeRef = useRef(canvasSize);
+  canvasSizeRef.current = canvasSize;
 
   // Track pinch gesture state
   const initialDistance = useRef<number | null>(null);
@@ -326,7 +332,7 @@ function MobileCropper({ imageUri, onCropConfirm, onCancel, style }: CropperProp
       setImageDimensions({ width: w, height: h });
       imageDimensionsRef.current = { width: w, height: h };
       // Minimum zoom that fits the entire image inside the canvas square.
-      const fitZoom = Math.min(CANVAS_SIZE / w, CANVAS_SIZE / h);
+      const fitZoom = Math.min(canvasSizeRef.current / w, canvasSizeRef.current / h);
       setMinZoom(fitZoom);
       minZoomRef.current = fitZoom;
       setZoom(fitZoom);
@@ -380,8 +386,8 @@ function MobileCropper({ imageUri, onCropConfirm, onCancel, style }: CropperProp
           const newOffsetX = panStartX.current + gestureState.dx;
           const newOffsetY = panStartY.current + gestureState.dy;
 
-          const maxOffsetX = (imageDimensionsRef.current.width * zoomRef.current - CANVAS_SIZE) / 2;
-          const maxOffsetY = (imageDimensionsRef.current.height * zoomRef.current - CANVAS_SIZE) / 2;
+          const maxOffsetX = (imageDimensionsRef.current.width * zoomRef.current - canvasSizeRef.current) / 2;
+          const maxOffsetY = (imageDimensionsRef.current.height * zoomRef.current - canvasSizeRef.current) / 2;
 
           // If image is smaller than canvas on an axis, lock that axis to center (0)
           const clampedX = maxOffsetX > 0 ? Math.max(-maxOffsetX, Math.min(maxOffsetX, newOffsetX)) : 0;
@@ -447,9 +453,10 @@ function MobileCropper({ imageUri, onCropConfirm, onCancel, style }: CropperProp
       const scaledWidth = imgW * z;
       const scaledHeight = imgH * z;
 
+      const cs = canvasSizeRef.current;
       // Raw crop origin in source-image coordinates
-      const rawOriginX = (scaledWidth / 2 - CANVAS_SIZE / 2 - ox) / z;
-      const rawOriginY = (scaledHeight / 2 - CANVAS_SIZE / 2 - oy) / z;
+      const rawOriginX = (scaledWidth / 2 - cs / 2 - ox) / z;
+      const rawOriginY = (scaledHeight / 2 - cs / 2 - oy) / z;
 
       // Clamp origin so it stays inside the image
       const originX = Math.max(0, Math.min(Math.round(rawOriginX), imgW - 1));
@@ -458,7 +465,7 @@ function MobileCropper({ imageUri, onCropConfirm, onCancel, style }: CropperProp
       // Clamp size so origin + size never exceeds the image boundary.
       // Without this, zooming out to "fit" level produces CANVAS_SIZE/zoom > imageDimension
       // which throws "Invalid crop operation" from expo-image-manipulator.
-      const rawSize = CANVAS_SIZE / z;
+      const rawSize = cs / z;
       const cropWidth = Math.min(Math.round(rawSize), imgW - originX);
       const cropHeight = Math.min(Math.round(rawSize), imgH - originY);
 
@@ -500,7 +507,7 @@ function MobileCropper({ imageUri, onCropConfirm, onCancel, style }: CropperProp
 
       {/* Canvas Area */}
       <View style={styles.canvasWrapper}>
-        <View style={styles.canvas} {...panResponder.panHandlers}>
+        <View style={[styles.canvas, { width: canvasSize, height: canvasSize }]} {...panResponder.panHandlers}>
           <Image
             source={{ uri: imageUri }}
             style={[
@@ -508,8 +515,8 @@ function MobileCropper({ imageUri, onCropConfirm, onCancel, style }: CropperProp
               {
                 width: imageDimensions.width * zoom,
                 height: imageDimensions.height * zoom,
-                left: (CANVAS_SIZE - imageDimensions.width * zoom) / 2,
-                top: (CANVAS_SIZE - imageDimensions.height * zoom) / 2,
+                left: (canvasSize - imageDimensions.width * zoom) / 2,
+                top: (canvasSize - imageDimensions.height * zoom) / 2,
                 transform: [{ translateX: offsetX }, { translateY: offsetY }],
               },
             ]}
@@ -518,7 +525,7 @@ function MobileCropper({ imageUri, onCropConfirm, onCancel, style }: CropperProp
           />
 
           {/* Fixed 1:1 Crop Frame */}
-          <View style={styles.cropFrame} />
+          <View style={[styles.cropFrame, { width: canvasSize, height: canvasSize }]} />
         </View>
       </View>
 
@@ -530,7 +537,7 @@ function MobileCropper({ imageUri, onCropConfirm, onCancel, style }: CropperProp
           minimumValue={minZoom}
           maximumValue={3}
           step={0.05}
-          containerWidth={DEVICE_WIDTH - spacing.lg * 2}
+          containerWidth={canvasSize}
         />
       </View>
 
@@ -565,7 +572,7 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: colors.semantic.background,
     padding: spacing.lg,
-    width: DEVICE_WIDTH,
+    width: "100%",
   },
   title: {
     fontSize: typography.headline.large.fontSize,
@@ -578,8 +585,6 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
   },
   canvas: {
-    width: CANVAS_SIZE,
-    height: CANVAS_SIZE,
     backgroundColor: colors.neutral.iron[900],
     borderRadius: radii.lg,
     overflow: "hidden",
@@ -591,8 +596,6 @@ const styles = StyleSheet.create({
   },
   cropFrame: {
     position: "absolute",
-    width: CANVAS_SIZE,
-    height: CANVAS_SIZE,
     borderWidth: 2,
     borderColor: colors.primary[500],
     pointerEvents: "none",

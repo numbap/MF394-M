@@ -4,7 +4,7 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  Dimensions,
+  useWindowDimensions,
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import Animated, {
@@ -14,8 +14,6 @@ import Animated, {
   withDelay,
 } from "react-native-reanimated";
 import { colors, spacing, radii, typography } from "../../theme/theme";
-
-const { height: screenHeight } = Dimensions.get("window");
 
 interface QuizCelebrationProps {
   onPlayAgain: () => void;
@@ -44,9 +42,10 @@ interface ConfettiParticleProps {
   delay: number;
   duration: number;
   color: string;
+  screenHeight: number;
 }
 
-function ConfettiParticle({ left, size, delay, duration, color }: ConfettiParticleProps) {
+function ConfettiParticle({ left, size, delay, duration, color, screenHeight }: ConfettiParticleProps) {
   const translateY = useSharedValue(-20);
   const opacity = useSharedValue(1);
 
@@ -55,7 +54,7 @@ function ConfettiParticle({ left, size, delay, duration, color }: ConfettiPartic
     opacity.value = 1;
     translateY.value = withDelay(delay, withTiming(screenHeight + 20, { duration }));
     opacity.value = withDelay(delay + duration * 0.7, withTiming(0, { duration: duration * 0.3 }));
-  }, []);
+  }, [screenHeight]);
 
   const animStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }],
@@ -80,10 +79,12 @@ function ConfettiParticle({ left, size, delay, duration, color }: ConfettiPartic
 }
 
 export function QuizCelebration({ onPlayAgain }: QuizCelebrationProps) {
+  const { height: screenHeight } = useWindowDimensions();
+
   return (
     <View style={styles.container}>
       {/* Confetti falls as a full-area overlay behind the content */}
-      <View style={styles.confettiLayer} pointerEvents="none">
+      <View style={[styles.confettiLayer, { height: screenHeight }]} pointerEvents="none">
         {PARTICLE_CONFIGS.map((config, i) => (
           <ConfettiParticle
             key={i}
@@ -92,6 +93,7 @@ export function QuizCelebration({ onPlayAgain }: QuizCelebrationProps) {
             delay={config.delay}
             duration={config.duration}
             color={config.color}
+            screenHeight={screenHeight}
           />
         ))}
       </View>
@@ -124,7 +126,6 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    height: screenHeight,
     overflow: "hidden",
   },
   particle: {

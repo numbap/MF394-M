@@ -16,6 +16,7 @@
       "policy": "appVersion"
     },
     "ios": {
+      "supportsTablet": true,
       "bundleIdentifier": "com.ummyou.ios",
       "buildNumber": "1",
       "usesAppleSignIn": true,

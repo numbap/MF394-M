@@ -2,8 +2,14 @@
  * ocrService.native — OCR for iOS & Android using ML Kit.
  * Returns word-level segments normalized through regroupWords().
  */
-import TextRecognition from '@react-native-ml-kit/text-recognition';
 import { regroupWords } from './nameMatch';
+
+let TextRecognition: any = null;
+try {
+  TextRecognition = require('@react-native-ml-kit/text-recognition').default;
+} catch (e) {
+  console.warn('@react-native-ml-kit/text-recognition not available:', (e as Error).message);
+}
 
 export type OcrLine = {
   text: string;
@@ -12,6 +18,10 @@ export type OcrLine = {
 };
 
 export async function ocrImage(uri: string): Promise<OcrLine[]> {
+  if (!TextRecognition) {
+    console.warn('OCR unavailable: TextRecognition module failed to load');
+    return [];
+  }
   const result = await TextRecognition.recognize(uri);
 
   const words: Array<{ text: string; bbox: { x0: number; y0: number; x1: number; y1: number } }> = [];
