@@ -76,6 +76,14 @@ export const authApi = createApi({
       query: () => '/user',
       providesTags: ['User'],
     }),
+
+    // Delete user account permanently
+    deleteAccount: builder.mutation<void, void>({
+      query: () => ({
+        url: '/auth/account',
+        method: 'DELETE',
+      }),
+    }),
   }),
 });
 
@@ -83,4 +91,5 @@ export const {
   useLoginMutation,
   useAppleLoginMutation,
   useGetUserQuery,
+  useDeleteAccountMutation,
 } = authApi;

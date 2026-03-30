@@ -26,9 +26,10 @@ export function useGoogleAuth() {
 
   useEffect(() => {
     try {
+      console.log('[GoogleAuth] configure webClientId:', GOOGLE_OAUTH_WEB_CLIENT_ID);
+      console.log('[GoogleAuth] configure iosClientId:', GOOGLE_OAUTH_CLIENT_ID_iOS);
       GoogleSignin.configure({
         iosClientId: GOOGLE_OAUTH_CLIENT_ID_iOS,
-        androidClientId: GOOGLE_OAUTH_CLIENT_ID_Android,
         webClientId: GOOGLE_OAUTH_WEB_CLIENT_ID,
         scopes: ['profile', 'email'],
       });
@@ -47,9 +48,13 @@ export function useGoogleAuth() {
     try {
       await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
       const userInfo = await GoogleSignin.signIn();
+      console.log('[GoogleAuth] signIn response keys:', Object.keys(userInfo));
+      console.log('[GoogleAuth] idToken present:', !!userInfo.idToken);
+      console.log('[GoogleAuth] data?.idToken present:', !!(userInfo as any).data?.idToken);
       const idToken = userInfo.idToken ?? (userInfo as any).data?.idToken;
 
       if (!idToken) {
+        console.error('[GoogleAuth] No idToken. Full response:', JSON.stringify(userInfo, null, 2));
         dispatch(loginFailure('No ID token received from Google'));
         return;
       }

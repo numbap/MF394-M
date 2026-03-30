@@ -5,12 +5,46 @@ import { configureStore } from '@reduxjs/toolkit';
 import SettingsScreen from './SettingsScreen';
 import authReducer from '../../store/slices/auth.slice';
 import { tokenStorage } from '../../utils/secureStore';
+import { showAlert } from '../../utils/showAlert';
 
-// Mock tokenStorage
+// Mock dependencies
 jest.mock('../../utils/secureStore', () => ({
   tokenStorage: {
     clearToken: jest.fn().mockResolvedValue(undefined),
   },
+}));
+
+jest.mock('../../services/sessionCache', () => ({
+  clearSessionCache: jest.fn().mockResolvedValue(undefined),
+}));
+
+jest.mock('../../services/filterCache', () => ({
+  clearFilterSnapshot: jest.fn().mockResolvedValue(undefined),
+}));
+
+jest.mock('../../utils/showAlert', () => ({
+  showAlert: jest.fn(),
+}));
+
+// Mock the delete account mutation hook
+const mockDeleteAccount = jest.fn();
+const mockDeleteAccountResult = {
+  isLoading: false,
+  isError: false,
+  reset: jest.fn(),
+};
+
+jest.mock('../../store/api/auth.api', () => ({
+  useDeleteAccountMutation: () => [mockDeleteAccount, mockDeleteAccountResult],
+}));
+
+// Mock the store API util methods
+jest.mock('../../store', () => ({
+  contactsApi: { util: { resetApiState: () => ({ type: 'contactsApi/resetApiState' }) } },
+  authApi: { util: { resetApiState: () => ({ type: 'authApi/resetApiState' }) } },
+  tagsApi: { util: { resetApiState: () => ({ type: 'tagsApi/resetApiState' }) } },
+  uploadApi: { util: { resetApiState: () => ({ type: 'uploadApi/resetApiState' }) } },
+  extractApi: { util: { resetApiState: () => ({ type: 'extractApi/resetApiState' }) } },
 }));
 
 const mockUser = {
@@ -40,6 +74,8 @@ const createMockStore = (user = mockUser) => {
 describe('SettingsScreen', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockDeleteAccountResult.isLoading = false;
+    mockDeleteAccount.mockReturnValue({ unwrap: jest.fn().mockResolvedValue(undefined) });
   });
 
   it('displays user name', () => {
@@ -131,31 +167,139 @@ describe('SettingsScreen', () => {
     expect(state.auth.isAuthenticated).toBe(false);
   });
 
-  it('clears token before dispatching logout', async () => {
-    const callOrder: string[] = [];
-    (tokenStorage.clearToken as jest.Mock).mockImplementation(async () => {
-      callOrder.push('clearToken');
-    });
+  // Delete Account tests
 
+  it('renders Delete Account button', () => {
     const store = createMockStore();
-    const originalDispatch = store.dispatch.bind(store);
-    store.dispatch = jest.fn((action) => {
-      if (action.type === 'auth/logout') {
-        callOrder.push('logout');
-      }
-      return originalDispatch(action);
-    }) as typeof store.dispatch;
-
     const { getByText } = render(
       <Provider store={store}>
         <SettingsScreen />
       </Provider>
     );
 
+    expect(getByText('Delete Account')).toBeTruthy();
+  });
+
+  it('shows confirmation dialog when Delete Account is pressed', () => {
+    const store = createMockStore();
+    const { getByText } = render(
+      <Provider store={store}>
+        <SettingsScreen />
+      </Provider>
+    );
+
+    fireEvent.press(getByText('Delete Account'));
+
+    expect(showAlert).toHaveBeenCalledWith(
+      'Delete Account',
+      'This will permanently delete your account and all your data. This action cannot be undone.',
+      expect.arrayContaining([
+        expect.objectContaining({ text: 'Cancel', style: 'cancel' }),
+        expect.objectContaining({ text: 'Delete Account', style: 'destructive' }),
+      ]),
+    );
+  });
+
+  it('calls deleteAccount mutation when confirmed', async () => {
+    const mockUnwrap = jest.fn().mockResolvedValue(undefined);
+    mockDeleteAccount.mockReturnValue({ unwrap: mockUnwrap });
+
+    const store = createMockStore();
+    const { getByText } = render(
+      <Provider store={store}>
+        <SettingsScreen />
+      </Provider>
+    );
+
+    fireEvent.press(getByText('Delete Account'));
+
+    // Extract the destructive button's onPress callback
+    const alertCall = (showAlert as jest.Mock).mock.calls[0];
+    const destructiveButton = alertCall[2].find(
+      (btn: any) => btn.style === 'destructive'
+    );
+
     await act(async () => {
-      fireEvent.press(getByText('Log Out'));
+      await destructiveButton.onPress();
     });
 
-    expect(callOrder).toEqual(['clearToken', 'logout']);
+    expect(mockDeleteAccount).toHaveBeenCalled();
+    expect(mockUnwrap).toHaveBeenCalled();
+  });
+
+  it('clears all state after successful account deletion', async () => {
+    const mockUnwrap = jest.fn().mockResolvedValue(undefined);
+    mockDeleteAccount.mockReturnValue({ unwrap: mockUnwrap });
+
+    const store = createMockStore();
+    const { getByText } = render(
+      <Provider store={store}>
+        <SettingsScreen />
+      </Provider>
+    );
+
+    fireEvent.press(getByText('Delete Account'));
+
+    const alertCall = (showAlert as jest.Mock).mock.calls[0];
+    const destructiveButton = alertCall[2].find(
+      (btn: any) => btn.style === 'destructive'
+    );
+
+    await act(async () => {
+      await destructiveButton.onPress();
+    });
+
+    // Auth state should be cleared
+    const state = store.getState();
+    expect(state.auth.user).toBeNull();
+    expect(state.auth.token).toBeNull();
+    expect(state.auth.isAuthenticated).toBe(false);
+
+    // Token storage should be cleared
+    expect(tokenStorage.clearToken).toHaveBeenCalled();
+  });
+
+  it('does not clear state when account deletion fails', async () => {
+    const mockUnwrap = jest.fn().mockRejectedValue(new Error('Server error'));
+    mockDeleteAccount.mockReturnValue({ unwrap: mockUnwrap });
+
+    const store = createMockStore();
+    const { getByText } = render(
+      <Provider store={store}>
+        <SettingsScreen />
+      </Provider>
+    );
+
+    fireEvent.press(getByText('Delete Account'));
+
+    const alertCall = (showAlert as jest.Mock).mock.calls[0];
+    const destructiveButton = alertCall[2].find(
+      (btn: any) => btn.style === 'destructive'
+    );
+
+    await act(async () => {
+      await destructiveButton.onPress();
+    });
+
+    // Auth state should NOT be cleared
+    const state = store.getState();
+    expect(state.auth.user).toEqual(mockUser);
+    expect(state.auth.isAuthenticated).toBe(true);
+
+    // Token should NOT be cleared
+    expect(tokenStorage.clearToken).not.toHaveBeenCalled();
+  });
+
+  it('shows loading state while deleting', () => {
+    mockDeleteAccountResult.isLoading = true;
+
+    const store = createMockStore();
+    const { getByText } = render(
+      <Provider store={store}>
+        <SettingsScreen />
+      </Provider>
+    );
+
+    expect(getByText('Deleting Account...')).toBeTruthy();
   });
 });
