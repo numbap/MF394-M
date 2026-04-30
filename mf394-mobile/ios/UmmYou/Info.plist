@@ -31,6 +31,7 @@
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
+          <string>ummyou</string>
           <string>com.ummyou.ios</string>
         </array>
       </dict>
@@ -40,15 +41,9 @@
           <string>exp+ummyoumobile</string>
         </array>
       </dict>
-      <dict>
-        <key>CFBundleURLSchemes</key>
-        <array>
-          <string>com.googleusercontent.apps.356418259207-ilau724ipgojbk1fnbq0cm0kd544m9sk</string>
-        </array>
-      </dict>
     </array>
     <key>CFBundleVersion</key>
-    <string>1</string>
+    <string>19</string>
     <key>ITSAppUsesNonExemptEncryption</key>
     <false/>
     <key>LSMinimumSystemVersion</key>
@@ -84,6 +79,13 @@
     <array>
       <string>UIInterfaceOrientationPortrait</string>
       <string>UIInterfaceOrientationPortraitUpsideDown</string>
+    </array>
+    <key>UISupportedInterfaceOrientations~ipad</key>
+    <array>
+      <string>UIInterfaceOrientationPortrait</string>
+      <string>UIInterfaceOrientationPortraitUpsideDown</string>
+      <string>UIInterfaceOrientationLandscapeLeft</string>
+      <string>UIInterfaceOrientationLandscapeRight</string>
     </array>
     <key>UIUserInterfaceStyle</key>
     <string>Light</string>

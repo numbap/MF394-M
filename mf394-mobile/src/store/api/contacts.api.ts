@@ -9,7 +9,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type { RootState } from '../index';
 import { mapCategoryToAPI, mapCategoryFromAPI } from '../../utils/categoryMapper';
-import { API_BASE_URL } from '../../utils/constants';
+import { API_BASE_URL, API_TIMEOUT } from '../../utils/constants';
 import { saveUserData } from '../../services/sessionCache';
 
 export interface Contact {
@@ -56,8 +56,19 @@ const transformToAPI = (contact: ContactInput) => ({
   category: mapCategoryToAPI(contact.category),
 });
 
+const fetchWithTimeout: typeof fetch = async (input, init) => {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), API_TIMEOUT);
+  try {
+    return await fetch(input as RequestInfo, { ...init, signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+};
+
 const baseQuery = fetchBaseQuery({
-  baseUrl: `${API_BASE_URL}/api`,
+  baseUrl: `${API_BASE_URL.replace(/\/$/, '')}/api`,
+  fetchFn: fetchWithTimeout,
   prepareHeaders: (headers, { getState }) => {
     const state = getState() as RootState;
     const token = state.auth.token;

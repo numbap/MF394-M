@@ -73,6 +73,7 @@ export function AuthProvider({ children }) {
           return;
         }
 
+        await GoogleSignIn.signOut();
         const userInfo = await GoogleSignIn.signIn();
         const { idToken } = userInfo;
 

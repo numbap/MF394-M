@@ -11,8 +11,8 @@ import UIKit
 
 class ShareViewController: UIViewController {
   let hostAppGroupIdentifier = "group.com.ummyou.ios"
-  let shareProtocol = "com.ummyou.ios"
-  let sharedKey = "com.ummyou.iosShareKey"
+  let shareProtocol = "ummyou"
+  let sharedKey = "ummyouShareKey"
   var sharedMedia: [SharedMediaFile] = []
   var sharedWebUrl: [WebUrl] = []
   var sharedText: [String] = []

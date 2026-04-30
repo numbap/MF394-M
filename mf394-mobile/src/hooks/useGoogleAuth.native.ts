@@ -47,6 +47,7 @@ export function useGoogleAuth() {
 
     try {
       await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+      await GoogleSignin.signOut();
       const userInfo = await GoogleSignin.signIn();
       console.log('[GoogleAuth] signIn response keys:', Object.keys(userInfo));
       console.log('[GoogleAuth] idToken present:', !!userInfo.idToken);
@@ -65,7 +66,9 @@ export function useGoogleAuth() {
         console.log('[GoogleAuth] token aud:', payload.aud, '| iss:', payload.iss);
       } catch {}
 
+      console.log('[GoogleAuth] calling backend login...');
       const loginResult = await login({ idToken }).unwrap();
+      console.log('[GoogleAuth] backend login success, token present:', !!loginResult.token);
       await tokenStorage.setToken(loginResult.token);
 
       const userId = (loginResult.user as any)._id || (loginResult.user as any).id;
@@ -89,8 +92,8 @@ export function useGoogleAuth() {
       } else {
         const message =
           error?.data?.error || error?.error || error?.message || 'Authentication failed';
+        console.error('[GoogleAuth] login failed:', message, error);
         dispatch(loginFailure(message));
-        throw error;
       }
     } finally {
       isSigningIn.current = false;
