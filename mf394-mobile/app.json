@@ -4,7 +4,6 @@
     "slug": "ummyoumobile",
     "version": "1.0.0",
     "orientation": "portrait",
-    "sdkVersion": "54.0.0",
     "icon": "./assets/ios_icon.png",
     "splash": {
       "image": "./assets/logo.png",
@@ -18,7 +17,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.ummyou.ios",
-      "buildNumber": "19",
+      "buildNumber": "34",
       "usesAppleSignIn": true,
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
@@ -60,7 +59,9 @@
           ],
           "androidMultiIntentFilters": []
         }
-      ]
+      ],
+      "expo-audio",
+      "expo-secure-store"
     ],
     "extra": {
       "eas": {

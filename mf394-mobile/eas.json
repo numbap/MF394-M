@@ -21,8 +21,11 @@
         "GOOGLE_OAUTH_CLIENT_ID_iOS": "356418259207-ilau724ipgojbk1fnbq0cm0kd544m9sk.apps.googleusercontent.com",
         "GOOGLE_OAUTH_CLIENT_ID_Android": "356418259207-vchhonsrbge14puotlgo73jqc9ac0lpe.apps.googleusercontent.com",
         "GOOGLE_OAUTH_WEB_CLIENT_ID": "356418259207-1s9ev1g7l8mo1k13jmogn2uqi45k7lo4.apps.googleusercontent.com",
-        "API_DOMAIN": "https://ummyou.com",
+        "API_DOMAIN": "https://memcard-git-mobileapi-numbaps-projects.vercel.app",
         "API_TIMEOUT": "30000"
+      },
+      "android": {
+        "buildType": "apk"
       }
     },
     "development": {
