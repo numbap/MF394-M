@@ -4,6 +4,8 @@
   <dict>
     <key>AppGroupIdentifier</key>
     <string>group.com.ummyou.ios</string>
+    <key>GIDClientID</key>
+    <string>356418259207-ilau724ipgojbk1fnbq0cm0kd544m9sk.apps.googleusercontent.com</string>
     <key>CADisableMinimumFrameDurationOnPhone</key>
     <true/>
     <key>CFBundleAllowMixedLocalizations</key>
