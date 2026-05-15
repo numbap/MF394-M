@@ -25,17 +25,13 @@ export function useGoogleAuth() {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    try {
-      console.log('[GoogleAuth] configure webClientId:', GOOGLE_OAUTH_WEB_CLIENT_ID);
-      console.log('[GoogleAuth] configure iosClientId:', GOOGLE_OAUTH_CLIENT_ID_iOS);
-      GoogleSignin.configure({
-        iosClientId: GOOGLE_OAUTH_CLIENT_ID_iOS,
-        webClientId: GOOGLE_OAUTH_WEB_CLIENT_ID,
-        scopes: ['profile', 'email'],
-      });
-    } catch (error) {
-      console.warn('GoogleSignin.configure failed:', error);
-    }
+    GoogleSignin.configure({
+      iosClientId: GOOGLE_OAUTH_CLIENT_ID_iOS,
+      webClientId: GOOGLE_OAUTH_WEB_CLIENT_ID,
+      scopes: ['profile', 'email'],
+    }).catch((error) => {
+      console.warn('[GoogleAuth] configure failed:', error);
+    });
   }, []);
 
   const signInWithGoogle = useCallback(async () => {
