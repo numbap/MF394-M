@@ -20,7 +20,6 @@ import Animated, {
   withSequence,
   withTiming,
 } from "react-native-reanimated";
-import { createAudioPlayer, setAudioModeAsync } from "expo-audio";
 import shuffle from "../../utils/shuffle";
 import { colors, spacing, radii, typography } from "../../theme/theme";
 import {
@@ -63,61 +62,18 @@ export default function QuizGameScreen() {
   const scale = useSharedValue(1);
   const shakeX = useSharedValue(0);
 
-  // Sound refs
-  const correctSoundRef = useRef(null);
-  const incorrectSoundRef = useRef(null);
-
   // Timer ref for cleanup
   const timerRef = useRef(null);
-
-  useEffect(() => {
-    loadSounds();
-
-    return () => {
-      // Cleanup sounds
-      if (correctSoundRef.current) {
-        correctSoundRef.current.remove();
-      }
-      if (incorrectSoundRef.current) {
-        incorrectSoundRef.current.remove();
-      }
-    };
-  }, []);
-
-  const loadSounds = async () => {
-    if (Platform.OS === 'web') return;
-    try {
-      await setAudioModeAsync({
-        playsInSilentModeIOS: true,
-        shouldPlayInBackground: false,
-      });
-    } catch (e) {
-      return; // audio mode setup failed — continue without sound
-    }
-    try {
-      correctSoundRef.current = createAudioPlayer(
-        require('../../../assets/sounds/correct.wav')
-      );
-    } catch (e) { /* non-fatal */ }
-    try {
-      incorrectSoundRef.current = createAudioPlayer(
-        require('../../../assets/sounds/incorrect.wav')
-      );
-    } catch (e) { /* non-fatal */ }
-  };
 
   const playSound = async (isCorrect) => {
     try {
       if (Platform.OS === "web") {
-        // Web Audio API oscillator (web only)
         if (typeof window !== "undefined" && window.AudioContext) {
           const audioContext = new (window.AudioContext || window.webkitAudioContext)();
           const oscillator = audioContext.createOscillator();
           const gainNode = audioContext.createGain();
-
           oscillator.connect(gainNode);
           gainNode.connect(audioContext.destination);
-
           if (isCorrect) {
             oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime);
             oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.1);
@@ -137,12 +93,6 @@ export default function QuizGameScreen() {
           }
         }
       } else {
-        // Native: play sound + haptics (iOS/Android)
-        const soundRef = isCorrect ? correctSoundRef : incorrectSoundRef;
-        if (soundRef.current) {
-          soundRef.current.seekTo(0);
-          soundRef.current.play();
-        }
         if (isCorrect) {
           await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
         } else {
