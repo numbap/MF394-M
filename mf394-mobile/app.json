@@ -60,7 +60,6 @@
           "androidMultiIntentFilters": []
         }
       ],
-      "expo-audio",
       "expo-secure-store"
     ],
     "extra": {
