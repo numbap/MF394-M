@@ -85,23 +85,25 @@ export default function QuizGameScreen() {
   }, []);
 
   const loadSounds = async () => {
+    if (Platform.OS === 'web') return;
     try {
       await setAudioModeAsync({
         playsInSilentModeIOS: true,
         shouldPlayInBackground: false,
       });
-
-      if (Platform.OS !== 'web') {
-        correctSoundRef.current = createAudioPlayer(
-          require('../../../assets/sounds/correct.wav')
-        );
-        incorrectSoundRef.current = createAudioPlayer(
-          require('../../../assets/sounds/incorrect.wav')
-        );
-      }
-    } catch (error) {
-      console.error("Error loading sounds:", error);
+    } catch (e) {
+      return; // audio mode setup failed — continue without sound
     }
+    try {
+      correctSoundRef.current = createAudioPlayer(
+        require('../../../assets/sounds/correct.wav')
+      );
+    } catch (e) { /* non-fatal */ }
+    try {
+      incorrectSoundRef.current = createAudioPlayer(
+        require('../../../assets/sounds/incorrect.wav')
+      );
+    } catch (e) { /* non-fatal */ }
   };
 
   const playSound = async (isCorrect) => {
@@ -305,7 +307,9 @@ export default function QuizGameScreen() {
   });
 
   const getOptionStyle = (option) => {
-    const isCorrectAnswer = option === getCurrentContact().name;
+    const current = getCurrentContact();
+    if (!current) return styles.optionButton;
+    const isCorrectAnswer = option === current.name;
     const isSelected = option === selectedOption;
 
     // Show green for correct answer when feedback is "correct"
@@ -445,8 +449,8 @@ export default function QuizGameScreen() {
 
   const current = getCurrentContact();
 
-  // Don't render quiz until options are generated
-  if (currentOptions.length === 0) {
+  // Don't render quiz until contact and options are ready
+  if (!current || currentOptions.length === 0) {
     return (
       <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
         <View style={styles.container}>
