@@ -16,7 +16,7 @@ import { loginStart, loginSuccess, loginFailure } from '../store/slices/auth.sli
 import { useLoginMutation } from '../store/api/auth.api';
 import { tokenStorage } from '../utils/secureStore';
 import { saveSession } from '../services/sessionCache';
-import { GOOGLE_OAUTH_CLIENT_ID_iOS, GOOGLE_OAUTH_CLIENT_ID_Android, GOOGLE_OAUTH_WEB_CLIENT_ID } from '../utils/constants';
+import { GOOGLE_OAUTH_WEB_CLIENT_ID } from '../utils/constants';
 
 export function useGoogleAuth() {
   const dispatch = useAppDispatch();
@@ -28,7 +28,6 @@ export function useGoogleAuth() {
     (async () => {
       try {
         await GoogleSignin.configure({
-          iosClientId: GOOGLE_OAUTH_CLIENT_ID_iOS,
           webClientId: GOOGLE_OAUTH_WEB_CLIENT_ID,
           scopes: ['profile', 'email'],
         });
