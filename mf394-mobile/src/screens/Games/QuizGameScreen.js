@@ -13,13 +13,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import * as Haptics from "expo-haptics";
 import { useSelector, useDispatch } from "react-redux";
 import { useGetUserQuery } from "../../store/api/contacts.api";
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  withSequence,
-  withTiming,
-} from "react-native-reanimated";
 import shuffle from "../../utils/shuffle";
 import { colors, spacing, radii, typography } from "../../theme/theme";
 import {
@@ -58,9 +51,6 @@ export default function QuizGameScreen() {
   const [score, setScore] = useState(0);
   const [quizComplete, setQuizComplete] = useState(false);
 
-  // Animation values
-  const scale = useSharedValue(1);
-  const shakeX = useSharedValue(0);
 
   // Timer ref for cleanup
   const timerRef = useRef(null);
@@ -205,10 +195,6 @@ export default function QuizGameScreen() {
 
     if (isCorrect) {
       // Correct answer: quick bounce and advance
-      scale.value = withSequence(
-        withTiming(1.15, { duration: 100 }),
-        withTiming(1, { duration: 150 })
-      );
 
       setScore((prev) => prev + 1);
 
@@ -225,13 +211,6 @@ export default function QuizGameScreen() {
       }, 600);
     } else {
       // Wrong answer: quick shake and let user try again
-      shakeX.value = withSequence(
-        withTiming(-12, { duration: 50 }),
-        withTiming(12, { duration: 50 }),
-        withTiming(-8, { duration: 40 }),
-        withTiming(8, { duration: 40 }),
-        withTiming(0, { duration: 40 })
-      );
 
       // Clear the red highlight after 300ms so user can try again quickly
       timerRef.current = setTimeout(() => {
@@ -250,11 +229,6 @@ export default function QuizGameScreen() {
     setQuizContacts(shuffle(quizContacts));
   };
 
-  const animatedImageStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ scale: scale.value }, { translateX: shakeX.value }],
-    };
-  });
 
   const getOptionStyle = (option) => {
     const current = getCurrentContact();
@@ -433,7 +407,7 @@ export default function QuizGameScreen() {
             </Text>
           </View>
 
-          <Animated.View style={[styles.imageBox, current.photo ? null : styles.hintBox, animatedImageStyle]}>
+          <View style={[styles.imageBox, current.photo ? null : styles.hintBox]}>
             {current.photo ? (
               <View style={styles.imageClip}>
                 <Image
@@ -450,7 +424,7 @@ export default function QuizGameScreen() {
             ) : (
               <Text style={styles.noImageText}>No Photo</Text>
             )}
-          </Animated.View>
+          </View>
 
           <View style={styles.optionsContainer}>
             {currentOptions.map((option, index) => (

@@ -818,16 +818,6 @@ exports[`QuizGameScreen - Filters Snapshots matches snapshot for single category
                 "width": 200,
               },
               null,
-              {
-                "transform": [
-                  {
-                    "scale": 1,
-                  },
-                  {
-                    "translateX": 0,
-                  },
-                ],
-              },
             ]
           }
         >

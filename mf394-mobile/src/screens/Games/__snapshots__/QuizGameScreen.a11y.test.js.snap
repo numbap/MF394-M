@@ -86,16 +86,6 @@ exports[`QuizGameScreen - Accessibility Snapshot matches snapshot for full rende
                 "width": 200,
               },
               null,
-              {
-                "transform": [
-                  {
-                    "scale": 1,
-                  },
-                  {
-                    "translateX": 0,
-                  },
-                ],
-              },
             ]
           }
         >

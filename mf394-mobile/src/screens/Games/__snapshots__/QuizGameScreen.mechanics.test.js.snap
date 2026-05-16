@@ -82,16 +82,6 @@ exports[`QuizGameScreen - Mechanics Snapshots matches snapshot for feedback stat
                 "width": 200,
               },
               null,
-              {
-                "transform": [
-                  {
-                    "scale": 1,
-                  },
-                  {
-                    "translateX": 0,
-                  },
-                ],
-              },
             ]
           }
         >
@@ -504,16 +494,6 @@ exports[`QuizGameScreen - Mechanics Snapshots matches snapshot for feedback stat
                 "width": 200,
               },
               null,
-              {
-                "transform": [
-                  {
-                    "scale": 1,
-                  },
-                  {
-                    "translateX": 0,
-                  },
-                ],
-              },
             ]
           }
         >
@@ -926,16 +906,6 @@ exports[`QuizGameScreen - Mechanics Snapshots matches snapshot for initial rende
                 "width": 200,
               },
               null,
-              {
-                "transform": [
-                  {
-                    "scale": 1,
-                  },
-                  {
-                    "translateX": 0,
-                  },
-                ],
-              },
             ]
           }
         >

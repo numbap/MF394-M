@@ -39,6 +39,7 @@
     "expo-image-manipulator": "~55.0.16",
     "expo-image-picker": "~55.0.20",
     "expo-linking": "~55.0.15",
+    "expo-modules-core": "^55.0.25",
     "expo-secure-store": "~55.0.13",
     "expo-share-intent": "^6.1.0",
     "expo-status-bar": "~55.0.6",

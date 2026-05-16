@@ -41,16 +41,6 @@ jest.mock('expo-secure-store', () => ({
   deleteItemAsync: jest.fn(() => Promise.resolve()),
 }));
 
-// Mock expo-audio (replaced expo-av in SDK 54)
-jest.mock('expo-audio', () => ({
-  createAudioPlayer: jest.fn(() => ({
-    seekTo: jest.fn(),
-    play: jest.fn(),
-    remove: jest.fn(),
-  })),
-  setAudioModeAsync: jest.fn(() => Promise.resolve()),
-}));
-
 // Mock expo-haptics
 jest.mock('expo-haptics', () => ({
   impactAsync: jest.fn(() => Promise.resolve()),
