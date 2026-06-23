@@ -9,7 +9,7 @@ const PEAKS_REQUIRED = 3;
 const COOLDOWN_MS = 1500;
 
 interface UseShakeGestureOptions {
-  onShake: () => void;
+  onShake: () => void | Promise<void>;
   enabled: boolean;
 }
 
