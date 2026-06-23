@@ -151,19 +151,19 @@ function AuthenticatedStack() {
         }}
       />
       <Tab.Screen
-        name="HelpTab"
-        component={HelpStack}
-        options={{
-          title: "Help",
-          tabBarLabel: "Help",
-        }}
-      />
-      <Tab.Screen
         name="QuizTab"
         component={GamesStack}
         options={{
           title: "Quiz",
           tabBarLabel: "Quiz",
+        }}
+      />
+      <Tab.Screen
+        name="HelpTab"
+        component={HelpStack}
+        options={{
+          title: "Help",
+          tabBarLabel: "Help",
         }}
       />
       <Tab.Screen
