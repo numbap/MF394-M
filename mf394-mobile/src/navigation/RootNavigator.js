@@ -19,6 +19,7 @@ import PracticeGameScreen from "../screens/Games/PracticeGameScreen";
 import AddEditContactScreen from "../screens/AddEdit/AddEditContactScreen";
 import PartyModeScreen from "../screens/Party/PartyModeScreen";
 import SettingsScreen from "../screens/Settings/SettingsScreen";
+import HelpScreen from "../screens/Help/HelpScreen";
 import OnboardingScreen from "../screens/Onboarding/OnboardingScreen";
 
 const BackWithThumbnail = ({ onPress }) => (
@@ -130,6 +131,7 @@ function AuthenticatedStack() {
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
           if (route.name === 'HomeTab') iconName = 'address-card';
+          else if (route.name === 'HelpTab') iconName = 'question-circle';
           else if (route.name === 'QuizTab') iconName = 'trophy';
           else if (route.name === 'SettingsTab') iconName = 'cog';
 
@@ -146,6 +148,14 @@ function AuthenticatedStack() {
         options={{
           title: "Contacts",
           tabBarLabel: "Contacts",
+        }}
+      />
+      <Tab.Screen
+        name="HelpTab"
+        component={HelpStack}
+        options={{
+          title: "Help",
+          tabBarLabel: "Help",
         }}
       />
       <Tab.Screen
@@ -239,6 +249,29 @@ function GamesStack() {
         name="Quiz"
         component={QuizGameScreen}
         options={{ title: "Quiz Game", headerShown: false  }}
+      />
+    </Stack.Navigator>
+  );
+}
+
+function HelpStack() {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: true,
+        headerStyle: {
+          backgroundColor: colors.semantic.background,
+        },
+        headerTintColor: colors.semantic.text,
+        headerTitleStyle: {
+          fontWeight: "600",
+        },
+      }}
+    >
+      <Stack.Screen
+        name="Help"
+        component={HelpScreen}
+        options={{ title: "Help" }}
       />
     </Stack.Navigator>
   );
