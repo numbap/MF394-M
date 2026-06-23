@@ -15,6 +15,7 @@
     "pods": "cd ios && pod install"
   },
   "dependencies": {
+    "@expo/vector-icons": "^15.1.1",
     "@react-native-async-storage/async-storage": "2.2.0",
     "@react-native-community/netinfo": "11.5.2",
     "@react-native-google-signin/google-signin": "^10.0.0",
@@ -70,6 +71,7 @@
     "@testing-library/jest-dom": "^6.1.5",
     "@testing-library/react-native": "^12.4.0",
     "@types/react": "~19.2.10",
+    "babel-preset-expo": "^56.0.15",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-react-native": "^5.0.0",
