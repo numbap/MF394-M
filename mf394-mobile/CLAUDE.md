@@ -36,3 +36,14 @@ Claude MUST ask before: refactoring existing code, architectural changes, destru
 - Web and mobile experiences should match as much as possible
 - `/old` folder is reference only — do not modify
 - When starting a conversation: ask clarifying questions first, then present a plan for approval before doing work
+
+## Testing
+- Unit: Jest + React Native Testing Library · E2E: Detox (mobile), Playwright (web)
+- Coverage: 80% lines, 90% critical logic paths
+- If changes break multiple unrelated tests: roll back, ask user how to proceed
+- If cross-component failure detected: create NOTES.md with root cause, affected components, fix options
+- Palette screen must render every component from `src/components` with all states; tests fail if any component is missing
+
+## Scope
+- Only modify files inside `/Users/patjo/Dev/MF394-M/mf394-mobile`
+- Loop autonomously until tests pass; stop and ask after repeated failures
