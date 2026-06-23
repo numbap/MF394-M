@@ -26,16 +26,16 @@ Max 200 lines per component · Max 8 props · Max 1 component per file
 - `AUTH_MOCK=true` in .env → use mock data from mock_user.json
 
 ## Autonomous Permissions
-Claude MAY without asking: create/rename files, run tests/lint/builds, fix lint errors, make small fixes, add libraries, commit with descriptive messages, push to non-main branches.
+Claude MAY without asking: create/rename files, run tests/lint/builds, fix lint errors, make small fixes, commit with descriptive messages, push to non-main branches.
 Claude MUST ask before: refactoring existing code, architectural changes, destructive git ops, changes to this file.
 
 ## Rules
+- When starting a conversation: ask clarifying questions first, then present a plan for approval before doing work
 - Summarize changes after every task
 - No secrets/API keys in code · No console.log in production · No unencrypted PII storage
 - Maintain CHANGELOG.md
 - Web and mobile experiences should match as much as possible
 - `/old` folder is reference only — do not modify
-- When starting a conversation: ask clarifying questions first, then present a plan for approval before doing work
 
 ## Testing
 - Unit: Jest + React Native Testing Library · E2E: Detox (mobile), Playwright (web)
@@ -45,5 +45,5 @@ Claude MUST ask before: refactoring existing code, architectural changes, destru
 - Palette screen must render every component from `src/components` with all states; tests fail if any component is missing
 
 ## Scope
-- Only modify files inside `/Users/patjo/Dev/MF394-M/mf394-mobile`
+- Only modify files inside the project root
 - Loop autonomously until tests pass; stop and ask after repeated failures
