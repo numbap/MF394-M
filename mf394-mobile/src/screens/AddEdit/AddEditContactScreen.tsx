@@ -292,28 +292,25 @@ export default function AddEditContactScreen() {
     <View style={styles.container}>
       {step === "details" ? (
         <ContactFormSteps
+          values={{ photoUri, name, hint, summary, category, tags }}
+          actions={{
+            onImageSelected: handleImageSelected,
+            onImageDeleted: handleImageDeleted,
+            onNameChange: setName,
+            onHintChange: setHint,
+            onSummaryChange: setSummary,
+            onCategoryChange: setCategory,
+            onTagsChange: setTags,
+            onEditTags: () => setViewMode("tagManagement"),
+            onExitTagManagement: () => setViewMode("details"),
+            onSave: handleSave,
+            onDelete: handleDelete,
+            onCancel: () => navigation.goBack(),
+          }}
           viewMode={viewMode}
-          photoUri={photoUri}
-          name={name}
-          hint={hint}
-          summary={summary}
-          category={category}
-          tags={tags}
           isEditing={isEditing}
           isLoading={isLoading}
-          isFormValid={isFormValid()}
-          onImageSelected={handleImageSelected}
-          onImageDeleted={handleImageDeleted}
-          onNameChange={setName}
-          onHintChange={setHint}
-          onSummaryChange={setSummary}
-          onCategoryChange={setCategory}
-          onTagsChange={setTags}
-          onEditTags={() => setViewMode("tagManagement")}
-          onExitTagManagement={() => setViewMode("details")}
-          onSave={handleSave}
-          onDelete={handleDelete}
-          onCancel={() => navigation.goBack()}
+          canSave={isFormValid()}
         />
       ) : (
         <ContactPhotoStep

@@ -16,10 +16,10 @@ import { FaceSelector, Face } from "../../components/FaceSelector";
 import { Cropper } from "../../components/Cropper";
 import { LoadingState } from "../../components/LoadingState";
 
-type Step = "details" | "faceDetection" | "faceSelection" | "crop";
+type PhotoStep = "faceDetection" | "faceSelection" | "crop";
 
 interface ContactPhotoStepProps {
-  step: Step;
+  step: PhotoStep;
   uploadedImageUri: string | null;
   detectedFaces: Face[];
   isLoading: boolean;

@@ -22,17 +22,16 @@ import { CATEGORIES } from "../../constants";
 
 type ViewMode = "details" | "tagManagement";
 
-interface ContactFormStepsProps {
-  viewMode: ViewMode;
+export interface FormValues {
   photoUri: string | null;
   name: string;
   hint: string;
   summary: string;
   category: string;
   tags: string[];
-  isEditing: boolean;
-  isLoading: boolean;
-  isFormValid: boolean;
+}
+
+export interface FormActions {
   onImageSelected: (uri: string) => void;
   onImageDeleted: () => void;
   onNameChange: (value: string) => void;
@@ -47,32 +46,25 @@ interface ContactFormStepsProps {
   onCancel: () => void;
 }
 
+interface ContactFormStepsProps {
+  values: FormValues;
+  actions: FormActions;
+  viewMode: ViewMode;
+  isEditing: boolean;
+  isLoading: boolean;
+  canSave: boolean;
+}
+
 export function ContactFormSteps({
+  values,
+  actions,
   viewMode,
-  photoUri,
-  name,
-  hint,
-  summary,
-  category,
-  tags,
   isEditing,
   isLoading,
-  isFormValid,
-  onImageSelected,
-  onImageDeleted,
-  onNameChange,
-  onHintChange,
-  onSummaryChange,
-  onCategoryChange,
-  onTagsChange,
-  onEditTags,
-  onExitTagManagement,
-  onSave,
-  onDelete,
-  onCancel,
+  canSave,
 }: ContactFormStepsProps) {
   if (viewMode === "tagManagement") {
-    return <TagManagementView onExit={onExitTagManagement} />;
+    return <TagManagementView onExit={actions.onExitTagManagement} />;
   }
 
   return (
@@ -80,9 +72,9 @@ export function ContactFormSteps({
       {/* Image Selector */}
       <FormGroup>
         <ImageSelector
-          imageUri={photoUri}
-          onImageSelected={onImageSelected}
-          onImageDeleted={onImageDeleted}
+          imageUri={values.photoUri}
+          onImageSelected={actions.onImageSelected}
+          onImageDeleted={actions.onImageDeleted}
         />
       </FormGroup>
 
@@ -94,8 +86,8 @@ export function ContactFormSteps({
         <TextInput
           style={styles.input}
           placeholder="Contact name"
-          value={name}
-          onChangeText={onNameChange}
+          value={values.name}
+          onChangeText={actions.onNameChange}
           placeholderTextColor={colors.semantic.textTertiary}
         />
       </FormGroup>
@@ -106,8 +98,8 @@ export function ContactFormSteps({
         <TextInput
           style={styles.input}
           placeholder="e.g., tall, red jacket"
-          value={hint}
-          onChangeText={onHintChange}
+          value={values.hint}
+          onChangeText={actions.onHintChange}
           placeholderTextColor={colors.semantic.textTertiary}
         />
       </FormGroup>
@@ -118,8 +110,8 @@ export function ContactFormSteps({
         <TextInput
           style={[styles.input, styles.multilineInput]}
           placeholder="Notes about this person"
-          value={summary}
-          onChangeText={onSummaryChange}
+          value={values.summary}
+          onChangeText={actions.onSummaryChange}
           multiline
           numberOfLines={3}
           placeholderTextColor={colors.semantic.textTertiary}
@@ -130,11 +122,11 @@ export function ContactFormSteps({
       <FormGroup>
         <CategoryTagSelector
           categories={CATEGORIES}
-          selectedCategory={category}
-          onCategoryChange={onCategoryChange}
-          selectedTags={tags}
-          onTagsChange={onTagsChange}
-          onEditTags={onEditTags}
+          selectedCategory={values.category}
+          onCategoryChange={actions.onCategoryChange}
+          selectedTags={values.tags}
+          onTagsChange={actions.onTagsChange}
+          onEditTags={actions.onEditTags}
         />
       </FormGroup>
 
@@ -143,22 +135,22 @@ export function ContactFormSteps({
         primaryButton={{
           label: `${isEditing ? "Save" : "Add"} Contact`,
           icon: "save",
-          onPress: onSave,
+          onPress: actions.onSave,
           isLoading: isLoading,
-          disabled: !isFormValid,
+          disabled: !canSave,
         }}
         deleteButton={
           isEditing
             ? {
                 label: "",
                 icon: "trash",
-                onPress: onDelete,
+                onPress: actions.onDelete,
               }
             : undefined
         }
         cancelButton={{
           label: "Cancel",
-          onPress: onCancel,
+          onPress: actions.onCancel,
         }}
       />
     </ScrollView>
