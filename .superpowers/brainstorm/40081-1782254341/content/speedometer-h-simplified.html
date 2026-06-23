@@ -1,0 +1,40 @@
+<h2>H Simplified</h2>
+<p class="subtitle">Thick ring with aura glow — cleaned up per your feedback.</p>
+
+<div class="cards" style="display:grid;grid-template-columns:1fr;gap:24px;max-width:500px;margin:0 auto;">
+
+  <div class="card" data-choice="h-simple" onclick="toggleSelect(this)" style="padding:32px;display:flex;justify-content:center;">
+    <div style="width:220px;height:220px;">
+      <svg viewBox="0 0 200 200" style="width:100%;height:100%;">
+        <defs>
+          <linearGradient id="thickGrad2" x1="0%" y1="100%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#dc2626"/>
+            <stop offset="35%" stop-color="#f97316"/>
+            <stop offset="65%" stop-color="#facc15"/>
+            <stop offset="100%" stop-color="#4ade80"/>
+          </linearGradient>
+          <filter id="aura">
+            <feGaussianBlur stdDeviation="6" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <!-- Background ring -->
+        <circle cx="100" cy="100" r="82" fill="none" stroke="#f1f5f9" stroke-width="24"/>
+        <!-- Progress ring with glow (50% filled) -->
+        <g filter="url(#aura)">
+          <circle cx="100" cy="100" r="82" fill="none" stroke="url(#thickGrad2)" stroke-width="24"
+            stroke-dasharray="515" stroke-dashoffset="257"
+            stroke-linecap="round" transform="rotate(-90 100 100)"/>
+        </g>
+        <!-- Center content -->
+        <text x="100" y="108" text-anchor="middle" font-size="48" font-weight="800" fill="#0f172a">15</text>
+        <text x="100" y="130" text-anchor="middle" font-size="12" fill="#94a3b8">of 30</text>
+      </svg>
+    </div>
+  </div>
+
+</div>
+
+<div style="max-width:500px;margin:16px auto 0;color:#64748b;font-size:13px;text-align:center;">
+  Big number + "of 30". Thick gradient ring with aura glow. That's it.
+</div>

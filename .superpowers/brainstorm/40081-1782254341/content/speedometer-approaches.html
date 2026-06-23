@@ -1,0 +1,156 @@
+<h2>Speedometer Component — 3 Approaches</h2>
+<p class="subtitle">Click the one that feels right for the Help screen header. Each works on iOS, Android & Web.</p>
+
+<div class="cards" style="display:grid;grid-template-columns:1fr;gap:24px;max-width:800px;margin:0 auto;">
+
+  <!-- Approach A: Classic Gauge -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)" style="padding:24px;">
+    <div class="card-body" style="display:flex;gap:32px;align-items:center;">
+      <div style="flex-shrink:0;width:220px;height:140px;position:relative;">
+        <!-- SVG Gauge Mockup -->
+        <svg viewBox="0 0 220 140" style="width:100%;height:100%;">
+          <!-- Background arc segments -->
+          <path d="M 30 130 A 80 80 0 0 1 73 52" stroke="#ef4444" stroke-width="18" fill="none" stroke-linecap="round" opacity="0.25"/>
+          <path d="M 78 48 A 80 80 0 0 1 142 48" stroke="#eab308" stroke-width="18" fill="none" stroke-linecap="round" opacity="0.25"/>
+          <path d="M 147 52 A 80 80 0 0 1 190 130" stroke="#22c55e" stroke-width="18" fill="none" stroke-linecap="round" opacity="0.25"/>
+
+          <!-- Filled arc (progress to ~15/30) -->
+          <path d="M 30 130 A 80 80 0 0 1 73 52" stroke="#ef4444" stroke-width="18" fill="none" stroke-linecap="round"/>
+          <path d="M 78 48 A 80 80 0 0 1 110 44" stroke="#eab308" stroke-width="12" fill="none" stroke-linecap="round"/>
+
+          <!-- Needle -->
+          <line x1="110" y1="130" x2="105" y2="55" stroke="#1e293b" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="110" cy="130" r="6" fill="#1e293b"/>
+
+          <!-- Labels -->
+          <text x="25" y="138" font-size="10" fill="#94a3b8">0</text>
+          <text x="105" y="28" font-size="10" fill="#94a3b8" text-anchor="middle">15</text>
+          <text x="195" y="138" font-size="10" fill="#94a3b8">30</text>
+        </svg>
+      </div>
+      <div>
+        <h3 style="margin:0 0 8px 0;">A: Classic Speedometer Gauge</h3>
+        <p style="margin:0 0 8px 0;color:#64748b;">Traditional semicircle gauge with a rotating needle. Red → Yellow → Green arc segments. Needle animates with spring physics on mount and when count changes.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <span style="background:#dbeafe;color:#1e40af;padding:2px 8px;border-radius:12px;font-size:12px;">Classic feel</span>
+          <span style="background:#dcfce7;color:#166534;padding:2px 8px;border-radius:12px;font-size:12px;">Reanimated spring</span>
+          <span style="background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:12px;font-size:12px;">SVG paths</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Approach B: Modern Arc with Glow -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)" style="padding:24px;">
+    <div class="card-body" style="display:flex;gap:32px;align-items:center;">
+      <div style="flex-shrink:0;width:220px;height:140px;position:relative;">
+        <svg viewBox="0 0 220 150" style="width:100%;height:100%;">
+          <defs>
+            <linearGradient id="arcGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#ef4444"/>
+              <stop offset="50%" stop-color="#eab308"/>
+              <stop offset="100%" stop-color="#22c55e"/>
+            </linearGradient>
+            <filter id="glow">
+              <feGaussianBlur stdDeviation="3" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          <!-- Background track -->
+          <path d="M 30 125 A 85 85 0 0 1 190 125" stroke="#e2e8f0" stroke-width="12" fill="none" stroke-linecap="round"/>
+          <!-- Gradient progress arc -->
+          <path d="M 30 125 A 85 85 0 0 1 110 40" stroke="url(#arcGrad)" stroke-width="12" fill="none" stroke-linecap="round" filter="url(#glow)"/>
+          <!-- Dot indicator at end of progress -->
+          <circle cx="110" cy="40" r="8" fill="#eab308" filter="url(#glow)"/>
+          <!-- Center text -->
+          <text x="110" y="105" text-anchor="middle" font-size="28" font-weight="bold" fill="#1e293b">15</text>
+          <text x="110" y="120" text-anchor="middle" font-size="10" fill="#94a3b8">of 30 contacts</text>
+          <!-- Milestone markers -->
+          <text x="25" y="138" font-size="9" fill="#ef4444">0</text>
+          <text x="108" y="28" font-size="9" fill="#eab308" text-anchor="middle">15</text>
+          <text x="195" y="138" font-size="9" fill="#22c55e">30</text>
+        </svg>
+      </div>
+      <div>
+        <h3 style="margin:0 0 8px 0;">B: Modern Arc with Glow</h3>
+        <p style="margin:0 0 8px 0;color:#64748b;">Sleek single arc with gradient fill (red→yellow→green) and a glowing dot indicator. Large number in center. Arc traces smoothly on mount with easing animation. Clean, modern feel.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <span style="background:#dbeafe;color:#1e40af;padding:2px 8px;border-radius:12px;font-size:12px;">Modern / minimal</span>
+          <span style="background:#dcfce7;color:#166534;padding:2px 8px;border-radius:12px;font-size:12px;">SVG gradient + glow</span>
+          <span style="background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:12px;font-size:12px;">Animated stroke</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Approach C: Segmented Meter -->
+  <div class="card" data-choice="c" onclick="toggleSelect(this)" style="padding:24px;">
+    <div class="card-body" style="display:flex;gap:32px;align-items:center;">
+      <div style="flex-shrink:0;width:220px;height:140px;position:relative;display:flex;align-items:center;justify-content:center;">
+        <svg viewBox="0 0 220 140" style="width:100%;height:100%;">
+          <!-- 30 individual segments arranged in a semicircle -->
+          <!-- Red segments (1-10) - filled -->
+          <rect x="28" y="118" width="4" height="16" rx="2" fill="#ef4444" transform="rotate(-85, 110, 130)"/>
+          <rect x="34" y="112" width="4" height="16" rx="2" fill="#ef4444" transform="rotate(-79, 110, 130)"/>
+          <rect x="40" y="106" width="4" height="16" rx="2" fill="#ef4444" transform="rotate(-73, 110, 130)"/>
+          <rect x="46" y="100" width="4" height="16" rx="2" fill="#ef4444" transform="rotate(-67, 110, 130)"/>
+          <rect x="52" y="95" width="4" height="16" rx="2" fill="#ef4444" transform="rotate(-61, 110, 130)"/>
+          <rect x="58" y="90" width="4" height="16" rx="2" fill="#ef4444" transform="rotate(-55, 110, 130)"/>
+          <rect x="64" y="86" width="4" height="16" rx="2" fill="#ef4444" transform="rotate(-49, 110, 130)"/>
+          <rect x="70" y="82" width="4" height="16" rx="2" fill="#ef4444" transform="rotate(-43, 110, 130)"/>
+          <rect x="76" y="79" width="4" height="16" rx="2" fill="#ef4444" transform="rotate(-37, 110, 130)"/>
+          <rect x="82" y="76" width="4" height="16" rx="2" fill="#ef4444" transform="rotate(-31, 110, 130)"/>
+
+          <!-- Yellow segments (11-15) - filled -->
+          <rect x="88" y="74" width="4" height="16" rx="2" fill="#eab308" transform="rotate(-25, 110, 130)"/>
+          <rect x="94" y="73" width="4" height="16" rx="2" fill="#eab308" transform="rotate(-19, 110, 130)"/>
+          <rect x="100" y="72" width="4" height="16" rx="2" fill="#eab308" transform="rotate(-13, 110, 130)"/>
+          <rect x="106" y="72" width="4" height="16" rx="2" fill="#eab308" transform="rotate(-7, 110, 130)"/>
+          <rect x="112" y="72" width="4" height="16" rx="2" fill="#eab308" transform="rotate(-1, 110, 130)"/>
+
+          <!-- Remaining segments (16-30) - grey/unfilled -->
+          <rect x="118" y="72" width="4" height="16" rx="2" fill="#e2e8f0" transform="rotate(5, 110, 130)"/>
+          <rect x="124" y="73" width="4" height="16" rx="2" fill="#e2e8f0" transform="rotate(11, 110, 130)"/>
+          <rect x="130" y="74" width="4" height="16" rx="2" fill="#e2e8f0" transform="rotate(17, 110, 130)"/>
+          <rect x="136" y="76" width="4" height="16" rx="2" fill="#e2e8f0" transform="rotate(23, 110, 130)"/>
+          <rect x="142" y="79" width="4" height="16" rx="2" fill="#e2e8f0" transform="rotate(29, 110, 130)"/>
+          <rect x="148" y="82" width="4" height="16" rx="2" fill="#e2e8f0" transform="rotate(35, 110, 130)"/>
+          <rect x="152" y="86" width="4" height="16" rx="2" fill="#e2e8f0" transform="rotate(41, 110, 130)"/>
+          <rect x="156" y="90" width="4" height="16" rx="2" fill="#e2e8f0" transform="rotate(47, 110, 130)"/>
+          <rect x="160" y="95" width="4" height="16" rx="2" fill="#e2e8f0" transform="rotate(53, 110, 130)"/>
+          <rect x="164" y="100" width="4" height="16" rx="2" fill="#e2e8f0" transform="rotate(59, 110, 130)"/>
+          <rect x="168" y="106" width="4" height="16" rx="2" fill="#e2e8f0" transform="rotate(65, 110, 130)"/>
+          <rect x="172" y="112" width="4" height="16" rx="2" fill="#e2e8f0" transform="rotate(71, 110, 130)"/>
+          <rect x="176" y="118" width="4" height="16" rx="2" fill="#e2e8f0" transform="rotate(77, 110, 130)"/>
+          <rect x="180" y="124" width="4" height="16" rx="2" fill="#e2e8f0" transform="rotate(83, 110, 130)"/>
+          <rect x="184" y="128" width="4" height="16" rx="2" fill="#e2e8f0" transform="rotate(89, 110, 130)"/>
+
+          <!-- Center text -->
+          <text x="110" y="115" text-anchor="middle" font-size="24" font-weight="bold" fill="#1e293b">15/30</text>
+          <text x="110" y="132" text-anchor="middle" font-size="9" fill="#94a3b8">SUPER-CONNECTOR</text>
+        </svg>
+      </div>
+      <div>
+        <h3 style="margin:0 0 8px 0;">C: Segmented LED Meter</h3>
+        <p style="margin:0 0 8px 0;color:#64748b;">30 individual bar segments arranged in a semicircle — one per contact. Segments light up sequentially with a cascade animation. Red (1-10) → Yellow (11-20) → Green (21-30). Each new contact triggers one more segment to light up.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <span style="background:#dbeafe;color:#1e40af;padding:2px 8px;border-radius:12px;font-size:12px;">Gamified / retro</span>
+          <span style="background:#dcfce7;color:#166534;padding:2px 8px;border-radius:12px;font-size:12px;">Cascade animation</span>
+          <span style="background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:12px;font-size:12px;">1 segment = 1 contact</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div style="max-width:800px;margin:24px auto 0;padding:16px;background:#f8fafc;border-radius:12px;">
+  <h3 style="margin:0 0 8px 0;">All approaches share:</h3>
+  <ul style="margin:0;padding-left:20px;color:#64748b;">
+    <li><strong>react-native-svg</strong> for cross-platform rendering (iOS, Android, Web)</li>
+    <li><strong>react-native-reanimated</strong> for smooth 60fps animations</li>
+    <li>Motivational text below ("Keep going!" / "Super-Connector!" at 30)</li>
+    <li>Standalone component in <code>src/components/SuperConnectorGauge/</code></li>
+    <li>Contact count from Redux store</li>
+  </ul>
+</div>
