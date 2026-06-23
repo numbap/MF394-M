@@ -155,4 +155,17 @@ describe('useShakeGesture', () => {
 
     expect(removeMock).toHaveBeenCalledTimes(1);
   });
+
+  it('subscribes when enabled flips from false to true', () => {
+    const { rerender } = renderHook(
+      ({ enabled }) => useShakeGesture({ onShake: jest.fn(), enabled }),
+      { initialProps: { enabled: false } }
+    );
+
+    expect(Accelerometer.addListener).not.toHaveBeenCalled();
+
+    rerender({ enabled: true });
+
+    expect(Accelerometer.addListener).toHaveBeenCalledTimes(1);
+  });
 });
