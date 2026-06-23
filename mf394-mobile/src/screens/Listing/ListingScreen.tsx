@@ -10,6 +10,9 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useSelector, useDispatch } from "react-redux";
 import { useRoute } from "@react-navigation/native";
+import { useIsFocused } from '@react-navigation/native';
+import * as Haptics from 'expo-haptics';
+import { useShakeGesture } from '../../hooks/useShakeGesture';
 import { colors, spacing, typography } from "../../theme/theme";
 import { AppDispatch } from "../../store";
 import {
@@ -94,6 +97,15 @@ export default function ListingScreen({ navigation }: any) {
       dispatch(setCategories(CATEGORIES.map((c) => c.value)));
     }
   };
+
+  const isFocused = useIsFocused();
+
+  const handleShake = async () => {
+    await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    handleCategoryLongPress();
+  };
+
+  useShakeGesture({ onShake: handleShake, enabled: isFocused });
 
   const handleTagLongPress = () => {
     if (selectedTags.length >= availableTags.length / 2) {
