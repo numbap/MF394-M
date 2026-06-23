@@ -1,61 +1,35 @@
-/**
- * Party Mode Screen
- *
- * Allows users to upload group photos and create multiple contacts at once.
- *
- * Flow:
- * 1. Upload image
- * 2. Face detection (loading)
- * 3. Name each face (validation: red → green border)
- * 4. Select category + tags
- * 5. Bulk save (create all validated contacts via API)
- */
-
-import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, ScrollView, Image } from "react-native";
-import { generateId } from "../../utils/generateId";
-import { showAlert } from "../../utils/showAlert";
-import { useNavigation, useRoute } from "@react-navigation/native";
-import { colors, spacing, radii, typography } from "../../theme/theme";
-import { ImageSelector } from "../../components/ImageSelector";
-import { BulkNamer, NamedFace } from "../../components/BulkNamer";
-import { CategoryTagsStep } from "../../components/CategoryTagsStep";
-import { FormButtons } from "../../components/FormButtons";
-import { FormGroup } from "../../components/FormGroup";
-import { LoadingState } from "../../components/LoadingState";
-import { InfoBox } from "../../components/InfoBox";
-import { Cropper } from "../../components/Cropper";
-import { FullScreenSpinner } from "../../components/FullScreenSpinner";
-import { usePartyProcessing } from "../../hooks/usePartyProcessing";
-import { useBulkCreateContactsMutation } from "../../store/api/contacts.api";
-import type { ContactInput } from "../../store/api/contacts.api";
-import { useUploadImageMutation } from "../../store/api/upload.api";
-import { CATEGORIES, DEFAULT_CATEGORY } from "../../constants";
-import { TagManagementView } from "../../components/TagManagementView";
-
-type Step = "upload" | "detecting" | "naming" | "category" | "crop";
-type ViewMode = "category" | "tagManagement";
+import React, { useState, useEffect } from 'react';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { generateId } from '../../utils/generateId';
+import { showAlert } from '../../utils/showAlert';
+import { usePartyProcessing } from '../../hooks/usePartyProcessing';
+import { useBulkCreateContactsMutation } from '../../store/api/contacts.api';
+import type { ContactInput } from '../../store/api/contacts.api';
+import { useUploadImageMutation } from '../../store/api/upload.api';
+import { DEFAULT_CATEGORY } from '../../constants';
+import { PartyModeCard } from './PartyModeCard';
+import type { PartyStep, PartyViewMode, PartyModeCardHandlers } from './PartyModeCard';
+import type { NamedFace } from '../../components/BulkNamer';
 
 export default function PartyModeScreen() {
   const navigation = useNavigation();
   const route = useRoute();
-  const [step, setStep] = useState<Step>("upload");
+  const [step, setStep] = useState<PartyStep>('upload');
   const [uploadedImageUri, setUploadedImageUri] = useState<string | null>(null);
   const [detectedFaces, setDetectedFaces] = useState<Array<{ id: string; uri: string }>>([]);
   const [namedFaces, setNamedFaces] = useState<NamedFace[]>([]);
   const [category, setCategory] = useState<string>(DEFAULT_CATEGORY);
   const [tags, setTags] = useState<string[]>([]);
-  const [viewMode, setViewMode] = useState<ViewMode>("category");
+  const [viewMode, setViewMode] = useState<PartyViewMode>('category');
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
 
   const sharedImageUri = (route.params as any)?.sharedImageUri as string | undefined;
 
   useEffect(() => {
-    navigation.setOptions({ gestureEnabled: step !== "crop" });
+    navigation.setOptions({ gestureEnabled: step !== 'crop' });
   }, [step, navigation]);
 
-  // Auto-start face detection when launched via share intent
   useEffect(() => {
     if (sharedImageUri) {
       navigation.setParams({ sharedImageUri: undefined } as any);
@@ -63,7 +37,6 @@ export default function PartyModeScreen() {
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Reset local state when screen re-focuses without a shared image (e.g. after account switch)
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
       const params = (route.params as any);
@@ -86,27 +59,24 @@ export default function PartyModeScreen() {
 
   const handleImageSelected = async (uri: string) => {
     setUploadedImageUri(uri);
-    setStep("detecting");
+    setStep('detecting');
 
     try {
       const { detectedFaces: processedFaces, prePopulatedNames } = await processImage(uri);
 
       if (processedFaces.length === 0) {
-        setStep("crop");
+        setStep('crop');
         return;
       }
 
       setDetectedFaces(processedFaces);
 
-      if (prePopulatedNames.length > 0) {
-        setNamedFaces(prePopulatedNames);
-      }
-
-      setStep("naming");
+      if (prePopulatedNames.length > 0) setNamedFaces(prePopulatedNames);
+      setStep('naming');
     } catch (error: any) {
-      console.error("[PartyMode] Error during image processing:", error);
-      showAlert("Error", "Failed to process image. Please try again.");
-      setStep("upload");
+      console.error('[PartyMode] Error during image processing:', error);
+      showAlert('Error', 'Failed to process image. Please try again.');
+      setStep('upload');
       setUploadedImageUri(null);
     }
   };
@@ -120,17 +90,17 @@ export default function PartyModeScreen() {
   const handleCropConfirm = async (croppedImageUri: string) => {
     const singleFace = { id: generateId(), uri: croppedImageUri };
     setDetectedFaces([singleFace]);
-    setStep("naming");
+    setStep('naming');
   };
 
   const handleCropCancel = () => {
-    setStep("upload");
+    setStep('upload');
     setUploadedImageUri(null);
   };
 
   const handleSave = async () => {
     if (namedFaces.length === 0) {
-      showAlert("No Names", "Please add at least one name before saving.");
+      showAlert('No Names', 'Please add at least one name before saving.');
       return;
     }
 
@@ -138,21 +108,16 @@ export default function PartyModeScreen() {
     setSaveError(null);
 
     const errors: string[] = [];
-
-    // Upload all photos first
     const contactInputs: ContactInput[] = [];
     for (const namedFace of namedFaces) {
       try {
         const uploadResult = await uploadImage({
           uri: namedFace.faceUri,
-          type: "contact-photo",
-          source: "party-mode",
+          type: 'contact-photo',
+          source: 'party-mode',
         });
-        if ('error' in uploadResult) {
-          throw new Error("Upload failed");
-        }
-        const photoUrl = uploadResult.data?.url || "";
-
+        if ('error' in uploadResult) throw new Error('Upload failed');
+        const photoUrl = uploadResult.data?.url || '';
         contactInputs.push({
           name: namedFace.name.trim(),
           category: category as any,
@@ -165,215 +130,71 @@ export default function PartyModeScreen() {
       }
     }
 
-    // Bulk create all contacts in one mutation (single cache invalidation)
     if (contactInputs.length > 0) {
       try {
         const bulkResult = await bulkCreateContacts(contactInputs);
-        if ('error' in bulkResult) {
-          throw new Error("Bulk create failed");
-        }
+        if ('error' in bulkResult) throw new Error('Bulk create failed');
       } catch (error) {
         errors.push(...contactInputs.map((c) => c.name));
-        console.error("Failed to bulk create contacts:", error);
+        console.error('Failed to bulk create contacts:', error);
       }
     }
 
     setIsSaving(false);
 
-    const successCount = contactInputs.length - errors.filter((e) => contactInputs.some((c) => c.name === e)).length;
     if (errors.length === 0 && contactInputs.length > 0) {
-      navigation.navigate("Listing" as never, { category, tags } as never);
+      navigation.navigate('Listing' as never, { category, tags } as never);
     } else if (contactInputs.length > 0 && errors.length > 0) {
-      setSaveError(
-        `Some contacts saved. Failed: ${errors.join(", ")}. Tap Save to retry.`
-      );
+      setSaveError(`Some contacts saved. Failed: ${errors.join(', ')}. Tap Save to retry.`);
     } else {
-      setSaveError("Failed to save contacts. Please check your connection and try again.");
+      setSaveError('Failed to save contacts. Please check your connection and try again.');
     }
   };
 
-  const handleErrorBack = () => {
-    setSaveError(null);
-    setIsSaving(false);
-  };
-
-  const handleEditTags = () => {
-    setViewMode("tagManagement");
-  };
-
-  const handleExitTagManagement = () => {
-    setViewMode("category");
+  const handlers: PartyModeCardHandlers = {
+    onImageSelected: handleImageSelected,
+    onImageDeleted: handleImageDeleted,
+    onCropConfirm: handleCropConfirm,
+    onCropCancel: handleCropCancel,
+    onNamesChange: setNamedFaces,
+    onContinueToCategory: () => setStep('category'),
+    onBackToUpload: () => {
+      setStep('upload');
+      setUploadedImageUri(null);
+      setDetectedFaces([]);
+      setNamedFaces([]);
+    },
+    onBackToNaming: () => setStep('naming'),
+    onCategoryChange: setCategory,
+    onTagsChange: setTags,
+    onEditTags: () => setViewMode('tagManagement'),
+    onExitTagManagement: () => setViewMode('category'),
+    onSave: handleSave,
+    onBack: () => {
+      if (navigation.canGoBack()) {
+        navigation.goBack();
+      } else {
+        navigation.navigate('Listing' as never);
+      }
+    },
+    onErrorBack: () => {
+      setSaveError(null);
+      setIsSaving(false);
+    },
   };
 
   return (
-    <View style={styles.container}>
-      {/* Upload Step */}
-      {step === "upload" && (
-        <ScrollView style={styles.stepContainer}>
-          <FormGroup>
-            <ImageSelector
-              imageUri={uploadedImageUri}
-              onImageSelected={handleImageSelected}
-              onImageDeleted={handleImageDeleted}
-            />
-          </FormGroup>
-
-          <FormGroup>
-            <InfoBox text="Upload a photo with multiple faces. We'll detect each person and let you name them.">
-              <View style={styles.multifaceImageWrapper}>
-                <Image
-                  source={require('../../../assets/multiface.png')}
-                  style={styles.multifaceImage}
-                  resizeMode="contain"
-                />
-              </View>
-            </InfoBox>
-          </FormGroup>
-
-          <FormButtons
-            cancelButton={{
-              label: "Back",
-              icon: "arrow-left",
-              onPress: () => {
-                if (navigation.canGoBack()) {
-                  navigation.goBack();
-                } else {
-                  navigation.navigate("Listing" as never);
-                }
-              },
-            }}
-          />
-        </ScrollView>
-      )}
-
-      {/* Face Detection Step */}
-      {step === "detecting" && (
-        <View style={styles.stepContainer}>
-          <LoadingState title="Detecting Faces" subtitle="Analyzing your photo..." />
-        </View>
-      )}
-
-      {/* Naming Step */}
-      {step === "naming" && detectedFaces.length > 0 && (
-        <ScrollView style={styles.namingStepContainer}>
-          <BulkNamer
-            faces={detectedFaces}
-            onNamesChange={setNamedFaces}
-            initialNames={namedFaces}
-            style={styles.bulkNamerContent}
-          />
-
-          <View style={styles.buttonFooter}>
-            <FormButtons
-              primaryButton={{
-                label: `Continue (${namedFaces.length})`,
-                icon: "arrow-right",
-                onPress: () => setStep("category"),
-                disabled: !namedFaces.length,
-              }}
-              cancelButton={{
-                label: "Back to Upload",
-                icon: "arrow-left",
-                onPress: () => {
-                  setStep("upload");
-                  setUploadedImageUri(null);
-                  setDetectedFaces([]);
-                  setNamedFaces([]);
-                },
-              }}
-            />
-          </View>
-        </ScrollView>
-      )}
-
-      {/* Category + Tags Step */}
-      {step === "category" && (
-        <>
-          {viewMode === "category" && (
-            <CategoryTagsStep
-              contactCount={namedFaces.length}
-              category={category}
-              tags={tags}
-              categories={CATEGORIES}
-              contacts={namedFaces.map((face) => ({
-                id: face.id,
-                name: face.name,
-              }))}
-              onCategoryChange={setCategory}
-              onTagsChange={setTags}
-              onEditTags={handleEditTags}
-              onSave={handleSave}
-              onBack={() => setStep("naming")}
-              isSaving={isSaving}
-            />
-          )}
-
-          {viewMode === "tagManagement" && <TagManagementView onExit={handleExitTagManagement} />}
-        </>
-      )}
-
-      {/* Manual Crop Step */}
-      {step === "crop" && uploadedImageUri && (
-        <Cropper
-          imageUri={uploadedImageUri}
-          onCropConfirm={handleCropConfirm}
-          onCancel={handleCropCancel}
-          style={styles.stepContainer}
-        />
-      )}
-
-      {/* Full-Screen Spinner */}
-      <FullScreenSpinner
-        visible={isSaving && !saveError}
-        variant="loading"
-        message={`Saving ${namedFaces.length} contact${namedFaces.length !== 1 ? "s" : ""}...`}
-      />
-
-      {/* Error State */}
-      <FullScreenSpinner
-        visible={!!saveError}
-        variant="error"
-        errorMessage={saveError || ""}
-        onBack={handleErrorBack}
-      />
-    </View>
+    <PartyModeCard
+      step={step}
+      viewMode={viewMode}
+      uploadedImageUri={uploadedImageUri}
+      detectedFaces={detectedFaces}
+      namedFaces={namedFaces}
+      category={category}
+      tags={tags}
+      isSaving={isSaving}
+      saveError={saveError}
+      handlers={handlers}
+    />
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.semantic.background,
-  },
-  stepContainer: {
-    flex: 1,
-    padding: spacing.lg,
-  },
-  namingStepContainer: {
-    flex: 1,
-    paddingHorizontal: spacing.lg,
-    flexDirection: "column",
-    backgroundColor: colors.semantic.background,
-  },
-  bulkNamerContent: {
-    flex: 1,
-  },
-  multifaceImageWrapper: {
-    alignSelf: 'center',
-    marginTop: spacing.md,
-    marginBottom: -spacing.xs,
-    borderRadius: radii.md,
-    overflow: 'hidden',
-  },
-  multifaceImage: {
-    width: 200,
-    height: 200,
-  },
-  buttonFooter: {
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.lg,
-    backgroundColor: colors.semantic.background,
-    borderTopWidth: 1,
-    borderTopColor: colors.semantic.border,
-  },
-});
