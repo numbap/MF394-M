@@ -31,32 +31,3 @@ export const API_ENDPOINTS = {
   QUIZ_SCORE: "/quiz-score",
   STATS: "/stats",
 };
-
-// Deprecated - use theme.ts instead
-export const COLORS = {
-  PRIMARY: "#547fab",
-  SECONDARY: "#d4b82b",
-  ERROR: "#dd4b22",
-  WARNING: "#d4b82b",
-  BACKGROUND: "#f5f3ef",
-  SURFACE: "#ece7df",
-  TEXT: "#181b1b",
-  TEXT_SECONDARY: "#778588",
-  BORDER: "#c8ced0",
-};
-
-export const SPACING = {
-  XS: 4,
-  SM: 8,
-  MD: 12,
-  LG: 16,
-  XL: 20,
-  XXL: 24,
-};
-
-export const BORDER_RADIUS = {
-  SM: 4,
-  MD: 8,
-  LG: 12,
-  FULL: 999,
-};

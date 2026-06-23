@@ -11,7 +11,7 @@ import { showAlert } from "../../utils/showAlert";
 import { gameService } from "../../services/gameService";
 import { useContacts } from "../../hooks/useContacts";
 import shuffle from "../../utils/shuffle";
-import { COLORS, SPACING } from "../../utils/constants";
+import { colors, spacing } from "../../theme/theme";
 
 export default function PracticeGameScreen() {
   const [contacts, setContacts] = useState([]);
@@ -72,7 +72,7 @@ export default function PracticeGameScreen() {
   if (isLoading) {
     return (
       <View style={styles.container}>
-        <ActivityIndicator size="large" color={COLORS.PRIMARY} />
+        <ActivityIndicator size="large" color={colors.primary[500]} />
       </View>
     );
   }
@@ -127,59 +127,59 @@ export default function PracticeGameScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.BACKGROUND,
-    padding: SPACING.LG,
+    backgroundColor: colors.semantic.background,
+    padding: spacing.lg,
   },
   resetButton: {
     alignSelf: "flex-end",
-    backgroundColor: COLORS.SURFACE,
-    paddingVertical: SPACING.SM,
-    paddingHorizontal: SPACING.MD,
+    backgroundColor: colors.semantic.surface,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
     borderRadius: 6,
-    marginBottom: SPACING.MD,
+    marginBottom: spacing.md,
   },
   resetButtonText: {
     fontWeight: "600",
-    color: COLORS.TEXT,
+    color: colors.semantic.text,
   },
   mainContent: {
     flex: 1,
     flexDirection: "row",
-    gap: SPACING.LG,
+    gap: spacing.lg,
   },
   imageColumn: {
     flex: 1,
   },
   imageCard: {
-    marginRight: SPACING.MD,
+    marginRight: spacing.md,
     borderRadius: 8,
     overflow: "hidden",
     borderWidth: 2,
-    borderColor: COLORS.BORDER,
+    borderColor: colors.semantic.border,
   },
   imageCardSelected: {
-    borderColor: COLORS.PRIMARY,
+    borderColor: colors.primary[500],
     borderWidth: 3,
   },
   imageBox: {
     width: 120,
     height: 120,
-    backgroundColor: COLORS.SURFACE,
+    backgroundColor: colors.semantic.surface,
   },
   nameColumn: {
     flex: 1,
     justifyContent: "space-around",
   },
   nameButton: {
-    paddingVertical: SPACING.MD,
-    paddingHorizontal: SPACING.LG,
-    backgroundColor: COLORS.SURFACE,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.lg,
+    backgroundColor: colors.semantic.surface,
     borderRadius: 8,
     alignItems: "center",
   },
   nameText: {
     fontSize: 16,
     fontWeight: "500",
-    color: COLORS.TEXT,
+    color: colors.semantic.text,
   },
 });

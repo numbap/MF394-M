@@ -6,7 +6,7 @@ import {
   Text,
   StyleSheet,
 } from "react-native";
-import { COLORS, SPACING } from "../utils/constants";
+import { colors, spacing } from "../theme/theme";
 
 export default function TagFilter({ tags, selectedTags, onTagSelect }) {
   if (tags.length === 0) {
@@ -44,25 +44,25 @@ export default function TagFilter({ tags, selectedTags, onTagSelect }) {
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: SPACING.LG,
-    paddingVertical: SPACING.MD,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.BORDER,
+    borderBottomColor: colors.semantic.border,
   },
   chip: {
-    paddingVertical: SPACING.SM,
-    paddingHorizontal: SPACING.LG,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.lg,
     borderRadius: 20,
-    backgroundColor: COLORS.SURFACE,
-    marginRight: SPACING.SM,
+    backgroundColor: colors.semantic.surface,
+    marginRight: spacing.sm,
   },
   chipSelected: {
-    backgroundColor: COLORS.PRIMARY,
+    backgroundColor: colors.primary[500],
   },
   chipText: {
     fontSize: 14,
     fontWeight: "500",
-    color: COLORS.TEXT,
+    color: colors.semantic.text,
   },
   chipTextSelected: {
     color: "#fff",
