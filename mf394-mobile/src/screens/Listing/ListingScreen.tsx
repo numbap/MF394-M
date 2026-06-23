@@ -9,8 +9,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useSelector, useDispatch } from "react-redux";
-import { useRoute } from "@react-navigation/native";
-import { useIsFocused } from '@react-navigation/native';
+import { useRoute, useIsFocused } from "@react-navigation/native";
 import * as Haptics from 'expo-haptics';
 import { useShakeGesture } from '../../hooks/useShakeGesture';
 import { colors, spacing, typography } from "../../theme/theme";
@@ -33,6 +32,32 @@ const THUMBNAIL_SIZE = 110;
 const CARD_WIDTH = 180;
 const DOUBLE_TAP_DELAY = 300;
 
+function ListingLoadingOrError({ isLoading, error, userData }: { isLoading: boolean; error: unknown; userData: unknown }) {
+  if (isLoading && !userData) {
+    return (
+      <SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
+        <View style={styles.centeredState}>
+          <ActivityIndicator size="large" color={colors.primary[500]} />
+          <Text style={styles.stateText}>Loading contacts...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+  if (error && !userData) {
+    return (
+      <SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
+        <View style={styles.centeredState}>
+          <Text style={styles.errorText}>Failed to load contacts</Text>
+          <Text style={styles.stateText}>
+            Please check your connection and try again.
+          </Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+  return null;
+}
+
 export default function ListingScreen({ navigation }: any) {
   const dispatch = useDispatch<AppDispatch>();
   const route = useRoute();
@@ -45,14 +70,8 @@ export default function ListingScreen({ navigation }: any) {
   const [isGalleryView, setIsGalleryView] = useState(false);
   const lastTapTime = useRef<{ [key: string]: number }>({});
 
-  const galleryColumns = Math.max(
-    1,
-    Math.floor((width - spacing.lg * 2) / (THUMBNAIL_SIZE + spacing.xxs))
-  );
-  const cardColumns = Math.max(
-    1,
-    Math.floor(width / (CARD_WIDTH + spacing.sm))
-  );
+  const galleryColumns = Math.max(1, Math.floor((width - spacing.lg * 2) / (THUMBNAIL_SIZE + spacing.xxs)));
+  const cardColumns = Math.max(1, Math.floor(width / (CARD_WIDTH + spacing.sm)));
   const numColumns = isGalleryView ? galleryColumns : cardColumns;
 
   const { data: userData, isLoading, error } = useGetUserQuery();
@@ -91,28 +110,19 @@ export default function ListingScreen({ navigation }: any) {
   }, [contacts, selectedCategories, selectedTags]);
 
   const handleCategoryLongPress = () => {
-    if (selectedCategories.length >= CATEGORIES.length / 2) {
-      dispatch(setCategories([]));
-    } else {
-      dispatch(setCategories(CATEGORIES.map((c) => c.value)));
-    }
+    dispatch(selectedCategories.length >= CATEGORIES.length / 2
+      ? setCategories([])
+      : setCategories(CATEGORIES.map((c) => c.value)));
   };
 
   const isFocused = useIsFocused();
-
-  const handleShake = async () => {
-    await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    handleCategoryLongPress();
-  };
-
+  const handleShake = async () => { await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success); handleCategoryLongPress(); };
   useShakeGesture({ onShake: handleShake, enabled: isFocused });
 
   const handleTagLongPress = () => {
-    if (selectedTags.length >= availableTags.length / 2) {
-      dispatch(setTags([]));
-    } else {
-      dispatch(setTags([...availableTags]));
-    }
+    dispatch(selectedTags.length >= availableTags.length / 2
+      ? setTags([])
+      : setTags([...availableTags]));
   };
 
   const handleContactLongPress = (contactId: string) =>
@@ -121,37 +131,11 @@ export default function ListingScreen({ navigation }: any) {
   const handleContactPress = (contactId: string) => {
     const now = Date.now();
     const lastTap = lastTapTime.current[contactId] || 0;
-    if (now - lastTap < DOUBLE_TAP_DELAY) {
-      handleContactLongPress(contactId);
-      lastTapTime.current[contactId] = 0;
-    } else {
-      lastTapTime.current[contactId] = now;
-    }
+    lastTapTime.current[contactId] = now - lastTap < DOUBLE_TAP_DELAY ? (handleContactLongPress(contactId), 0) : now;
   };
 
-  if (isLoading && !userData) {
-    return (
-      <SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
-        <View style={styles.centeredState}>
-          <ActivityIndicator size="large" color={colors.primary[500]} />
-          <Text style={styles.stateText}>Loading contacts...</Text>
-        </View>
-      </SafeAreaView>
-    );
-  }
-
-  if (error && !userData) {
-    return (
-      <SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
-        <View style={styles.centeredState}>
-          <Text style={styles.errorText}>Failed to load contacts</Text>
-          <Text style={styles.stateText}>
-            Please check your connection and try again.
-          </Text>
-        </View>
-      </SafeAreaView>
-    );
-  }
+  if (isLoading && !userData) return <ListingLoadingOrError isLoading={isLoading} error={null} userData={null} />;
+  if (error && !userData) return <ListingLoadingOrError isLoading={false} error={error} userData={null} />;
 
   const filterHeader = (
     <ListingFilterHeader

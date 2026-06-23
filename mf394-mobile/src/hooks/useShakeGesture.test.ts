@@ -27,7 +27,7 @@ describe('useShakeGesture', () => {
   });
 
   const simulatePeak = () => {
-    // x=20, y=5, z=9.8 → sqrt(400+25+96.04)-9.8 ≈ 22.4-9.8 = 12.6 > 12
+    // x=20, y=5, z=9.8 → sqrt(400+25+96.04) = sqrt(521.04) ≈ 22.83-9.8 = 13.03 > 12
     act(() => { listenerCallback?.({ x: 20, y: 5, z: 9.8 }); });
   };
 
