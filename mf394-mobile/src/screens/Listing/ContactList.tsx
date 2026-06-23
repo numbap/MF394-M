@@ -35,8 +35,7 @@ interface ContactListProps {
   isGalleryView: boolean;
   numColumns: number;
   filterHeader: React.ReactElement;
-  filteredCount: number;
-  totalCount: number;
+  counts: { filtered: number; total: number };
   onContactPress: (contactId: string) => void;
   onContactLongPress: (contactId: string) => void;
   hasCategories: boolean;
@@ -47,8 +46,7 @@ export function ContactList({
   isGalleryView,
   numColumns,
   filterHeader,
-  filteredCount,
-  totalCount,
+  counts,
   onContactPress,
   onContactLongPress,
   hasCategories,
@@ -62,7 +60,7 @@ export function ContactList({
   const statusBar = hasCategories ? (
     <View style={styles.statusBar}>
       <Text style={styles.statusText}>
-        {filteredCount} of {totalCount}
+        {counts.filtered} of {counts.total}
       </Text>
       <View style={styles.progressTrack}>
         <View
@@ -70,8 +68,8 @@ export function ContactList({
             styles.progressFill,
             {
               width:
-                totalCount > 0
-                  ? `${(filteredCount / totalCount) * 100}%`
+                counts.total > 0
+                  ? `${(counts.filtered / counts.total) * 100}%`
                   : "0%",
             },
           ]}

@@ -143,18 +143,22 @@ export default function ListingScreen({ navigation }: any) {
 
   const filterHeader = (
     <ListingFilterHeader
-      selectedCategories={selectedCategories}
-      selectedTags={selectedTags}
-      availableTags={availableTags}
+      filterState={{
+        selectedCategories,
+        selectedTags,
+        availableTags,
+      }}
+      filterActions={{
+        onCategoryPress: (cat) => dispatch(toggleCategory(cat)),
+        onCategoryLongPress: handleCategoryLongPress,
+        onTagPress: (tag) => dispatch(toggleTag(tag)),
+        onTagLongPress: handleTagLongPress,
+        onAddPress: () => isOnline && navigation.navigate("AddContact"),
+        onPartyPress: () => isOnline && navigation.navigate("PartyMode"),
+        onViewToggle: () => setIsGalleryView(!isGalleryView),
+      }}
       isGalleryView={isGalleryView}
       isOnline={isOnline}
-      onCategoryPress={(cat) => dispatch(toggleCategory(cat))}
-      onCategoryLongPress={handleCategoryLongPress}
-      onTagPress={(tag) => dispatch(toggleTag(tag))}
-      onTagLongPress={handleTagLongPress}
-      onAddPress={() => isOnline && navigation.navigate("AddContact")}
-      onPartyPress={() => isOnline && navigation.navigate("PartyMode")}
-      onViewToggle={() => setIsGalleryView(!isGalleryView)}
     />
   );
 
@@ -165,8 +169,7 @@ export default function ListingScreen({ navigation }: any) {
         isGalleryView={isGalleryView}
         numColumns={numColumns}
         filterHeader={filterHeader}
-        filteredCount={filteredContacts.length}
-        totalCount={contacts.length}
+        counts={{ filtered: filteredContacts.length, total: contacts.length }}
         onContactPress={handleContactPress}
         onContactLongPress={handleContactLongPress}
         hasCategories={selectedCategories.length > 0}

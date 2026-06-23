@@ -24,12 +24,13 @@ interface Category {
   label: string;
 }
 
-interface ListingFilterHeaderProps {
+interface FilterState {
   selectedCategories: string[];
   selectedTags: string[];
   availableTags: string[];
-  isGalleryView: boolean;
-  isOnline: boolean;
+}
+
+interface FilterActions {
   onCategoryPress: (category: string) => void;
   onCategoryLongPress: () => void;
   onTagPress: (tag: string) => void;
@@ -39,20 +40,29 @@ interface ListingFilterHeaderProps {
   onViewToggle: () => void;
 }
 
+interface ListingFilterHeaderProps {
+  filterState: FilterState;
+  filterActions: FilterActions;
+  isGalleryView: boolean;
+  isOnline: boolean;
+}
+
 export function ListingFilterHeader({
-  selectedCategories,
-  selectedTags,
-  availableTags,
+  filterState,
+  filterActions,
   isGalleryView,
   isOnline,
-  onCategoryPress,
-  onCategoryLongPress,
-  onTagPress,
-  onTagLongPress,
-  onAddPress,
-  onPartyPress,
-  onViewToggle,
 }: ListingFilterHeaderProps) {
+  const { selectedCategories, selectedTags, availableTags } = filterState;
+  const {
+    onCategoryPress,
+    onCategoryLongPress,
+    onTagPress,
+    onTagLongPress,
+    onAddPress,
+    onPartyPress,
+    onViewToggle,
+  } = filterActions;
   return (
     <View style={styles.section}>
       <FilterContainer>
