@@ -1,32 +1,17 @@
-/**
- * ListingScreen
- *
- * Displays a filtered list of contacts with:
- * - Category and tag filtering
- * - Card/Thumbnail view toggle
- * - Long-press or double-tap to edit
- * - Status bar showing visible count
- * - Data loaded from live API via RTK Query
- */
-
+// ListingScreen — orchestrator: Redux selectors, filtering, navigation.
 import React, { useEffect, useState, useMemo, useRef } from "react";
 import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity,
-  Pressable,
-  FlatList,
   ActivityIndicator,
-  Platform,
   useWindowDimensions,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useSelector, useDispatch } from "react-redux";
 import { useRoute } from "@react-navigation/native";
-import { FontAwesome } from "@expo/vector-icons";
-import { colors, spacing, radii, typography } from "../../theme/theme";
-import { RootState, AppDispatch } from "../../store";
+import { colors, spacing, typography } from "../../theme/theme";
+import { AppDispatch } from "../../store";
 import {
   toggleCategory,
   toggleTag,
@@ -36,12 +21,14 @@ import {
   selectSelectedTags,
 } from "../../store/slices/filters.slice";
 import { useGetUserQuery } from "../../store/api/contacts.api";
-import { ContactCard } from "../../components/ContactCard";
-import { SummaryThumbnail } from "../../components/SummaryThumbnail";
-import { CategoryTagFilter } from "../../components/CategoryTagFilter";
-import { FilterContainer } from "../../components/FilterContainer";
 import { useNetworkStatus } from "../../hooks/useNetworkStatus";
 import { CATEGORIES } from "../../constants";
+import { ContactList } from "./ContactList";
+import { ListingFilterHeader } from "./ListingFilterHeader";
+
+const THUMBNAIL_SIZE = 110;
+const CARD_WIDTH = 180;
+const DOUBLE_TAP_DELAY = 300;
 
 export default function ListingScreen({ navigation }: any) {
   const dispatch = useDispatch<AppDispatch>();
@@ -52,78 +39,53 @@ export default function ListingScreen({ navigation }: any) {
   const { isOnline } = useNetworkStatus();
 
   const routeParams = route.params as { category?: string; tags?: string[] } | undefined;
-
   const [isGalleryView, setIsGalleryView] = useState(false);
-  const [statusBarHeight, setStatusBarHeight] = useState(0);
-
   const lastTapTime = useRef<{ [key: string]: number }>({});
-  const DOUBLE_TAP_DELAY = 300;
 
-  const THUMBNAIL_SIZE = 110;
-  const CARD_WIDTH = 180;
-  const CARD_GAP = spacing.sm;
-
-  const galleryColumns = Math.max(1, Math.floor((width - spacing.lg * 2) / (THUMBNAIL_SIZE + spacing.xxs)));
-  const cardColumns = Math.max(1, Math.floor(width / (CARD_WIDTH + CARD_GAP)));
-
+  const galleryColumns = Math.max(
+    1,
+    Math.floor((width - spacing.lg * 2) / (THUMBNAIL_SIZE + spacing.xxs))
+  );
+  const cardColumns = Math.max(
+    1,
+    Math.floor(width / (CARD_WIDTH + spacing.sm))
+  );
   const numColumns = isGalleryView ? galleryColumns : cardColumns;
 
-  // Load all contacts + tags from /api/user (single call)
   const { data: userData, isLoading, error } = useGetUserQuery();
   const contacts = userData?.contacts || [];
 
-  // Apply filters from route params (when navigating from Add/Edit/Party)
   useEffect(() => {
     if (routeParams?.category) {
       dispatch(setCategories([routeParams.category]));
-      if (routeParams.tags && routeParams.tags.length > 0) {
-        dispatch(setTags(routeParams.tags));
-      } else {
-        dispatch(setTags([]));
-      }
+      dispatch(setTags(routeParams.tags?.length ? routeParams.tags : []));
     }
   }, [dispatch, routeParams?.category, routeParams?.tags]);
 
-  // Get available tags from category-filtered contacts
   const availableTags = useMemo(() => {
-    if (selectedCategories.length === 0) {
-      return [];
-    }
+    if (selectedCategories.length === 0) return [];
     const categorySet = new Set(selectedCategories);
     const filtered = contacts.filter((c) => categorySet.has(c.category));
     const tagsSet = new Set<string>();
-    filtered.forEach((c) => {
-      c.groups?.forEach((tag) => tagsSet.add(tag));
-    });
+    filtered.forEach((c) => c.groups?.forEach((tag) => tagsSet.add(tag)));
     return Array.from(tagsSet).sort();
   }, [contacts, selectedCategories]);
 
-  // Filter contacts by selected categories and tags
   const filteredContacts = useMemo(() => {
-    if (selectedCategories.length === 0) {
-      return [];
-    }
-
+    if (selectedCategories.length === 0) return [];
     const categorySet = new Set(selectedCategories);
     let result = contacts.filter((c) => categorySet.has(c.category));
-
     if (selectedTags.length > 0) {
       const tagSet = new Set(selectedTags);
       result = result.filter((c) => c.groups?.some((tag) => tagSet.has(tag)));
     }
-
     result.sort((a, b) => {
       const aTime = a.edited || a.created || 0;
       const bTime = b.edited || b.created || 0;
       return bTime - aTime;
     });
-
     return result;
   }, [contacts, selectedCategories, selectedTags]);
-
-  const handleCategoryPress = (category: string) => {
-    dispatch(toggleCategory(category));
-  };
 
   const handleCategoryLongPress = () => {
     if (selectedCategories.length >= CATEGORIES.length / 2) {
@@ -131,10 +93,6 @@ export default function ListingScreen({ navigation }: any) {
     } else {
       dispatch(setCategories(CATEGORIES.map((c) => c.value)));
     }
-  };
-
-  const handleTagPress = (tag: string) => {
-    dispatch(toggleTag(tag));
   };
 
   const handleTagLongPress = () => {
@@ -145,14 +103,12 @@ export default function ListingScreen({ navigation }: any) {
     }
   };
 
-  const handleContactLongPress = (contactId: string) => {
+  const handleContactLongPress = (contactId: string) =>
     navigation.navigate("EditContact", { contactId });
-  };
 
   const handleContactPress = (contactId: string) => {
     const now = Date.now();
     const lastTap = lastTapTime.current[contactId] || 0;
-
     if (now - lastTap < DOUBLE_TAP_DELAY) {
       handleContactLongPress(contactId);
       lastTapTime.current[contactId] = 0;
@@ -161,19 +117,9 @@ export default function ListingScreen({ navigation }: any) {
     }
   };
 
-  const handleAddContact = () => {
-    if (!isOnline) return;
-    navigation.navigate("AddContact");
-  };
-
-  const handlePartyMode = () => {
-    if (!isOnline) return;
-    navigation.navigate("PartyMode");
-  };
-
   if (isLoading && !userData) {
     return (
-      <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+      <SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
         <View style={styles.centeredState}>
           <ActivityIndicator size="large" color={colors.primary[500]} />
           <Text style={styles.stateText}>Loading contacts...</Text>
@@ -183,134 +129,47 @@ export default function ListingScreen({ navigation }: any) {
   }
 
   if (error && !userData) {
-    console.error('[Contacts] error:', JSON.stringify(error));
     return (
-      <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+      <SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
         <View style={styles.centeredState}>
           <Text style={styles.errorText}>Failed to load contacts</Text>
-          <Text style={styles.stateText}>Please check your connection and try again.</Text>
+          <Text style={styles.stateText}>
+            Please check your connection and try again.
+          </Text>
         </View>
       </SafeAreaView>
     );
   }
 
   const filterHeader = (
-    <View style={styles.section}>
-      <FilterContainer>
-        <CategoryTagFilter
-          categories={CATEGORIES}
-          selectedCategories={selectedCategories}
-          onCategoryPress={handleCategoryPress}
-          onCategoryLongPress={handleCategoryLongPress}
-          availableTags={availableTags}
-          selectedTags={selectedTags}
-          onTagPress={handleTagPress}
-          onTagLongPress={handleTagLongPress}
-        />
-
-        {/* Action Buttons */}
-        <View style={styles.actionRow}>
-          <View style={styles.buttonGroup}>
-            <TouchableOpacity
-              style={[styles.actionButton, !isOnline && styles.actionButtonDisabled]}
-              onPress={handleAddContact}
-              disabled={!isOnline}
-            >
-              <FontAwesome name="user-plus" size={18} color="#fff" />
-              <Text style={styles.actionButtonText}>Add</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[styles.actionButton, !isOnline && styles.actionButtonDisabled]}
-              onPress={handlePartyMode}
-              disabled={!isOnline}
-            >
-              <FontAwesome name="users" size={18} color="#fff" />
-              <Text style={styles.actionButtonText}>Party</Text>
-            </TouchableOpacity>
-
-          </View>
-
-          {/* View Toggle */}
-          <TouchableOpacity
-            style={styles.viewToggle}
-            onPress={() => setIsGalleryView(!isGalleryView)}
-          >
-            <FontAwesome
-              name={isGalleryView ? "address-card" : "th"}
-              size={18}
-              color={colors.semantic.text}
-            />
-          </TouchableOpacity>
-        </View>
-      </FilterContainer>
-    </View>
+    <ListingFilterHeader
+      selectedCategories={selectedCategories}
+      selectedTags={selectedTags}
+      availableTags={availableTags}
+      isGalleryView={isGalleryView}
+      isOnline={isOnline}
+      onCategoryPress={(cat) => dispatch(toggleCategory(cat))}
+      onCategoryLongPress={handleCategoryLongPress}
+      onTagPress={(tag) => dispatch(toggleTag(tag))}
+      onTagLongPress={handleTagLongPress}
+      onAddPress={() => isOnline && navigation.navigate("AddContact")}
+      onPartyPress={() => isOnline && navigation.navigate("PartyMode")}
+      onViewToggle={() => setIsGalleryView(!isGalleryView)}
+    />
   );
 
-  const statusBarEl = selectedCategories.length > 0 ? (
-    <View
-      style={styles.statusBar}
-      onLayout={(e) => setStatusBarHeight(e.nativeEvent.layout.height)}
-    >
-      <Text style={styles.statusText}>
-        {filteredContacts.length} of {contacts.length}
-      </Text>
-      <View style={styles.progressTrack}>
-        <View
-          style={[
-            styles.progressFill,
-            {
-              width: contacts.length > 0
-                ? `${(filteredContacts.length / contacts.length) * 100}%`
-                : '0%',
-            },
-          ]}
-        />
-      </View>
-    </View>
-  ) : null;
-
-  const emptyState = selectedCategories.length > 0 ? (
-    <View style={styles.emptyState}>
-      <Text style={styles.emptyStateText}>No contacts found</Text>
-    </View>
-  ) : null;
-
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
-      <FlatList
-        key={isGalleryView ? `gallery-${numColumns}` : `cards-${numColumns}`}
-        data={selectedCategories.length > 0 ? filteredContacts : []}
-        keyExtractor={(item) => item._id}
+    <SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
+      <ContactList
+        contacts={filteredContacts}
+        isGalleryView={isGalleryView}
         numColumns={numColumns}
-        removeClippedSubviews={Platform.OS !== 'android'}
-        columnWrapperStyle={numColumns > 1 ? (isGalleryView ? styles.galleryRow : styles.cardRow) : undefined}
-        renderItem={({ item: contact }) => (
-          <Pressable
-            onPress={() => handleContactPress(contact._id)}
-            onLongPress={() => handleContactLongPress(contact._id)}
-            delayLongPress={500}
-            style={({ pressed }) => [
-              isGalleryView ? styles.thumbnailItem : styles.cardItem,
-              { opacity: pressed ? 0.8 : 1 },
-            ]}
-          >
-            {isGalleryView
-              ? <SummaryThumbnail id={contact._id} name={contact.name} photo={contact.photo} hint={contact.hint} />
-              : <ContactCard contact={contact} />}
-          </Pressable>
-        )}
-        ListHeaderComponent={filterHeader}
-        ListEmptyComponent={emptyState}
-        ListFooterComponent={
-          selectedCategories.length > 0 ? (
-            <View style={{ flex: 1, justifyContent: 'flex-end', minHeight: statusBarHeight }}>
-              {statusBarEl}
-            </View>
-          ) : null
-        }
-        contentContainerStyle={[styles.listContent, { flexGrow: 1 }]}
-        showsVerticalScrollIndicator={false}
+        filterHeader={filterHeader}
+        filteredCount={filteredContacts.length}
+        totalCount={contacts.length}
+        onContactPress={handleContactPress}
+        onContactLongPress={handleContactLongPress}
+        hasCategories={selectedCategories.length > 0}
       />
     </SafeAreaView>
   );
@@ -320,9 +179,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.semantic.background,
-  },
-  listContent: {
-    paddingHorizontal: 0,
   },
   centeredState: {
     flex: 1,
@@ -340,100 +196,5 @@ const styles = StyleSheet.create({
     fontSize: typography.title.medium.fontSize,
     fontWeight: "600",
     color: colors.semantic.error,
-  },
-  section: {
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.lg,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.semantic.border,
-  },
-  actionRow: {
-    paddingTop: spacing.lg,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  buttonGroup: {
-    flexDirection: "row",
-    gap: spacing.md,
-    flex: 1,
-  },
-  actionButton: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: spacing.sm,
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.lg,
-    backgroundColor: colors.primary[500],
-    borderRadius: radii.md,
-  },
-  actionButtonDisabled: {
-    opacity: 0.5,
-  },
-  actionButtonText: {
-    color: "#fff",
-    fontWeight: "600",
-    fontSize: typography.body.medium.fontSize,
-  },
-  viewToggle: {
-    marginLeft: spacing.lg,
-    width: 44,
-    height: 44,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: radii.md,
-    backgroundColor: colors.semantic.surface,
-    borderWidth: 1,
-    borderColor: colors.semantic.border,
-  },
-  galleryRow: {
-    gap: spacing.xxs,
-    justifyContent: "center",
-  },
-  cardRow: {
-    gap: spacing.sm,
-    justifyContent: "center",
-  },
-  thumbnailItem: {
-    margin: spacing.xs,
-  },
-  cardItem: {
-    paddingVertical: spacing.sm,
-    alignItems: "center",
-  },
-  emptyState: {
-    paddingVertical: spacing.xl,
-    alignItems: "center",
-  },
-  emptyStateText: {
-    fontSize: typography.body.large.fontSize,
-    color: colors.semantic.textSecondary,
-    fontWeight: "500",
-  },
-  statusBar: {
-    borderTopWidth: 1,
-    borderTopColor: colors.semantic.border,
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.lg,
-    backgroundColor: colors.semantic.surface,
-    gap: spacing.sm,
-  },
-  statusText: {
-    fontSize: typography.body.small.fontSize,
-    color: colors.semantic.textSecondary,
-    fontWeight: "500",
-  },
-  progressTrack: {
-    height: 6,
-    borderRadius: radii.full,
-    backgroundColor: colors.neutral.iron[100],
-    overflow: "hidden",
-  },
-  progressFill: {
-    height: 4,
-    borderRadius: radii.full,
-    backgroundColor: colors.primary[500],
   },
 });
