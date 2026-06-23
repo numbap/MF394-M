@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { Accelerometer } from 'expo-sensors';
+import { Platform } from 'react-native';
 
 const SAMPLE_INTERVAL_MS = 16;
 const MAGNITUDE_THRESHOLD = 12;
@@ -20,7 +20,10 @@ export function useShakeGesture({ onShake, enabled }: UseShakeGestureOptions): v
   onShakeRef.current = onShake;
 
   useEffect(() => {
-    if (!enabled) return;
+    if (!enabled || Platform.OS === 'web') return;
+
+    // Lazy-require to avoid loading expo-sensors on web (Pedometer crashes on web)
+    const { Accelerometer } = require('expo-sensors');
 
     Accelerometer.setUpdateInterval(SAMPLE_INTERVAL_MS);
 
