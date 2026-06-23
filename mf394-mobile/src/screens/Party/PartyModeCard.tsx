@@ -14,20 +14,18 @@ import { TagManagementView } from '../../components/TagManagementView';
 import { CATEGORIES } from '../../constants';
 import type { PartyModeCardProps } from './partyModeCard.types';
 
-export type { PartyStep, PartyViewMode, PartyModeCardHandlers, PartyModeCardProps } from './partyModeCard.types';
+export type { PartyStep, PartyViewMode, PartyModeCardHandlers, PartyModeCardProps, CardData, CardStatus } from './partyModeCard.types';
 
 export function PartyModeCard({
   step,
   viewMode,
-  uploadedImageUri,
-  detectedFaces,
-  namedFaces,
-  category,
-  tags,
-  isSaving,
-  saveError,
+  data,
+  status,
   handlers,
 }: PartyModeCardProps) {
+  const { uploadedImageUri, detectedFaces, namedFaces, category, tags } = data;
+  const { isSaving, saveError } = status;
+
   return (
     <View style={styles.container}>
       {step === 'upload' && (

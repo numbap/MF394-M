@@ -3,6 +3,19 @@ import type { NamedFace } from '../../components/BulkNamer';
 export type PartyStep = 'upload' | 'detecting' | 'naming' | 'category' | 'crop';
 export type PartyViewMode = 'category' | 'tagManagement';
 
+export interface CardData {
+  uploadedImageUri: string | null;
+  detectedFaces: Array<{ id: string; uri: string }>;
+  namedFaces: NamedFace[];
+  category: string;
+  tags: string[];
+}
+
+export interface CardStatus {
+  isSaving: boolean;
+  saveError: string | null;
+}
+
 export interface PartyModeCardHandlers {
   onImageSelected: (uri: string) => void;
   onImageDeleted: () => void;
@@ -24,12 +37,7 @@ export interface PartyModeCardHandlers {
 export interface PartyModeCardProps {
   step: PartyStep;
   viewMode: PartyViewMode;
-  uploadedImageUri: string | null;
-  detectedFaces: Array<{ id: string; uri: string }>;
-  namedFaces: NamedFace[];
-  category: string;
-  tags: string[];
-  isSaving: boolean;
-  saveError: string | null;
+  data: CardData;
+  status: CardStatus;
   handlers: PartyModeCardHandlers;
 }

@@ -187,13 +187,8 @@ export default function PartyModeScreen() {
     <PartyModeCard
       step={step}
       viewMode={viewMode}
-      uploadedImageUri={uploadedImageUri}
-      detectedFaces={detectedFaces}
-      namedFaces={namedFaces}
-      category={category}
-      tags={tags}
-      isSaving={isSaving}
-      saveError={saveError}
+      data={{ uploadedImageUri, detectedFaces, namedFaces, category, tags }}
+      status={{ isSaving, saveError }}
       handlers={handlers}
     />
   );
