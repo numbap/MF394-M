@@ -145,7 +145,7 @@ export function WebCropper({ imageUri, onCropConfirm, onCancel }: CropperProps) 
             containerStyle: {
               width: "100%",
               height: "100%",
-              backgroundColor: "#000",
+              backgroundColor: colors.neutral.iron[900],
             },
           }}
         />
