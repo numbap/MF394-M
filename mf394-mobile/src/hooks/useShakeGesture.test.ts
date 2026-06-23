@@ -1,6 +1,5 @@
 import { renderHook, act } from '@testing-library/react-native';
 import { Accelerometer } from 'expo-sensors';
-import * as Haptics from 'expo-haptics';
 import { useShakeGesture } from './useShakeGesture';
 
 // Mock expo-sensors
@@ -9,12 +8,6 @@ jest.mock('expo-sensors', () => ({
     setUpdateInterval: jest.fn(),
     addListener: jest.fn(() => ({ remove: jest.fn() })),
   },
-}));
-
-// Mock expo-haptics
-jest.mock('expo-haptics', () => ({
-  notificationAsync: jest.fn(),
-  NotificationFeedbackType: { Success: 'success' },
 }));
 
 describe('useShakeGesture', () => {
