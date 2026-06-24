@@ -1,0 +1,180 @@
+<h2>More Speedometer Approaches</h2>
+<p class="subtitle">3 more directions. Click the one that excites you — or mix and match ideas.</p>
+
+<div class="cards" style="display:grid;grid-template-columns:1fr;gap:24px;max-width:800px;margin:0 auto;">
+
+  <!-- Approach D: Circular Ring Progress -->
+  <div class="card" data-choice="d" onclick="toggleSelect(this)" style="padding:24px;">
+    <div class="card-body" style="display:flex;gap:32px;align-items:center;">
+      <div style="flex-shrink:0;width:200px;height:200px;position:relative;">
+        <svg viewBox="0 0 200 200" style="width:100%;height:100%;">
+          <defs>
+            <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#ef4444"/>
+              <stop offset="40%" stop-color="#f97316"/>
+              <stop offset="60%" stop-color="#eab308"/>
+              <stop offset="100%" stop-color="#22c55e"/>
+            </linearGradient>
+          </defs>
+          <!-- Background ring -->
+          <circle cx="100" cy="100" r="80" fill="none" stroke="#f1f5f9" stroke-width="14"/>
+          <!-- Tick marks at milestones -->
+          <line x1="100" y1="8" x2="100" y2="22" stroke="#cbd5e1" stroke-width="2" stroke-linecap="round"/>
+          <line x1="180" y1="100" x2="166" y2="100" stroke="#cbd5e1" stroke-width="2" stroke-linecap="round"/>
+          <line x1="100" y1="192" x2="100" y2="178" stroke="#cbd5e1" stroke-width="2" stroke-linecap="round"/>
+          <line x1="20" y1="100" x2="34" y2="100" stroke="#cbd5e1" stroke-width="2" stroke-linecap="round"/>
+          <!-- Progress ring (50% = 15/30) -->
+          <circle cx="100" cy="100" r="80" fill="none" stroke="url(#ringGrad)" stroke-width="14"
+            stroke-dasharray="502" stroke-dashoffset="251"
+            stroke-linecap="round" transform="rotate(-90 100 100)"/>
+          <!-- Pulsing dot at progress end -->
+          <circle cx="100" cy="180" r="9" fill="#eab308" opacity="0.3">
+            <animate attributeName="r" values="9;13;9" dur="2s" repeatCount="indefinite"/>
+            <animate attributeName="opacity" values="0.3;0.1;0.3" dur="2s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="100" cy="180" r="6" fill="#eab308"/>
+          <!-- Center content -->
+          <text x="100" y="88" text-anchor="middle" font-size="36" font-weight="800" fill="#0f172a">15</text>
+          <text x="100" y="106" text-anchor="middle" font-size="11" fill="#94a3b8" letter-spacing="1">OF 30 CONTACTS</text>
+          <text x="100" y="128" text-anchor="middle" font-size="12" font-weight="600" fill="#eab308">⚡ Halfway there!</text>
+        </svg>
+      </div>
+      <div>
+        <h3 style="margin:0 0 8px 0;">D: Full Ring Progress</h3>
+        <p style="margin:0 0 8px 0;color:#64748b;">Apple Watch–style circular progress ring with gradient color (red→green). Pulsing dot at the progress point. Clean center with big number and motivational text. Ring draws itself on mount with smooth easing.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <span style="background:#dbeafe;color:#1e40af;padding:2px 8px;border-radius:12px;font-size:12px;">Apple Watch style</span>
+          <span style="background:#dcfce7;color:#166534;padding:2px 8px;border-radius:12px;font-size:12px;">Pulsing indicator</span>
+          <span style="background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:12px;font-size:12px;">Familiar UX pattern</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Approach E: Dashboard Dial with Zones -->
+  <div class="card" data-choice="e" onclick="toggleSelect(this)" style="padding:24px;">
+    <div class="card-body" style="display:flex;gap:32px;align-items:center;">
+      <div style="flex-shrink:0;width:220px;height:160px;position:relative;">
+        <svg viewBox="0 0 240 160" style="width:100%;height:100%;">
+          <defs>
+            <filter id="needleShadow">
+              <feDropShadow dx="1" dy="2" stdDeviation="2" flood-opacity="0.2"/>
+            </filter>
+          </defs>
+          <!-- Outer chrome ring -->
+          <path d="M 20 140 A 100 100 0 0 1 220 140" stroke="#e2e8f0" stroke-width="3" fill="none"/>
+          <!-- Zone arcs - thick colored bands -->
+          <path d="M 28 140 A 92 92 0 0 1 58 62" stroke="#ef4444" stroke-width="24" fill="none" opacity="0.8"/>
+          <path d="M 62 58 A 92 92 0 0 1 120 48" stroke="#f97316" stroke-width="24" fill="none" opacity="0.8"/>
+          <path d="M 124 48 A 92 92 0 0 1 178 58" stroke="#eab308" stroke-width="24" fill="none" opacity="0.8"/>
+          <path d="M 182 62 A 92 92 0 0 1 212 140" stroke="#22c55e" stroke-width="24" fill="none" opacity="0.8"/>
+          <!-- Zone labels -->
+          <text x="38" y="105" font-size="7" fill="#fff" font-weight="bold" transform="rotate(-65, 38, 105)">STARTER</text>
+          <text x="78" y="60" font-size="7" fill="#fff" font-weight="bold" transform="rotate(-35, 78, 60)">GROWING</text>
+          <text x="155" y="55" font-size="7" fill="#fff" font-weight="bold" transform="rotate(25, 155, 55)">STRONG</text>
+          <text x="198" y="95" font-size="7" fill="#fff" font-weight="bold" transform="rotate(60, 198, 95)">SUPER!</text>
+          <!-- Tick marks -->
+          <line x1="28" y1="140" x2="40" y2="140" stroke="#94a3b8" stroke-width="1.5"/>
+          <line x1="120" y1="48" x2="120" y2="60" stroke="#94a3b8" stroke-width="1.5"/>
+          <line x1="212" y1="140" x2="200" y2="140" stroke="#94a3b8" stroke-width="1.5"/>
+          <!-- Numbers -->
+          <text x="22" y="152" font-size="10" fill="#64748b" text-anchor="middle">0</text>
+          <text x="40" y="42" font-size="10" fill="#64748b" text-anchor="middle">10</text>
+          <text x="120" y="36" font-size="10" fill="#64748b" text-anchor="middle">15</text>
+          <text x="200" y="42" font-size="10" fill="#64748b" text-anchor="middle">20</text>
+          <text x="218" y="152" font-size="10" fill="#64748b" text-anchor="middle">30</text>
+          <!-- Needle pointing to ~15 -->
+          <g filter="url(#needleShadow)">
+            <polygon points="120,55 117,140 123,140" fill="#1e293b"/>
+            <circle cx="120" cy="140" r="8" fill="#334155"/>
+            <circle cx="120" cy="140" r="4" fill="#f8fafc"/>
+          </g>
+        </svg>
+      </div>
+      <div>
+        <h3 style="margin:0 0 8px 0;">E: Dashboard Dial with Named Zones</h3>
+        <p style="margin:0 0 8px 0;color:#64748b;">Car-dashboard feel with thick colored zone bands labeled "Starter", "Growing", "Strong", "Super!". Physical needle with drop shadow. Needle bounces with spring physics on mount. Feels tactile and gamified.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <span style="background:#dbeafe;color:#1e40af;padding:2px 8px;border-radius:12px;font-size:12px;">Dashboard / tactile</span>
+          <span style="background:#dcfce7;color:#166534;padding:2px 8px;border-radius:12px;font-size:12px;">Named milestones</span>
+          <span style="background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:12px;font-size:12px;">Spring needle bounce</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Approach F: Thermometer / Power Bar -->
+  <div class="card" data-choice="f" onclick="toggleSelect(this)" style="padding:24px;">
+    <div class="card-body" style="display:flex;gap:32px;align-items:center;">
+      <div style="flex-shrink:0;width:220px;height:150px;position:relative;">
+        <svg viewBox="0 0 260 130" style="width:100%;height:100%;">
+          <!-- Curved power bar track -->
+          <defs>
+            <linearGradient id="powerGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#ef4444"/>
+              <stop offset="33%" stop-color="#f97316"/>
+              <stop offset="66%" stop-color="#eab308"/>
+              <stop offset="100%" stop-color="#22c55e"/>
+            </linearGradient>
+            <clipPath id="progressClip">
+              <rect x="0" y="0" width="130" height="130"/>
+            </clipPath>
+          </defs>
+
+          <!-- Background track -->
+          <rect x="20" y="40" width="220" height="32" rx="16" fill="#f1f5f9"/>
+
+          <!-- Filled progress bar -->
+          <rect x="20" y="40" width="110" height="32" rx="16" fill="url(#powerGrad)"/>
+
+          <!-- Segment lines -->
+          <line x1="93" y1="40" x2="93" y2="72" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
+          <line x1="166" y1="40" x2="166" y2="72" stroke="rgba(0,0,0,0.08)" stroke-width="1.5"/>
+
+          <!-- Zone labels above -->
+          <text x="56" y="32" text-anchor="middle" font-size="9" fill="#ef4444" font-weight="600">🔥 Warming Up</text>
+          <text x="130" y="32" text-anchor="middle" font-size="9" fill="#eab308" font-weight="600">⚡ Building</text>
+          <text x="203" y="32" text-anchor="middle" font-size="9" fill="#22c55e" font-weight="600">🚀 Super-Connector</text>
+
+          <!-- Milestone markers below -->
+          <text x="20" y="90" font-size="9" fill="#94a3b8">0</text>
+          <text x="90" y="90" font-size="9" fill="#94a3b8" text-anchor="middle">10</text>
+          <text x="163" y="90" font-size="9" fill="#94a3b8" text-anchor="middle">20</text>
+          <text x="237" y="90" font-size="9" fill="#94a3b8" text-anchor="end">30</text>
+
+          <!-- Current position indicator -->
+          <polygon points="130,40 125,30 135,30" fill="#1e293b"/>
+
+          <!-- Count badge -->
+          <rect x="108" y="10" width="44" height="20" rx="10" fill="#1e293b"/>
+          <text x="130" y="24" text-anchor="middle" font-size="11" fill="white" font-weight="bold">15</text>
+        </svg>
+      </div>
+      <div>
+        <h3 style="margin:0 0 8px 0;">F: Horizontal Power Bar</h3>
+        <p style="margin:0 0 8px 0;color:#64748b;">Gaming-inspired horizontal power bar with gradient fill and zone labels. Arrow indicator with floating badge shows current count. Bar fills left-to-right with smooth animation. Compact — takes less vertical space.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <span style="background:#dbeafe;color:#1e40af;padding:2px 8px;border-radius:12px;font-size:12px;">Gaming / power-up</span>
+          <span style="background:#dcfce7;color:#166534;padding:2px 8px;border-radius:12px;font-size:12px;">Compact layout</span>
+          <span style="background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:12px;font-size:12px;">Left-to-right fill</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div style="max-width:800px;margin:24px auto 0;padding:16px;background:#f0f9ff;border-radius:12px;border:1px solid #bae6fd;">
+  <p style="margin:0;color:#0369a1;font-size:14px;">
+    <strong>💡 Tip:</strong> You can also mix ideas — e.g. the ring shape from D with the named zones from E, or the needle from A with the glow from B. Let me know what elements you like!
+  </p>
+</div>
+
+<div style="max-width:800px;margin:16px auto 0;padding:16px;background:#f8fafc;border-radius:12px;">
+  <h3 style="margin:0 0 8px 0;">Previous options (scroll up or see first page):</h3>
+  <ul style="margin:0;padding-left:20px;color:#64748b;">
+    <li><strong>A:</strong> Classic Speedometer with rotating needle</li>
+    <li><strong>B:</strong> Modern Arc with gradient glow</li>
+    <li><strong>C:</strong> Segmented LED Meter (30 bars)</li>
+  </ul>
+</div>

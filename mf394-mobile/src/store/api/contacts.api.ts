@@ -90,6 +90,7 @@ export const contactsApi = createApi({
       name: string;
       email: string;
       image?: string;
+      createdAt?: string;
       contacts: Contact[];
       managedTags: string[];
     }, void>({

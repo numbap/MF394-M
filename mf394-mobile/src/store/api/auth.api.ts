@@ -26,6 +26,7 @@ export interface UserDataResponse {
   name: string;
   email: string;
   image?: string;
+  createdAt?: string;
   contacts: Contact[];
   managedTags: string[];
   managedCategories?: string[];

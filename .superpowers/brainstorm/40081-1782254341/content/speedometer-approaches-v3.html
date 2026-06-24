@@ -1,0 +1,239 @@
+<h2>More Ring-Inspired Approaches</h2>
+<p class="subtitle">You liked D (Full Ring). Here are variations that play with that circular energy. Click your favorite.</p>
+
+<div class="cards" style="display:grid;grid-template-columns:1fr;gap:24px;max-width:800px;margin:0 auto;">
+
+  <!-- Approach G: Orbit Ring with Milestone Stars -->
+  <div class="card" data-choice="g" onclick="toggleSelect(this)" style="padding:24px;">
+    <div class="card-body" style="display:flex;gap:32px;align-items:center;">
+      <div style="flex-shrink:0;width:200px;height:200px;position:relative;">
+        <svg viewBox="0 0 200 200" style="width:100%;height:100%;">
+          <defs>
+            <linearGradient id="orbitGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#ef4444"/>
+              <stop offset="50%" stop-color="#f59e0b"/>
+              <stop offset="100%" stop-color="#22c55e"/>
+            </linearGradient>
+            <filter id="starGlow">
+              <feGaussianBlur stdDeviation="2" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          <!-- Background ring -->
+          <circle cx="100" cy="100" r="78" fill="none" stroke="#f1f5f9" stroke-width="10"/>
+          <!-- Progress ring (50%) -->
+          <circle cx="100" cy="100" r="78" fill="none" stroke="url(#orbitGrad)" stroke-width="10"
+            stroke-dasharray="490" stroke-dashoffset="245"
+            stroke-linecap="round" transform="rotate(-90 100 100)"/>
+
+          <!-- Milestone markers on the ring - 10, 20, 30 -->
+          <!-- 10 contacts = 120° from start (at bottom-right) -->
+          <circle cx="167" cy="139" r="10" fill="#fff" stroke="#f97316" stroke-width="2"/>
+          <text x="167" y="143" text-anchor="middle" font-size="8" fill="#f97316" font-weight="bold">10</text>
+          <!-- 20 contacts = 240° from start (at top-right area) -->
+          <circle cx="61" cy="54" r="10" fill="#fff" stroke="#eab308" stroke-width="2"/>
+          <text x="61" y="58" text-anchor="middle" font-size="8" fill="#eab308" font-weight="bold">20</text>
+          <!-- 30 contacts = 360° (back at bottom) -->
+          <g filter="url(#starGlow)">
+            <circle cx="100" cy="178" r="12" fill="#22c55e" opacity="0.15"/>
+          </g>
+          <circle cx="100" cy="178" r="10" fill="#fff" stroke="#22c55e" stroke-width="2"/>
+          <text x="100" y="181" text-anchor="middle" font-size="9" fill="#22c55e">⭐</text>
+
+          <!-- Orbiting dot at progress end -->
+          <circle cx="100" cy="178" r="0" fill="#f59e0b"/>
+          <!-- Actually place at 15/30 = 180° = left side -->
+          <circle cx="22" cy="100" r="7" fill="#f59e0b">
+            <animate attributeName="r" values="7;9;7" dur="1.5s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="22" cy="100" r="4" fill="#fff"/>
+
+          <!-- Center content -->
+          <text x="100" y="90" text-anchor="middle" font-size="38" font-weight="800" fill="#0f172a">15</text>
+          <text x="100" y="108" text-anchor="middle" font-size="10" fill="#94a3b8" letter-spacing="0.5">CONTACTS</text>
+          <text x="100" y="128" text-anchor="middle" font-size="11" font-weight="600" fill="#f59e0b">Next: 20 🎯</text>
+        </svg>
+      </div>
+      <div>
+        <h3 style="margin:0 0 8px 0;">G: Orbit Ring with Milestones</h3>
+        <p style="margin:0 0 8px 0;color:#64748b;">Full ring with milestone badges at 10, 20, and 30. An orbiting dot shows current progress. Center shows count + "Next: 20 🎯" to drive toward the next milestone. Milestones light up and get a celebration animation when reached.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <span style="background:#dbeafe;color:#1e40af;padding:2px 8px;border-radius:12px;font-size:12px;">Milestone-driven</span>
+          <span style="background:#dcfce7;color:#166534;padding:2px 8px;border-radius:12px;font-size:12px;">Next-goal motivation</span>
+          <span style="background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:12px;font-size:12px;">Orbiting dot</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Approach H: Thick Ring with Inner Glow -->
+  <div class="card" data-choice="h" onclick="toggleSelect(this)" style="padding:24px;">
+    <div class="card-body" style="display:flex;gap:32px;align-items:center;">
+      <div style="flex-shrink:0;width:200px;height:200px;position:relative;">
+        <svg viewBox="0 0 200 200" style="width:100%;height:100%;">
+          <defs>
+            <linearGradient id="thickGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#dc2626"/>
+              <stop offset="35%" stop-color="#f97316"/>
+              <stop offset="65%" stop-color="#facc15"/>
+              <stop offset="100%" stop-color="#4ade80"/>
+            </linearGradient>
+            <filter id="innerGlow2">
+              <feGaussianBlur stdDeviation="6" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+            <radialGradient id="centerBg" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#fff"/>
+              <stop offset="100%" stop-color="#f8fafc"/>
+            </radialGradient>
+          </defs>
+          <!-- Inner circle background -->
+          <circle cx="100" cy="100" r="60" fill="url(#centerBg)"/>
+          <!-- Background ring (thick) -->
+          <circle cx="100" cy="100" r="82" fill="none" stroke="#f1f5f9" stroke-width="24"/>
+          <!-- Progress ring with glow -->
+          <g filter="url(#innerGlow2)">
+            <circle cx="100" cy="100" r="82" fill="none" stroke="url(#thickGrad)" stroke-width="24"
+              stroke-dasharray="515" stroke-dashoffset="257"
+              stroke-linecap="round" transform="rotate(-90 100 100)"/>
+          </g>
+          <!-- Small ticks around outside for scale feeling -->
+          <circle cx="100" cy="10" r="2" fill="#cbd5e1"/>
+          <circle cx="155" cy="20" r="2" fill="#cbd5e1"/>
+          <circle cx="190" cy="55" r="2" fill="#cbd5e1"/>
+          <circle cx="190" cy="100" r="1.5" fill="#cbd5e1"/>
+          <circle cx="10" cy="100" r="1.5" fill="#cbd5e1"/>
+          <circle cx="100" cy="190" r="2" fill="#cbd5e1"/>
+
+          <!-- Center content -->
+          <text x="100" y="85" text-anchor="middle" font-size="13" fill="#94a3b8" font-weight="500" letter-spacing="2">LEVEL</text>
+          <text x="100" y="115" text-anchor="middle" font-size="42" font-weight="900" fill="#0f172a">15</text>
+          <text x="100" y="135" text-anchor="middle" font-size="10" fill="#64748b">of 30 • <tspan fill="#f59e0b" font-weight="700">50%</tspan></text>
+        </svg>
+      </div>
+      <div>
+        <h3 style="margin:0 0 8px 0;">H: Thick Ring with Aura Glow</h3>
+        <p style="margin:0 0 8px 0;color:#64748b;">Bold, thick ring with a soft aura glow around the progress edge. Feels premium and substantial. Center shows "LEVEL" label with large count and percentage. The glow intensifies as you approach 30, and turns fully green with a pulse when complete.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <span style="background:#dbeafe;color:#1e40af;padding:2px 8px;border-radius:12px;font-size:12px;">Premium / bold</span>
+          <span style="background:#dcfce7;color:#166534;padding:2px 8px;border-radius:12px;font-size:12px;">Aura glow effect</span>
+          <span style="background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:12px;font-size:12px;">Level-up feeling</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Approach I: Double Ring with Avatar -->
+  <div class="card" data-choice="i" onclick="toggleSelect(this)" style="padding:24px;">
+    <div class="card-body" style="display:flex;gap:32px;align-items:center;">
+      <div style="flex-shrink:0;width:200px;height:200px;position:relative;">
+        <svg viewBox="0 0 200 200" style="width:100%;height:100%;">
+          <defs>
+            <linearGradient id="outerRingGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#ef4444"/>
+              <stop offset="50%" stop-color="#eab308"/>
+              <stop offset="100%" stop-color="#22c55e"/>
+            </linearGradient>
+            <linearGradient id="innerRingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#818cf8"/>
+              <stop offset="100%" stop-color="#c084fc"/>
+            </linearGradient>
+            <clipPath id="avatarClip">
+              <circle cx="100" cy="90" r="32"/>
+            </clipPath>
+          </defs>
+          <!-- Outer ring - bg -->
+          <circle cx="100" cy="100" r="85" fill="none" stroke="#f1f5f9" stroke-width="8"/>
+          <!-- Outer ring - progress (contacts) -->
+          <circle cx="100" cy="100" r="85" fill="none" stroke="url(#outerRingGrad)" stroke-width="8"
+            stroke-dasharray="534" stroke-dashoffset="267"
+            stroke-linecap="round" transform="rotate(-90 100 100)"/>
+          <!-- Inner decorative ring -->
+          <circle cx="100" cy="100" r="72" fill="none" stroke="#f8fafc" stroke-width="1"/>
+
+          <!-- Avatar placeholder -->
+          <circle cx="100" cy="90" r="32" fill="#e2e8f0"/>
+          <circle cx="100" cy="80" r="12" fill="#94a3b8"/>
+          <ellipse cx="100" cy="105" rx="18" ry="14" fill="#94a3b8"/>
+
+          <!-- Badge at bottom -->
+          <rect x="68" y="125" width="64" height="24" rx="12" fill="#0f172a"/>
+          <text x="100" y="141" text-anchor="middle" font-size="12" fill="white" font-weight="bold">15 / 30</text>
+
+          <!-- Status text below -->
+          <text x="100" y="170" text-anchor="middle" font-size="10" fill="#64748b">Connector</text>
+          <text x="100" y="185" text-anchor="middle" font-size="9" fill="#eab308">→ Super-Connector at 30</text>
+
+          <!-- Decorative sparkles near progress end -->
+          <text x="15" y="103" font-size="8" opacity="0.6">✨</text>
+          <text x="18" y="85" font-size="6" opacity="0.4">✨</text>
+        </svg>
+      </div>
+      <div>
+        <h3 style="margin:0 0 8px 0;">I: Profile Ring with Badge</h3>
+        <p style="margin:0 0 8px 0;color:#64748b;">Progress ring wraps around the user's avatar/profile icon, like a social-media level indicator. Dark badge overlay shows count. Below: current title ("Connector") and what's next ("Super-Connector at 30"). Ring animates on mount; badge bounces when count changes.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <span style="background:#dbeafe;color:#1e40af;padding:2px 8px;border-radius:12px;font-size:12px;">Social / personal</span>
+          <span style="background:#dcfce7;color:#166534;padding:2px 8px;border-radius:12px;font-size:12px;">Avatar-centric</span>
+          <span style="background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:12px;font-size:12px;">Title progression</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Approach J: 3-Zone Ring with Emoji Mascot -->
+  <div class="card" data-choice="j" onclick="toggleSelect(this)" style="padding:24px;">
+    <div class="card-body" style="display:flex;gap:32px;align-items:center;">
+      <div style="flex-shrink:0;width:200px;height:200px;position:relative;">
+        <svg viewBox="0 0 200 200" style="width:100%;height:100%;">
+          <!-- Background segments -->
+          <circle cx="100" cy="100" r="80" fill="none" stroke="#fecaca" stroke-width="16"
+            stroke-dasharray="167 335" transform="rotate(-90 100 100)"/>
+          <circle cx="100" cy="100" r="80" fill="none" stroke="#fef08a" stroke-width="16"
+            stroke-dasharray="167 335" transform="rotate(30 100 100)"/>
+          <circle cx="100" cy="100" r="80" fill="none" stroke="#bbf7d0" stroke-width="16"
+            stroke-dasharray="167 335" transform="rotate(150 100 100)"/>
+
+          <!-- Progress overlay (darker, filled portion) -->
+          <circle cx="100" cy="100" r="80" fill="none" stroke="#ef4444" stroke-width="16"
+            stroke-dasharray="167 335" stroke-dashoffset="335"
+            transform="rotate(-90 100 100)"/>
+          <circle cx="100" cy="100" r="80" fill="none" stroke="#eab308" stroke-width="16"
+            stroke-dasharray="84 418" stroke-dashoffset="418"
+            transform="rotate(30 100 100)"/>
+
+          <!-- Zone icons on the ring -->
+          <text x="170" y="58" font-size="16">🌱</text>
+          <text x="13" y="58" font-size="16">🔥</text>
+          <text x="90" y="195" font-size="16">⭐</text>
+
+          <!-- Inner circle -->
+          <circle cx="100" cy="100" r="58" fill="white"/>
+
+          <!-- Dynamic emoji mascot in center -->
+          <text x="100" y="92" text-anchor="middle" font-size="30">
+            😊
+          </text>
+          <text x="100" y="115" text-anchor="middle" font-size="20" font-weight="800" fill="#0f172a">15</text>
+          <text x="100" y="132" text-anchor="middle" font-size="9" fill="#64748b">Keep growing!</text>
+        </svg>
+      </div>
+      <div>
+        <h3 style="margin:0 0 8px 0;">J: Zone Ring with Emoji Mascot</h3>
+        <p style="margin:0 0 8px 0;color:#64748b;">Three distinct color zones (🌱 Starter, 🔥 Building, ⭐ Super-Connector) with a dynamic emoji mascot in the center that changes expression: 😐→😊→😄→🤩 as contacts increase. Fun, playful, and immediately communicates progress. Zones fill up sequentially.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <span style="background:#dbeafe;color:#1e40af;padding:2px 8px;border-radius:12px;font-size:12px;">Fun / playful</span>
+          <span style="background:#dcfce7;color:#166534;padding:2px 8px;border-radius:12px;font-size:12px;">Emoji mascot</span>
+          <span style="background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:12px;font-size:12px;">3 clear zones</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div style="max-width:800px;margin:24px auto 0;padding:16px;background:#f0fdf4;border-radius:12px;border:1px solid #bbf7d0;">
+  <p style="margin:0;color:#166534;font-size:14px;">
+    <strong>🏆 Your current favorite: D (Full Ring Progress)</strong> — Apple Watch style with pulsing dot. The options above explore variations on that ring concept. Which direction speaks to you?
+  </p>
+</div>

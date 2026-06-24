@@ -1,5 +1,5 @@
-import React, { useEffect, useCallback } from "react";
-import { View, TouchableOpacity, Image } from "react-native";
+import React, { useState, useEffect, useCallback } from "react";
+import { View, Modal, TouchableOpacity, Image } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -9,7 +9,9 @@ import { RootState } from "../store";
 import { colors } from "../theme/theme";
 import { OfflineBanner } from "../components/OfflineBanner";
 import { clearSharedImage } from "../store/slices/shareIntent.slice";
-import { useOnboarding } from "../hooks/useOnboarding";
+import { contactsApi } from "../store/api/contacts.api";
+import { useChallengeDeadline } from "../hooks/useChallengeDeadline";
+import { SUPER_CONNECTOR_MAX } from "../constants";
 
 import LoginScreen from "../screens/Auth/LoginScreen";
 import { ListingScreen } from "../screens/Listing";
@@ -21,6 +23,8 @@ import PartyModeScreen from "../screens/Party/PartyModeScreen";
 import SettingsScreen from "../screens/Settings/SettingsScreen";
 import HelpScreen from "../screens/Help/HelpScreen";
 import OnboardingScreen from "../screens/Onboarding/OnboardingScreen";
+
+const SUPER_CONNECTOR_THRESHOLD = SUPER_CONNECTOR_MAX + 1;
 
 const BackWithThumbnail = ({ onPress }) => (
   <TouchableOpacity
@@ -45,12 +49,34 @@ export function RootNavigator() {
   const auth = useSelector((state: RootState) => state.auth);
   const user = auth?.user || null;
   const loginSessionKey = auth?.loginSessionKey || user?.id;
+  const { data: userData, isLoading: isUserLoading } = contactsApi.useGetUserQuery(undefined, { skip: !user });
+  const contactCount = userData?.contacts?.length ?? 0;
+  const { isExpired, days, hours, minutes, seconds } = useChallengeDeadline(userData?.createdAt);
 
-  const { needsOnboarding, isLoading: onboardingLoading, markComplete } = useOnboarding();
+  const [onboardingDismissed, setOnboardingDismissed] = useState(false);
+  const [pendingNav, setPendingNav] = useState(null);
 
-  const handleOnboardingComplete = useCallback(async () => {
-    await markComplete();
-  }, [markComplete]);
+  const showOnboarding =
+    !!user &&
+    !isUserLoading &&
+    contactCount < SUPER_CONNECTOR_THRESHOLD &&
+    !onboardingDismissed;
+
+  const handleContinue = useCallback(() => {
+    setOnboardingDismissed(true);
+  }, []);
+
+  const handleInstructions = useCallback(() => {
+    setOnboardingDismissed(true);
+    setPendingNav("HelpTab");
+  }, []);
+
+  useEffect(() => {
+    if (pendingNav && !showOnboarding && navigationRef.current?.isReady()) {
+      navigationRef.current.navigate(pendingNav);
+      setPendingNav(null);
+    }
+  }, [pendingNav, showOnboarding]);
 
   return (
     <>
@@ -58,37 +84,29 @@ export function RootNavigator() {
       <NavigationContainer ref={navigationRef}>
         {!user ? (
           <UnauthenticatedStack />
-        ) : onboardingLoading ? (
-          <LoadingPlaceholder />
-        ) : needsOnboarding ? (
-          <OnboardingStack onComplete={handleOnboardingComplete} />
         ) : (
           <AuthenticatedStack key={loginSessionKey} />
         )}
       </NavigationContainer>
+      {showOnboarding && (
+        <Modal visible animationType="fade" statusBarTranslucent>
+          <OnboardingScreen
+            contactCount={contactCount}
+            days={days}
+            hours={hours}
+            minutes={minutes}
+            seconds={seconds}
+            showTimer={!isExpired}
+            createdAt={userData?.createdAt}
+            onContinue={handleContinue}
+            onInstructions={handleInstructions}
+          />
+        </Modal>
+      )}
     </>
   );
 }
 
-function LoadingPlaceholder() {
-  return <View style={{ flex: 1, backgroundColor: colors.semantic.background }} />;
-}
-
-function OnboardingStack({ onComplete }) {
-  return (
-    <Stack.Navigator
-      screenOptions={{
-        headerShown: false,
-        gestureEnabled: false,
-        animationEnabled: false,
-      }}
-    >
-      <Stack.Screen name="Onboarding">
-        {() => <OnboardingScreen onComplete={onComplete} />}
-      </Stack.Screen>
-    </Stack.Navigator>
-  );
-}
 
 function UnauthenticatedStack() {
   return (
