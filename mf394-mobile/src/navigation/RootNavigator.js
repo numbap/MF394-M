@@ -11,6 +11,7 @@ import { OfflineBanner } from "../components/OfflineBanner";
 import { clearSharedImage } from "../store/slices/shareIntent.slice";
 import { contactsApi } from "../store/api/contacts.api";
 import { useChallengeDeadline } from "../hooks/useChallengeDeadline";
+import { SUPER_CONNECTOR_MAX } from "../constants";
 
 import LoginScreen from "../screens/Auth/LoginScreen";
 import { ListingScreen } from "../screens/Listing";
@@ -23,7 +24,7 @@ import SettingsScreen from "../screens/Settings/SettingsScreen";
 import HelpScreen from "../screens/Help/HelpScreen";
 import OnboardingScreen from "../screens/Onboarding/OnboardingScreen";
 
-const SUPER_CONNECTOR_THRESHOLD = 31;
+const SUPER_CONNECTOR_THRESHOLD = SUPER_CONNECTOR_MAX + 1;
 
 const BackWithThumbnail = ({ onPress }) => (
   <TouchableOpacity
@@ -48,10 +49,8 @@ export function RootNavigator() {
   const auth = useSelector((state: RootState) => state.auth);
   const user = auth?.user || null;
   const loginSessionKey = auth?.loginSessionKey || user?.id;
-  const { data: userData } = contactsApi.useGetUserQuery(undefined, { skip: !user });
+  const { data: userData, isLoading: isUserLoading } = contactsApi.useGetUserQuery(undefined, { skip: !user });
   const contactCount = userData?.contacts?.length ?? 0;
-  // DEBUG: check all keys from API response
-  if (userData) console.log('DEBUG userData keys:', Object.keys(userData));
   const { isExpired, days, hours, minutes, seconds } = useChallengeDeadline(userData?.createdAt);
 
   const [onboardingDismissed, setOnboardingDismissed] = useState(false);
@@ -59,6 +58,7 @@ export function RootNavigator() {
 
   const showOnboarding =
     !!user &&
+    !isUserLoading &&
     contactCount < SUPER_CONNECTOR_THRESHOLD &&
     !onboardingDismissed;
 

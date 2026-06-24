@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import Svg, { Circle } from 'react-native-svg';
+import React, { useEffect } from "react";
+import { View, Text, StyleSheet } from "react-native";
+import Svg, { Circle } from "react-native-svg";
 import Animated, {
   useSharedValue,
   useAnimatedProps,
@@ -11,9 +11,10 @@ import Animated, {
   Easing,
   interpolateColor,
   useDerivedValue,
-} from 'react-native-reanimated';
-import { colors, spacing, typography } from '../../theme/theme';
-import { ConfettiOverlay } from './ConfettiOverlay';
+} from "react-native-reanimated";
+import { colors, spacing, typography } from "../../theme/theme";
+import { ConfettiOverlay } from "./ConfettiOverlay";
+import { SUPER_CONNECTOR_MAX } from "../../constants";
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
@@ -23,11 +24,11 @@ const RADIUS = (RING_SIZE - STROKE_WIDTH) / 2;
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
 function getMotivationalText(count: number, max: number): string {
-  if (count >= max) return 'Super-Connector!';
-  if (count >= max * 0.67) return 'Almost there!';
+  if (count >= max) return "Super-Connector!";
+  if (count >= max * 0.67) return "Almost there!";
   if (count >= max * 0.33) return "You're building momentum!";
-  if (count >= 1) return 'Keep going!';
-  return 'Add your first contact!';
+  if (count >= 1) return "Keep going!";
+  return "Add your first contact!";
 }
 
 export interface SuperConnectorGaugeProps {
@@ -35,10 +36,7 @@ export interface SuperConnectorGaugeProps {
   maxCount?: number;
 }
 
-export function SuperConnectorGauge({
-  contactCount,
-  maxCount = 30,
-}: SuperConnectorGaugeProps) {
+export function SuperConnectorGauge({ contactCount, maxCount = SUPER_CONNECTOR_MAX }: SuperConnectorGaugeProps) {
   const clamped = Math.min(Math.max(contactCount, 0), maxCount);
   const progress = useSharedValue(0);
   const scale = useSharedValue(1);
@@ -53,10 +51,7 @@ export function SuperConnectorGauge({
     if (isCelebrating) {
       scale.value = withDelay(
         400,
-        withSequence(
-          withTiming(1.05, { duration: 300 }),
-          withTiming(1, { duration: 300 }),
-        ),
+        withSequence(withTiming(1.05, { duration: 300 }), withTiming(1, { duration: 300 }))
       );
     }
   }, [clamped, maxCount, isCelebrating]);
@@ -65,7 +60,7 @@ export function SuperConnectorGauge({
     return interpolateColor(
       progress.value,
       [0, 0.33, 0.5, 0.83, 1],
-      ['#dc2626', '#f97316', '#eab308', '#84cc16', '#22c55e'],
+      ["#dc2626", "#f97316", "#eab308", "#84cc16", "#22c55e"]
     );
   });
 
@@ -120,21 +115,21 @@ export function SuperConnectorGauge({
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: 'center',
+    alignItems: "center",
     paddingVertical: spacing.xl,
   },
   centerContent: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   countText: {
     fontSize: 48,
-    fontWeight: '800',
+    fontWeight: "800",
     color: colors.semantic.text,
   },
   ofText: {
