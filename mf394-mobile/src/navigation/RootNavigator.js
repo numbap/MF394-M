@@ -9,6 +9,8 @@ import { RootState } from "../store";
 import { colors } from "../theme/theme";
 import { OfflineBanner } from "../components/OfflineBanner";
 import { clearSharedImage } from "../store/slices/shareIntent.slice";
+import { contactsApi } from "../store/api/contacts.api";
+import { useChallengeDeadline } from "../hooks/useChallengeDeadline";
 
 import LoginScreen from "../screens/Auth/LoginScreen";
 import { ListingScreen } from "../screens/Listing";
@@ -46,15 +48,19 @@ export function RootNavigator() {
   const auth = useSelector((state: RootState) => state.auth);
   const user = auth?.user || null;
   const loginSessionKey = auth?.loginSessionKey || user?.id;
-  const contactCount = useSelector(
-    (state: RootState) => state.contacts?.data?.length ?? 0,
-  );
+  const { data: userData } = contactsApi.useGetUserQuery(undefined, { skip: !user });
+  const contactCount = userData?.contacts?.length ?? 0;
+  // DEBUG: check all keys from API response
+  if (userData) console.log('DEBUG userData keys:', Object.keys(userData));
+  const { isExpired, days, hours, minutes, seconds } = useChallengeDeadline(userData?.createdAt);
 
   const [onboardingDismissed, setOnboardingDismissed] = useState(false);
   const [pendingNav, setPendingNav] = useState(null);
 
   const showOnboarding =
-    !!user && contactCount < SUPER_CONNECTOR_THRESHOLD && !onboardingDismissed;
+    !!user &&
+    contactCount < SUPER_CONNECTOR_THRESHOLD &&
+    !onboardingDismissed;
 
   const handleContinue = useCallback(() => {
     setOnboardingDismissed(true);
@@ -86,6 +92,12 @@ export function RootNavigator() {
         <Modal visible animationType="fade" statusBarTranslucent>
           <OnboardingScreen
             contactCount={contactCount}
+            days={days}
+            hours={hours}
+            minutes={minutes}
+            seconds={seconds}
+            showTimer={!isExpired}
+            createdAt={userData?.createdAt}
             onContinue={handleContinue}
             onInstructions={handleInstructions}
           />

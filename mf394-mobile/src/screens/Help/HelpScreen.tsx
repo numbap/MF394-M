@@ -1,9 +1,6 @@
 import React from 'react';
 import { View, Text, ScrollView, Image, ImageSourcePropType, StyleSheet } from 'react-native';
-import { useSelector } from 'react-redux';
 import { colors, spacing, typography } from '../../theme/theme';
-import { SuperConnectorGauge } from '../../components/SuperConnectorGauge';
-import type { RootState } from '../../store';
 
 interface SectionData {
   title: string;
@@ -59,13 +56,8 @@ function HelpSectionItem({ title, body, imageSource }: SectionData) {
 }
 
 export default function HelpScreen() {
-  const contactCount = useSelector(
-    (state: RootState) => state.contacts?.data?.length ?? 0,
-  );
-
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <SuperConnectorGauge contactCount={contactCount} />
       {SECTIONS.map((section) => (
         <HelpSectionItem key={section.title} {...section} />
       ))}
